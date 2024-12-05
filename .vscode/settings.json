@@ -22,5 +22,12 @@
             ]
         }
     ],
-    "latex-workshop.latex.outDir": "%DIR%/out"
+    "latex-workshop.latex.outDir": "%DIR%/out",
+    "latex-workshop.latex.autoBuild.run": "onSave",
+    "latex-workshop.synctex.afterBuild.enabled": true,
+    "latex-workshop.showContextMenu": true,
+    "latex-workshop.view.pdf.internal.synctex.keybinding": "double-click",
+    "latex-workshop.intellisense.package.enabled": true,
+    "latex-workshop.message.error.show": false,
+    "latex-workshop.message.warning.show": false,
 }
