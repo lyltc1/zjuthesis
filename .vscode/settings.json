@@ -1,11 +1,16 @@
 {
+    "latex-workshop.latex.tools": [{
+    "name": "latexmk",
+    "command": "latexmk",
+    "args": [
+        "-xelatex",
+        "-synctex=1",
+        "-interaction=nonstopmode",
+        "-file-line-error",
+        "%DOC%"
+    ]
+    }],
     "latex-workshop.latex.recipes": [
-        {
-            "name": "latexmk (latexmkrc)",
-            "tools": [
-                "latexmk_rconly"
-            ]
-        },
         {
             "name": "latexmk",
             "tools": [
@@ -28,6 +33,5 @@
     "latex-workshop.showContextMenu": true,
     "latex-workshop.view.pdf.internal.synctex.keybinding": "double-click",
     "latex-workshop.intellisense.package.enabled": true,
-    "latex-workshop.message.error.show": false,
     "latex-workshop.message.warning.show": false,
 }
