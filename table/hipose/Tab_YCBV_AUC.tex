@@ -1,0 +1,39 @@
+\begin{table}
+  \centering
+  \begin{tabular}{@{}l|c|c|c@{}}
+    \toprule
+     \multicolumn{2}{c|}{Method} & \makecell{AUC of\\ADD-S} & \makecell{AUC of\\ADD(-S)} \\
+    \midrule
+    \multirow{3}{*}{\rotatebox{90}{RGB}} & SO-Pose~\cite{di2021so} &  90.9 &  83.9  \\
+     & GDR-Net~\cite{wang2021gdr} &  91.6 &  84.4 \\
+     & ZebraPose~\cite{su2022zebrapose} & 90.1 & 85.3\\
+     \midrule
+    \multirow{5}{*}{\rotatebox{90}{RGB-D}} & PVN3D~\cite{he2020pvn3d} &  95.5 &  91.8 \\
+     & RCVPose~\cite{wu2022vote} &  96.6 &  95.2 \\
+     & FFB6D~\cite{he2021ffb6d} &  96.6 &  92.7 \\
+     & DFTr~\cite{zhou2023deep} & 96.7 & 94.4\\
+     & Ours &  \textbf{97.6} &  \textbf{95.5}  \\
+    \bottomrule
+  \end{tabular}
+  \caption{\textbf{Comparison with State of the Art on YCB-V\cite{xiang2018posecnn}}. We compare our HiPose with state of the art w.r.t AUC of ADD(-S) and AUC of ADD-S in \%.}
+  \label{tab:ycbv_results_table}
+\end{table}
+
+% \begin{table}
+%   \centering
+%   \begin{tabular}{@{}l|c|c|c@{}}
+%     \toprule
+%      Method & ADD(-S) & \makecell{AUC of\\ADD-S} & \makecell{AUC of\\ADD(-S)} \\
+%     \midrule
+%     SegDriven\cite{hu2019segmentation} & 39.0 &  - &  -  \\
+%     SingleStage\cite{hu2020single} & 53.9 &  - &  - \\
+%     CosyPose~\cite{labbe2020cosypose} & - &  89.8 &  84.5 \\
+%     RePose~\cite{iwase2021repose} & 62.1 &  88.5 &  82.0 \\
+%     GDR-Net~\cite{wang2021gdr} & 60.1 &  \textbf{91.6} &  84.4 \\
+%     SO-Pose~\cite{di2021so} & 56.8 &  90.9 &  83.9 \\
+%     Ours & \textbf{0.0} &  0.0 &  \textbf{0.0}  \\
+%     \bottomrule
+%   \end{tabular}
+%   \caption{\textbf{Comparison with State of the Art on YCB-V\cite{xiang2017posecnn}}. We compare our ZebraPose with state of the art w.r.t ADD(-S), AUC of ADD(-S) and AUC of ADD-S in \%. (-) denotes results missing from the original paper.}
+%   \label{tab:ycbv_results_table}
+% \end{table} - & PR-GCN~\cite{Zhou2021PRGCNAD} &  95.8 &  - \\

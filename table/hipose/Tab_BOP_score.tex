@@ -1,0 +1,37 @@
+\begin{table*}
+  \centering
+  \begin{tabular}{l|c|c|c|c|c|c}
+    \toprule
+     \textbf{Method} & Refinement & LM-O & YCB-V & T-LESS & mean & time(sec) \\
+    \midrule
+    FFB6D-CVPR21-PBR-NoRefinement~\cite{he2021ffb6d} &  - & 68.7 &  75.8  & - & 72.3$^*$ & 0.19$^*$\\
+    RCVPose 3D\_SingleModel\_VIVO\_PBR~\cite{wu2022vote} &  ICP~\cite{Rusinkiewicz2001EfficientVO} & 72.9 &  84.3  & 70.8 & 76.0 & 1.33\\
+    SurfEmb-PBR-RGBD~\cite{Haugaard2021SurfEmbDA} &  custom~\cite{Haugaard2021SurfEmbDA} & 76.0 &  79.9  & 82.8 & 79.6 & 9.04\\
+    RADet+PFA-PBR-RGBD~\cite{Hai2023RigidityAwareDF} &  PFA~\cite{hu2022perspective} & 79.7 &  82.6  & 80.2 & 80.8 & 2.63\\
+    GDRNPP-PBR-RGBD-MModel~\cite{liu2022gdrnpp_bop} &  $\sim$CIR~\cite{lipson2022coupled} & 77.5 &  90.6  & \textbf{85.2} & 84.4 & 6.37\\
+    HiPose (ours) &  - & \textbf{79.9} &  \textbf{90.7}   & 83.3 & \textbf{84.6} & \textbf{0.16}\\
+    \bottomrule
+  \end{tabular}
+  \caption{Comparison to leading methods of the BOP Challenge~\cite{Sundermeyer2023BOPC2} that trained on synthetic PBR data only w.r.t. BOP score.  ($\sim$) denotes similar to CIR\cite{lipson2022coupled}. $^*$ averaged over LM-O and YCB-V only as T-LESS results are not provided for this method.}
+  \label{tab:bop_score_table}
+\end{table*}
+
+
+
+% \begin{table}
+%   \centering
+%   \begin{tabular}{@{}l|c|c|c|c}
+%     \toprule
+%      \makecell{Method} & LMO & YCBV & TLESS & time(sec) \\
+%     \midrule
+%     \small{\makecell{FFB6D-CVPR21-\\PBR-NoRefinement~\cite{he2021ffb6d}}} &  68.7 &  75.8  & - & -\\
+%     \small{\makecell{GDRNPP-PBR-\\RGBD-MModel~\cite{liu2022gdrnpp_bop}}}} &  77.5 &  90.6  & \textbf{85.2} & 6.26\\
+%     \small{\makecell{RCVPose 3D\_\\SingleModel\_VIVO\_PBR~\cite{Wu2021VoteFT}}}} &  72.9 &  84.3  & 70.8 & 1.33\\
+%     \small{\makecell{RADet+PFA-\\PBR-RGBD~\cite{Hai2023RigidityAwareDF}}}} &  79.7 &  82.6  & 80.2 & 2.63\\
+%     \small{\makecell{SurfEmb-PBR-\\RGBD~\cite{Haugaard2021SurfEmbDA}}}} &  76.0 &  79.9  & 82.8 & 9.04\\
+%     \small{\makecell{HiPose (ours)} &  \textbf{79.9} &  \textbf{90.7}}   & 83.3 & \textbf{0.14}\\
+%     \bottomrule
+%   \end{tabular}
+%   \caption{\textbf{Comparison with Leaders on BOP Challenge~\cite{Sundermeyer2023BOPC2}}. We compare our ZebraPose with state of the art w.r.t AUC of ADD(-S) and AUC of ADD-S in \%. (-) denotes results missing from the original paper.}
+%   \label{tab:bop_score_table}
+% \end{table}

@@ -1,0 +1,23 @@
+\begin{table}
+  \centering
+  \begin{tabular}{@{}c|c|c@{}}
+    \toprule
+     A0 &Kabsch& 86.65 \\
+     A1 &RANSAC+ Kabsch& 89.12 \\
+     A2 &Our Hierarchical Pruning &\textbf{89.62}\\
+     \midrule
+     B0 &Trust Bit Threshold 0.08& 89.55 \\
+     B1 &Trust Bit Threshold 0.06& 89.61 \\
+     B2 &Trust Bit Threshold 0.04& 89.59 \\
+     \midrule
+     C0 &Inlier Threshold: median $\rightarrow$ mean & 89.47 \\
+     \midrule
+     D0 & ConvNext-B~\cite{Liu2022ACF} $\rightarrow$ ResNet34~\cite{He2015DeepRL} & 88.64 \\
+     \midrule
+     E0 & ZebraPose(pbr)+RANSAC Kabsch&87.0\\
+     E1 & ConcatRGBD+RANSAC Kabsch&84.5\\
+    \bottomrule
+  \end{tabular}
+  \caption{Ablation study on LM-O~\cite{Brachmann2016UncertaintyDriven6P}. We conduct several ablation studies, comparing our proposed method to a RANSAC-based approach and exploring the impact of hyperparameters on the results. The results are presented in terms of average recall of ADD(-S) in \%.}
+  \label{tab:ablation_study}
+\end{table}

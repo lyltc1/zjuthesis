@@ -1,0 +1,73 @@
+\section{实验}\label{sec:exp}
+
+在本节中，我们对本章方法使用的数据集以及评价指标进行介绍。接下来的小节则对相关消融实验进行介绍。最后我们展示我们的实验结果并与相关文献进行对比分析。
+
+\subsection{数据集}
+我们在LM-O~\cite{Brachmann2016UncertaintyDriven6P}、YCB-V~\cite{xiang2018posecnn}和T-LESS~\cite{hodan2017t}数据集上进行实验。这些数据集涵盖了广泛的场景，包括严重遮挡、纹理缺失和具有对称的物体。LM-O数据集包含8个家用弱纹理物体。YCB-V数据集由21个物体组成，包括有纹理和无纹理的物体。T-LESS数据集为工业物体模型数据集，模型不包含模型的纹理，渲染的仿真图像也不包含真实纹理。LM-O数据集有8个不同的物体模型，每个物体约有1.2K张训练图像。相比之下，YCB-V有21个不同的物体模型，训练集更大，每个物体约有28K张图像。
+
+由于为物体姿态标注真实数据非常耗时，我们利用BOP挑战赛~\cite{Sundermeyer2023BOPC2}提供的公开合成物理渲染（PBR）图像，证明我们的网络可以仅使用合成数据进行有效训练。
+在我们的实验中，我们仅使用这些PBR图像进行训练，但使用各自数据集的真实图像进行评价。
+
+\subsection{评价指标}
+
+对于LM-O数据集，我们报告ADD(-S)指标，这是当代6DoF姿态估计中最常用的指标。ADD计算在使用估计姿态和使用真实姿态投影到相机坐标时，物体顶点落在距离阈值（依赖于物体大小）内的百分比。
+对于对称物体，ADD(-S)的不同之处在于它匹配最近的模型点（考虑对称性）而不是完全相同的模型点。
+对于YCB-V数据集，我们报告ADD(-S)的曲线下面积（AUC），最大阈值为10厘米，如文献\cite{xiang2018posecnn}所述。此外，对于这两个数据集，我们还报告BOP挑战赛定义的BOP评分指标\cite{Sundermeyer2023BOPC2}。
+
+
+\subsection{消融实验}
+% \input{table/hipose/Tab_ablation}
+% \input{table/hipose/Tab_outlier_removal_metrics}
+% \input{table/hipose/line_chart}
+
+
+% \input{table/hipose/Tab_LMO_ADD}
+% \input{table/hipose/Tab_YCBV_AUC}
+% \input{table/hipose/Tab_BOP_score}
+
+% In the following, we perform several ablation studies with the LM-O dataset. We summarize the results in \autoref{tab:ablation_study}, \autoref{tab:ourlier_removal_metrics} and  \autoref{fig:ablation_initial_bit}.
+
+% \textbf{Effectiveness of Correspondence Pruning.}
+% We first focus on the effectiveness of our proposed hierarchical correspondence pruning.  
+% In the experiment (A0) in \autoref{tab:ablation_study}, we directly solve the object pose with the Kabsch Algorithm. The promising results highlight the effectiveness of the binary encoding. However, compared to our other experiments reveals that the predicted correspondences from the network are still noisy and contain outliers. 
+
+% Comparing A1 with A0, the most common method for identifying outliers using RANSAC framework, we observed a $2.47\%$ recall improvement. The results of A1 heavily depend on the choice of hyper-parameters, including the number of correspondences used in each iteration, the number of RANSAC iterations, and the inlier threshold in each iteration. Additionally, random seed variations can also impact the results. In this experiment, we utilized the public RANSAC and Kabsch algorithm from Open3D~\cite{zhou2018open3d}. Note that we explored multiple parameter combinations and reported the best results among them.
+
+% In contrast to the RANSAC scheme, our hierarchical correspondence pruning provides stable results analytically, irrespective of the random seed. 
+% In experiment A2, we chose the $10_\text{th}$ bit as our initial bit and defined the confidence bit based on predicted logits higher than $0.52$ or lower than $0.48$. As shown in \autoref{tab:ablation_study}, compared to not using any outlier strategy (A0), our approach (A2)  improves recall by about $3\%$ while outperforming the best results achievable by RANSAC. 
+
+% We also estimate the precision metrics of outlier removal at each iteration in \autoref{tab:ourlier_removal_metrics}. A true sample is defined when the distance between estimated coordinates and ground truth fall under a 10mm threshold. The increase in precision confirms the gradual removal of low-quality correspondences. In the following ablation studies, we demonstrate that our approach is also robust to the choice of hyper-parameters.
+
+% \textbf{Influence of Default Initial Bit.} Using smaller initial bits implies matching the point to a relatively coarse surface correspondence. However, our trust-bit-based initial surface selection ensures that each vertex is considered separately and corresponds to its most reliable initial bit.
+
+% As demonstrated in \autoref{fig:ablation_initial_bit}, our proposed design is robust to the choice of initial bit from $5_\text{th}$ bit to $11_\text{th}$ bit. %For some objects, we observe a performance drop when the initial bit $m$ is greater than $11$, as too few iterations are not sufficient to locate all outliers. 
+% We observe some performance drops when we start from the $12_\text{th}$ bit, and a significant drop when directly using $16_\text{th}$ bit, underscoring the importance of our hierarchical correspondence pruning. By calculating the mean recall across all 8 objects, we noticed that using the $9_\text{th}$ to $11_\text{th}$ bits as the initial bit provides slightly higher results. Considering both accuracy and computational efficiency, we consistently use the $10_\text{th}$ bit as our default initial bit.
+
+
+% \textbf{Threshold for the Trust Bit.}
+% The initial bit for each point and our inlier identification strategy is closely tied to the choice of the trust bit. By varying the threshold $0.02$ used in experiment A2 (predicted logits greater than 0.52 or smaller than 0.48), we alter the trust bit threshold in experiments B0, B1, and B2. As indicated by the experimental results, when the threshold is greater than $0.08$, we start to observe a small performance drop. Overall, the results remain quite stable within the threshold range of $0.02$ to $0.08$. This demonstrates the relative robustness of our approach to the choice of the trust bit.
+
+% \textbf{Criteria used in Correspondence Pruning.}
+% The default criterion for distinguishing inliers and outliers in correspondence pruning is based on the median of distance $l$ defined in Equation~\ref{eq:l}. We replaced the median criterion for the inlier threshold used in A2 with a mean criterion in C0, resulting in a decrease in average recall. It is comprehensible that utilizing indicators associated with the median produces superior outcomes, given the median's ability to disregard the impact of extreme values.
+
+% \textbf{Effectiveness of CNN Backbone.}
+% To ensure comparability with recent research employing the transformer architecture and ConvNext~\cite{Liu2022ACF} feature backbone, we default to using ConvNext as our image feature extraction network. Additionally, we provide results of experiment (D0) in \autoref{tab:ablation_study} using ResNet as the feature backbone to offer further insights for comparison with earlier approaches. Results show that the choice of feature backbone only has a marginal effect. 
+
+% \textbf{Naive RGB-D baselines.}
+% Using the networks provided by ZebraPose, we back-project 2D pixels into 3D points using the depth map, followed by pose estimation using RANSAC + Kabsch for 3D-3D correspondence(E0). We also implement "Concat"(E1), a naive baseline model that learns 2D-3D correspondence, yet solves the pose with 3D-3D correspondences. In the "Concat" baseline, we concatenate the RGB and depth channels as input for the CNN. However, the absence of a pretrained CNN model appears to make the results worse. Nonetheless, none of the baselines surpass HiPose, suggesting that direct learning of 3D-3D correspondences is more effective.
+
+% \subsection{Comparison to State of the Art}
+% In the following, we compare HiPose to the state of the art using various metrics on multiple datasets.
+
+% \textbf{Results on LM-O.} In \autoref{tab:lmo_results_table_}, we compare our HiPose with the state-of-the-art methods on the LM-O dataset w.r.t. the ADD(-S) score. We used the 2D detection provided by CDPN~\cite{li2019cdpn}, which is based on the FCOS~\cite{Tian2019FCOSFC} detector and trained only with PBR images provided by the BOP challenge. According to the results, HiPose outperforms all other methods by a large margin of $11.9\%$ compared to the best RGB-D method DFTr and $12.7\%$ compared to the best RGB-only method ZebraPose.
+
+% \textbf{Results on YCB-V.} In \autoref{tab:ycbv_results_table}, we compare HiPose with the state-of-the-art methods on the YCB-V dataset w.r.t. the AUC of ADD-S and ADD(-S) score. All other methods used real and synthetic images in the training. To ensure a fair comparison, the 2D FCOS detections employed here are trained with both real and synthetic images. According to the results, HiPose again excels beyond all other methods with a significant margin (around $1\%$) when taking into account that scores on YCB-V are already close to saturation.
+
+% \textbf{Results on the BOP Benchmark.} The BOP benchmark provides a fairer ground for comparisons, offering uniform training datasets and 2D detections for all participating methods and more informative evaluation metrics~\cite{hodan2018bop}. We used the default detections provided for the BOP Challenge 2023.
+
+% Most methods in \autoref{tab:bop_score_table} rely on a time-consuming pose refinement step, while HiPose estimates accurate object pose directly without any pose refinement. HiPose surpasses the state-of-the-art on LM-O, YCB-V datasets and achieves a very comparable result on the T-LESS dataset. When considering the average recall across the three datasets, HiPose exhibits higher recall compared to all other methods.
+
+% GDRNPP~\cite{liu2022gdrnpp_bop} has the most closely aligned results with HiPose, yet HiPose is approximately $\mathbf{40}$ times faster than GDRNPP with refinement. This demonstrates that HiPose is both accurate and computationally efficient.
+
+% \subsection{Runtime Analysis}
+% The inference time mainly comprises two components: 1) object detection and 2) object pose estimation. For a fair comparison, we use the same method to calculate inference speed as GDRNPP on an RTX3090 GPU. Our average object pose estimation time across the LM-O, YCB-V, and T-LESS datasets is $0.075$ seconds per image. The average 2D detection time with YOLOX~\cite{Ge2021YOLOXEY} on those three datasets is $0.081$ seconds. The fast object pose estimation time ensures the real-time applicability of our approach, especially since the costly refinement methods are not necessary.
