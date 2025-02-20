@@ -45,3 +45,4 @@ Loss = L_{mask} + \alpha L_{code}
 对于网络骨干（backbone），我们使用ConvNext\cite{Liu2022ACF}架构，该架构基于ResNet\cite{He2015DeepRL}。ConvNext在性能上与Vision Transformer\cite{Dosovitskiy2020AnII}相当，同时保留了ResNet的效率和简洁性。
 
 我们将网络训练了$38$万次迭代（batch size），批量大小为$32$。我们使用Adam\cite{Kingma2014AdamAM}优化器，固定学习率为$1e-4$。在训练过程中，我们对RGB图像采用了ZebraPose\cite{su2022zebrapose}中使用的图像数据增强方法，对深度图采用了MegaPose\cite{Labbe2022MegaPose6P}中的深度数据增强方法。
+

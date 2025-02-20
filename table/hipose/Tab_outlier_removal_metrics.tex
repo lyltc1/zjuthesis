@@ -1,19 +1,16 @@
-% \vspace{-0.1cm}
 \begin{table}[t]
   \centering
-  \scalebox{0.78}{
   \begin{tabular}{c|c|c|c|c|c|c|c|c}
     \toprule
     Iteration Step & 1 & 2 & 3 & 4 & 5 & 6 & 7 & final \\
     \midrule
-    % precision3mm(\%) & 14.3 &14.8 &16.0 &17.4 &17.6 &17.7 &17.7 &17.8\\
-    precision(\%) & 66.1 &67.4 &70.3 &73.3 &73.8 &75.9 &75.9 &76.1 \\
+    precision 10mm (\%) & 66.1 &67.4 &70.3 &73.3 &73.8 &75.9 &75.9 &76.1\\
+    precision 3mm (\%) & 14.3 &14.8 &16.0 &17.4 &17.6 &17.7 &17.7 &17.8\\
+    accuracy 3mm (\%)& 18.1 &22.6 &30.7 &36.9 &37.7 &38.5 &38.5 &39.5\\
     \bottomrule
   \end{tabular}
-  }
-  \caption{\textbf{Outlier removal metrics.} We evaluate precision at each iteration to validate the outlier removal process.}
+  \caption{不同迭代步骤下内点准确率和精度}
   \label{tab:ourlier_removal_metrics}
-  % \vspace{-0.3cm}
 \end{table}
 
 

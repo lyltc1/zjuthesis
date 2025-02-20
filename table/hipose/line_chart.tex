@@ -3,21 +3,21 @@
 \begin{axis}[
 scaled y ticks=real:100,
 ytick scale label code/.code={},
-ymin = 64,
+ymin = 68,
 ymax = 100,
 symbolic x coords={5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16},
 xtick=data,
-height=6cm,
-width=8cm,
+height=12cm,
+width=16cm,
 grid=major,
-xlabel={Default Initial Bit},
-ylabel={ADD Metric},
-y label style={at={(0.23,0.5)}},
+xlabel={默认初始位$m_{default}$},
+ylabel={ADD 指标},
+y label style={at={(0.0,0.5)}},
 legend style={
         at={(0.445,0.0)},
         anchor=south,
         legend columns=3,
-        nodes={scale=0.85, transform shape}
+        nodes={scale=1.0, transform shape}
     },
 ]
 
@@ -160,8 +160,6 @@ legend style={
 \legend{ape, can, cat, driller, duck, eggbox, glue, holepuncher, mean}
 \end{axis}
 \end{tikzpicture}
-\vspace{-0.3cm}
-     \caption{We conduct an ablation study on selecting the default initial bit $m_{default}$ using $8$ objects from the LM-O dataset.
-     The flat curve illustrates that our proposed design is robust and has a clear advantage to the non-hierarchical variant ($16$ as initial bit). }
+     \caption{默认初始位的影响}
      \label{fig:ablation_initial_bit}
 \end{figure}
