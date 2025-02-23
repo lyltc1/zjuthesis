@@ -1,0 +1,56 @@
+\begin{table}
+  \centering
+  \caption{Ablation study on refinement and Tikhonov regularization}
+  \begin{tabular}{@{}c|c|c|c@{}}
+    \toprule
+    Refinement & Tikhonov Regularization & $AR\uparrow$ & time (sec) \\
+    \midrule
+               &                         & 73.9         & 0.091      \\
+    \checkmark &                         & 69.8         & 0.110      \\
+    \checkmark & \checkmark              & 74.8         & 0.111      \\
+    \bottomrule
+  \end{tabular}
+  \vspace{-0.2cm}
+  \label{tab:main_ablation}
+\end{table}
+
+
+  %   A0 & w early stop (ours) & 74.8 & 0.110\\
+  %   B0 & w/o Tikhonov regularization & 73.9 & 0.091 \\
+  %   C0 & w/o refinement & 73.9 & 0.091 \\
+  %   \midrule
+  %    Tikhonov parameter = $10^1$ & 74.8 & 0.109 \\
+  %    Tikhonov parameter = $10^2$ & 74.8 & 0.108 \\
+  %    Tikhonov parameter = $10^3$ & 74.8 & 0.110 \\
+  %    Tikhonov parameter = $10^4$ & 74.8 & 0.110 \\
+  %    Tikhonov parameter = $10^5$ & 74.9 & 0.112 \\
+  %    Tikhonov parameter = $10^6$ & 75.1 & 0.113 \\
+  %    Tikhonov parameter = $10^7$ & 75.1 & 0.110 \\
+  %    Tikhonov parameter = $10^8$ & 74.9 & 0.112 \\
+  %    Tikhonov parameter = $10^9$ & 74.1 & 0.109 \\
+  %   \bottomrule
+  % \end{tabular}
+%   \label{tab:Tikhonov}
+% \end{table}
+% \begin{table}
+%   \centering
+%     \caption{The influence of iteration step}
+%   \begin{tabular}{@{}c|c|c@{}}
+%     \toprule
+%     settings & $AR\uparrow$ & time (sec) \\
+%     \midrule
+%      w/o refinement & 73.9 & 0.091 \\
+%      \midrule
+%      iteration step = $1$ & 74.7 &  0.100\\
+%      iteration step = $2$ & 74.7 &  0.103\\
+%      iteration step = $3$ & 74.8 &  0.106\\
+%      iteration step = $4$ & 74.8 &  0.108\\
+%      iteration step = $5$ & 74.8 &  0.109\\
+%      iteration step = $6$ & 74.8 &  0.110\\
+%      iteration step = $7$ & 74.8 &  0.111\\
+%      \midrule
+%      w early stop (ours) & 74.8 & 0.110\\
+%     \bottomrule
+%   \end{tabular}
+%   \label{tab:ablation_iter}
+% \end{table}

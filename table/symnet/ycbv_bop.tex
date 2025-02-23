@@ -1,0 +1,19 @@
+\begin{table*}[t]
+        \centering
+        \caption{
+                BOP results on dataset YCB-V~\cite{xiang2018posecnn}. The time is the runtime per image averaged over the dataset.
+        }
+        \begin{tabular}{l c c c c c c c c}
+        \toprule
+        6D object pose estimation method &Input type&Training type&$AR$&$AR_{VSD}$&$AR_{MSSD}$&$AR_{MSPD}$&Time(s)\\       %表格第一行，&的位置对齐
+        \midrule
+        CDPNv2~\cite{li2019cdpn}&RGB&pbr&0.532&0.396&0.570&0.631&0.143 \\
+        EPOS~\cite{hodan2020epos}&RGB&pbr&0.499&0.411&0.464&0.621&0.764 \\
+        SurfEmb~\cite{haugaard2022surfemb}&RGB&pbr&0.647&0.548&0.620&0.773&5.427 \\
+        ZebraPoseSAT-EffnetB4~\cite{su2022zebrapose}&RGB&pbr&\textbf{0.691}&\textbf{0.607}&\textbf{0.686}&\textbf{0.780}&0.25 \\
+        Symnet(Ours)&RGB&pbr&0.653&0.557&0.646&0.758&\textbf{0.085} \\
+        \bottomrule
+        \end{tabular}
+\vspace{-0.05in}
+\label{tab:ycbv_bop}
+\end{table*}

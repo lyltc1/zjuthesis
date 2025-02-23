@@ -25,12 +25,15 @@ FFB6D~\cite{he2021ffb6d}通过映射和合并RGB图像的特征与点云中的�
 \label{fig:teaser}
 \end{figure}
 
-在本文中，我们介绍了双向一致性融合网络，基于FFB6D~\cite{he2021ffb6d}的基础工作。我们的网络以RGB-D图像为输入，输出逐顶点的对应关系，然后应用Kabsch算法估计位姿，如~\cref{fig:teaser}所示。
+在本文中，我们介绍了双向一致性融合网络，基于FFB6D\cite{he2021ffb6d}的基础工作。我们的网络以RGB-D图像为输入，输出逐顶点的对应关系，然后应用Kabsch算法估计位姿，如~\cref{fig:teaser}所示。
 与FFB6D不同，我们的方法将RGB单一方法的像素级损失与RGB-D方法的点云级损失相结合。此外，为了维持RGB和深度分支之间的一致性，我们引入了一致性损失，以确保两个分支之间的收敛和一致性。
 
 总之，我们工作的主要贡献如下：
 \begin{enumerate}
 \item 我们深入探讨了一种用于物体位姿估计的深度多模态数据融合网络，并提出了双向一致性融合网络。
 \item 我们通过整合像素级和顶点级损失以及一致性损失，提升了网络的收敛性和准确性。
-\item 我们使用LM-O数据集~\cite{lmo}评估了我们的方法，并取得了与最先进技术相当的结果。
+\item 我们使用LM-O数据集评估了我们的方法，并取得了与最先进技术相当的结果。
 \end{enumerate}
+
+\inputbody{3_2_bcfn_method.tex}
+\inputbody{3_3_bcfn_experiment.tex}

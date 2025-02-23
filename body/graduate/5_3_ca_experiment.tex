@@ -1,0 +1,58 @@
+\section{实验}
+
+\subsection{数据集和指标}
+我们使用YCB-V数据集\cite{xiang2018posecnn}和IC-BIN数据集\cite{icbin}验证我们的方法，遵循BOP挑战赛\cite{hodan2024bop}的设置和指标。我们的方法利用50,000张合成图像进行训练，并在真实图像上进行测试。评估基于三个指标：可见表面差异（VSD）、最大对称感知表面距离（MSSD）和最大对称感知投影距离（MSPD）。这三个指标的平均值，记为AR，作为整体性能指标。
+
+\subsection{与现有技术的比较}
+\input{table/ca/ycbv_bop}
+\input{table/ca/icbin_bop}
+我们将我们的结果与完全在合成数据上训练的其他方法进行比较，特别是在YCB-V数据集和IC-BIN数据集上，如\autoref{tab:ycbv_bop}和\autoref{tab:icbin_bop}所示。术语“PBR”表示模型完全在合成图像上训练，而“RGB”表示输入中未使用深度信息。向上箭头（↑）表示较高的指标值表示更好的性能，而向下箭头（↓）表示相反。我们采用BOP挑战赛2023\cite{hodan2024bop}提供的默认检测结果。与其他方法相比，我们的方法运行时间显著减少，因为我们的细化方法不依赖于另一个耗时的网络。我们的方法在准确性和运行时间方面都取得了优异的结果。具体来说，我们比基线模型SymNet\cite{symnet}提高了$0.9\%$，并且在不使用深度信息的情况下，达到了接近使用RGB-D图像作为输入的FFB6D\cite{he2021ffb6d}的准确性。
+
+\subsection{消融研究}
+
+我们进行了深入的消融研究，以研究各种因素对我们方法的影响，包括Tikhonov正则化、早停和迭代次数。所有消融研究均在YCB-V数据集上进行，使用平均召回率（AR）作为性能指标。
+
+\input{table/ca/main_ablation}
+\input{table/ca/Tikhonov_param}
+\textbf{Tikhonov参数 } 如\autoref{tab:main_ablation}所示，缺乏Tikhonov正则化会导致准确性下降，突出了Tikhonov正则化在优化稳定性中的关键作用。此外，我们验证了Tikhonov参数的鲁棒性，展示了在$10$到$10^8$范围内的满意性能，如\autoref{tab:Tikhonov Parameter}所示。
+
+\input{table/ca/iteration_step}
+\textbf{迭代步骤 } 通过评估每次迭代的平均召回率（AR），展示了我们方法的收敛性，如\autoref{tab:Iteration Step}所示。可以观察到，第一次迭代步骤对整体改进贡献显著。此外，早停可以在不需要手动确定迭代次数的情况下实现最佳结果。
+
+\subsection{运行时间分析}
+我们的方法需要的数学运算最少，因为它避免了耗时的网络细化，并利用了早停。尽管在端到端的SymNet网络上实现，我们的细化方法在运行时间方面仍显著优于其他领先方法。我们的细化方法的总执行时间，包括渲染和优化，仅为0.02秒。
+
+\subsection{可视化}
+\textbf{定量结果 } 合成训练集和真实测试集以及定量结果见\autoref{fig:quantitative results}。
+
+\textbf{详细比较 } 我们在\autoref{fig: detail_compare}中强调了细化过程的影响。我们展示了SymNet\cite{symnet}（在明亮的蓝色背景中显示）和我们的方法（在明亮的绿色背景中显示）之间的视觉比较，突出了细化过程的影响，展示了其有效性。我们将估计的姿势渲染回原始图像，并观察到细化后的渲染结果与原始图像的一致性更高。
+
+\begin{figure*}[htbp]
+\centerline{\includegraphics[width=0.97\textwidth]{figure/ca/detail_compare.jpg}}
+    \caption{详细比较}
+    \label{fig: detail_compare}
+\end{figure*}
+
+\textbf{轮廓对齐。} 对齐前后的CoI、$\mathbf{C}_\text{ren}$和$e_i$在\autoref{fig:optimization_vis}中可视化。左：RGB图像。中间和右：对齐前后的CoI、$\mathbf{C}_\text{ren}$和$e_i$。为了更好的可视化，$e_i$被稀疏绘制。文本的颜色与相应的视觉元素的颜色一致。
+
+\textbf{失败案例} 失败案例在\autoref{fig: failure_case}中可视化。最左列：RGB图像。中间列：SymNet结果。最右列：细化后的结果。大多数失败案例涉及严重遮挡的物体。几乎所有这些失败的主要原因是存在显著的初始值误差。没有发现优化导致结果显著恶化的例子。这突出了本文提出的细化方法的局限性，因为它对较大的误差没有影响。
+
+\begin{figure}[t]
+    \centering
+    \begin{overpic}[width=0.70\textwidth]{figure/ca/optimization_vis.jpg}
+        \put (35,4) {\textcolor{red}{$e = 2.69$}}
+        \put (69,4) {\textcolor{red}{$e = 0.64$}}
+        \put (39,25) {\textcolor{black}{CoI}}
+        \put (73,25) {\textcolor{black}{CoI}}
+        \put (52,18) {\textcolor{cyan}{$\mathbf{C}_\text{ren}$}}
+        \put (85,18) {\textcolor{cyan}{$\mathbf{C}_\text{ren}$}}
+    \end{overpic}
+    \caption{轮廓对齐}
+    \label{fig:optimization_vis}
+\end{figure}
+
+\begin{figure}[htbp]
+\centerline{\includegraphics[width=0.70\textwidth]{figure/ca/failure_case.jpg}}
+    \caption{失败案例 }
+    \label{fig: failure_case}
+\end{figure}

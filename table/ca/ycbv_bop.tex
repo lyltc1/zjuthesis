@@ -1,0 +1,26 @@
+\begin{sidewaystable}[ht]
+        \centering
+        \caption{
+                BOP results on the YCB-V~\cite{xiang2018posecnn}. THE TIME IS THE RUNTIME PER IMAGE AVERAGED OVER THE DATASET.
+        }
+        \begin{tabular}{l c c c c c c c c}
+        \toprule
+        6D object pose estimation method &Input type&Training type&$AR\uparrow$&$AR_{VSD}\uparrow$&$AR_{MSSD}\uparrow$&$AR_{MSPD}\uparrow$&Time (sec)$\downarrow$\\       %表格第一行，&的位置对齐
+        \midrule
+        CDPNv2~\cite{li2019cdpn}&RGB&pbr&53.2&39.6&57.0&63.1&0.143 \\
+        CosyPose~\cite{labbe2020cosypose}&RGB&pbr&57.4&51.6&55.4&65.3&0.342\\
+        EPOS~\cite{hodan2020epos}&RGB&pbr&49.9&41.1&46.4&62.1&0.764 \\
+        SurfEmb~\cite{haugaard2022surfemb}&RGB&pbr&64.7&54.8&62.0&77.3&5.427 \\
+        GDRNPP~\cite{wang2021gdr}&RGB&pbr&71.3&59.9&70.8&\textbf{83.1}&0.277\\
+        ZebraPoseSAT-EffnetB4~\cite{su2022zebrapose}&RGB&pbr&72.9&64.0&72.5&82.1&0.25 \\
+        SymNet~\cite{symnet}&RGB&pbr&73.9&63.8&75.1&82.6&\textbf{0.091} \\
+        Contour Alignment(Ours)&RGB&pbr&\textbf{74.8}&\textbf{66.0}&\textbf{75.3}&\textbf{83.1}&0.110\\
+        \midrule
+        CDPNv2+ICP~\cite{li2019cdpn}&RGBD&pbr+real&61.9&59.0&70.1&56.5&0.637\\
+        Pix2Pose+ICP~\cite{park2019pix2pose}&RGBD&pbr+real&67.5&69.3&70.3&63.0&2.106\\
+        \midrule
+        FFB6D~\cite{he2021ffb6d}&RGBD&pbr&75.1&70.6&82.7&74.0&0.199\\
+        \bottomrule
+        \end{tabular}
+\label{tab:ycbv_bop}
+\end{sidewaystable}

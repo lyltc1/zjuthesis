@@ -1,0 +1,182 @@
+\section{方法}
+
+% 本节详细描述了我们提出的基于轮廓对齐的6D物体姿态估计的细化方法。该过程包括使用可见和完整掩码提取CoI，并基于CoI细化姿态估计。
+
+\subsection{概述}
+
+给定一个具有已知相机内参$K$的RGB图像和一组物体的CAD模型，我们的目标是估计每个物体的姿态。姿态包括旋转矩阵$\mathbf{R} \in SO(3)$和平移向量$\mathbf{t} \in \mathbb{R}^3$。定量结果请参见\autoref{fig:quantitative results}。
+
+与其他需要两个独立网络的方法\cite{labbe2020cosypose}相比，我们的方法依赖于一个单一网络进行初始姿态估计和细化。整个过程的概述请参见\autoref{fig: overview}。细化过程涉及迭代调整初始姿态$\mathbf{T}_0=[\mathbf{R}_0|\mathbf{t}_0]$，从而得到后续的姿态$\mathbf{T}_1, \mathbf{T}_2$，等等。
+
+% 完整掩码$\mathbf{M}_\text{amo}$包含整个物体区域而不考虑遮挡，而可见掩码$\mathbf{M}_\text{vis}$仅表示图像中可见的物体区域。
+
+在本工作中，我们将像素$\mathbf{p} = [u, v]$描述为图像中像素的坐标。此外，我们将3D物体顶点定义为$\mathbf{P}=[X, Y, Z] \in \mathbb{R}^3$。为了方便起见，我们也使用相同的符号$\mathbf{P}$表示$\mathbf{P}$的齐次形式，表示为$\mathbf{P}=[X, Y, Z, 1]$。此外，默认情况下，一维向量被假定为列向量。
+
+\begin{figure}[thbp]
+    \centering
+    \begin{overpic}[width=0.45\textwidth]{figure/ca/CoI.jpg}
+        \put (1,1) {感兴趣轮廓}
+        \put (1, 27) {可见掩码}
+        \put (1, 53) {完整掩码}
+    \end{overpic}
+    \caption{\textbf{感兴趣轮廓（CoI）。} \normalsize{\textcircled{\scriptsize{1}}}\enspace CoI; \normalsize{\textcircled{\scriptsize{2}}}\enspace 由遮挡生成的轮廓; \normalsize{\textcircled{\scriptsize{3}}}\enspace 由于遮挡不可见的轮廓。}
+    \label{fig:CoI}
+\end{figure}
+
+\subsection{感兴趣轮廓}
+在最近的研究中，可见掩码通常被用作辅助变量，通常表示为大小为$H \times W$的特征图，范围在0到1之间。很容易将层扩展为同时包含可见掩码和完整掩码，大小为$H \times W$。通过二值化可见掩码$\mathbf{M}_\text{vis}$和完整掩码$\mathbf{M}_\text{all}$，并使用OpenCV中的边缘提取算法\cite{itseez2015opencv}，我们可以提取可见掩码的轮廓$\mathbf{C}_\text{vis}$以及完整掩码的轮廓$\mathbf{C}_\text{all}$。CoI定义为可见掩码轮廓$\mathbf{C}_\text{vis}$和完整掩码轮廓$\mathbf{C}_\text{all}$的交集。数学上，CoI可以表示为$\text{CoI} = \mathbf{C}_\text{vis} \cap \mathbf{C}_\text{all}$。为了确定可见轮廓$\mathbf{C}_\text{vis}$中的像素$\mathbf{p}_\text{vis}$是否属于CoI，我们迭代每个像素并检查它是否存在于$\mathbf{C}_\text{all}$中，过程如\autoref{fig:CoI}所示。
+
+\subsection{基于轮廓对齐的细化}
+
+当提供物体模型、相机内参矩阵$K$和初始姿态$\mathbf{T}$用于细化过程的一次迭代时，我们可以根据姿态$\mathbf{T}$渲染物体模型的前景掩码。随后，我们从渲染图像中提取前景掩码的轮廓，表示为渲染轮廓$\mathbf{C}_\text{ren}$。
+
+在我们的方法中，我们使用针孔相机模型将3D模型点投影到未失真的图像上。投影过程由以下方程定义：
+\begin{equation}
+\begin{bmatrix}u\\v\end{bmatrix} = \pi(\mathbf{P}_C) = \begin{bmatrix}\frac{X_C}{Z_C} f_x+c_x\\[3pt] \frac{Y_C}{Z_C} f_y+c_y\end{bmatrix}
+% [u, v] = \pi(\mathbf{X})=[\frac{X}{Z} f_x+c_x, \frac{Y}{Z} f_y+c_y]
+\label{eq:camera}
+\end{equation}
+在这个方程中，变量$f_x$和$f_y$对应焦距，而$c_x$和$c_y$表示主点的坐标。术语$\mathbf{P}_C$指的是相机坐标系中的顶点。
+
+模型坐标系中的顶点可以使用齐次形式轻松转换到相机坐标系中，如下所示：
+
+\begin{equation}
+\mathbf{P}_C = \mathbf{T}\mathbf{P}_M=
+\begin{bmatrix}
+    \mathbf{R}&\mathbf{t}\\
+    \mathbf{0} & 1
+\end{bmatrix}
+\mathbf{P}_M
+\end{equation}
+
+这里，$\mathbf{P}_M$表示在模型坐标系中表示的3D模型顶点。
+
+我们使用向量$\mathbf{\theta}_r \in \mathbb{R}^3$表示旋转变化，使用向量$\mathbf{\theta}_t \in \mathbb{R}^3$表示平移变化。对于姿态的小变化，我们推导出更新方程如下：
+\begin{equation}
+\label{eq:update_rt}
+\begin{bmatrix}
+\mathbf{\hat{R}}&\mathbf{\hat{t}}\\
+    \mathbf{0} & 1
+\end{bmatrix}
+=
+\begin{bmatrix}
+    \mathbf{R}&\mathbf{t}\\
+    \mathbf{0} & 1
+\end{bmatrix}
+\begin{bmatrix}
+    \mathbf{I} + [\mathbf{\theta}_r]_{\times}&\mathbf{\theta}_{t}\\
+    \mathbf{0} & 1
+\end{bmatrix}
+\
+\end{equation}
+这里，$\hat{\mathbf{R}}$和$\hat{\mathbf{t}}$分别表示更新后的旋转和平移。术语$[\mathbf{\theta}_r]_{\times}$表示$\mathbf{\theta}_r$的反对称矩阵形式。
+在三维空间中，任何向量$\mathbf{v} = [v_1, v_2, v_3]$都可以与一个反对称矩阵相关联，定义如下：
+\begin{equation}
+     [\mathbf{v}]_{\times} = \begin{bmatrix} 0 & -v_3 & v_2 \\ v_3 & 0 & -v_1 \\ -v_2 & v_1 & 0 \end{bmatrix} 
+\end{equation}
+
+使用更新方程\autoref{eq:update_rt}，可以将3D模型点投影到相机坐标系中，如下所示：
+\begin{equation}
+    \mathbf{P}_C' = 
+\begin{bmatrix}
+\mathbf{\hat{R}}&\mathbf{\hat{t}}\\
+    \mathbf{0} & 1
+\end{bmatrix}
+\mathbf{P}_M
+\label{eq:update_pc}
+\end{equation}
+
+这里，$P_C'$表示相机坐标系中更新后的模型顶点。
+
+对于每个点$\mathbf{p}_i=[p_{ui}, p_{vi}] \in \mathbf{C}_{pri}$，我们将在渲染轮廓$\mathbf{C}_{ren}$中找到最近的点$\mathbf{r}_i=[r_{ui}, r_{vi}]$。误差模型定义如下：
+\begin{equation}
+    \mathbf{e} = \sum_{i} e_i = \sum_{i} \left( \begin{bmatrix}r_{ui}\\r_{vi}\end{bmatrix}-\begin{bmatrix}p_{ui}\\p_{vi}\end{bmatrix} \right)
+    \label{eq:error}
+\end{equation}
+
+通过求和每个$e_i$的导数，可以得到误差的导数。应用链式法则，可以表示为：
+
+\begin{equation}
+    \frac{\partial e_i}{\partial \delta \xi}=
+\frac{\partial e_i}{\partial \mathbf{P}_C'} \frac{\partial \mathbf{P}_C'}{\partial \delta \xi}
+\label{eq:dedxi}
+\end{equation}
+这里，$\xi=[\mathbf{\theta}_r \  \mathbf{\theta}_t] \in \mathbb{R}^6$。
+
+第一个术语可以使用相机模型\autoref{eq:camera}和误差模型\autoref{eq:error}推导出来。为了简化公式，我们将省略下标$i$。
+
+\begin{equation}
+\frac{\partial e}{\partial \mathbf{P}_C'}=
+\begin{bmatrix}
+\frac{\partial r_{u}}{\partial X_C'}&\frac{\partial r_{u}}{\partial Y_C'}&\frac{\partial r_{u}}{\partial Z_C'}\\[5pt]\frac{\partial r_{v}}{\partial X_C'}&\frac{\partial r_{v}}{\partial Y_C'}&\frac{\partial r_{v}}{\partial Z_C'}\\ 
+\end{bmatrix}
+=
+\begin{bmatrix}\frac{f_x}{Z_C'}&0&-\frac{f_x X_C'}{Z_C'^{2}}\\0&\frac{f_y}{Z'}&-\frac{f_y Y'}{Z_C'^{2}}\\ 
+\end{bmatrix}
+\label{eq:dedPC}
+\end{equation}
+
+第二个术语可以从更新方程\autoref{eq:update_rt}和\autoref{eq:update_pc}推导出来。
+
+\begin{equation}
+    \frac{\partial \mathbf{P}_C'}{\partial \mathbf{\xi}}=
+\begin{bmatrix}
+\mathbf{I} & -(\mathbf{P}_C')_{\times}
+\end{bmatrix}
+\label{eq:dPCdxi}
+\end{equation}
+
+\subsection{优化}
+
+对于单步细化，使用带有Tikhonov正则化的牛顿优化计算更新向量，可以表示为：
+\begin{equation}
+\mathbf{\delta \xi} = 
+  \left( 
+    -\mathbf{H} + 
+    \lambda \mathbf{I}_{6}
+  \right)^{-1}\mathbf{g}
+\label{eq:delta_si}
+\end{equation}
+在上面的方程中，
+$\mathbf{g}$和$\mathbf{H}$分别表示梯度向量和Hessian矩阵，定义如下：
+\begin{equation}
+    \mathbf{g} = \sum_{i}\frac{\partial e_i}{\partial \delta \mathbf{\xi}}, \ \ \mathbf{H} = \mathbf{g} \mathbf{g}^T
+\label{eq:gH}
+\end{equation}
+和$\lambda$是正则化参数。
+
+我们算法的伪代码简要概述在\autoref{alg:refinement}中。
+
+\begin{algorithm}[!h]
+    \caption{渲染和优化过程}
+    \label{alg:refinement}
+    \renewcommand{\algorithmicrequire}{\textbf{输入:}}
+    \renewcommand{\algorithmicensure}{\textbf{输出:}}
+    
+    \begin{algorithmic}[1]
+        % \REQUIRE $A$, $B$, $C$(This is Inputs)  %%input
+        \REQUIRE $T_0$, $P_M$, $K$, $CoI$
+        \ENSURE $T_n$, $e$    %%output
+        \STATE 基于$T_0$渲染$M_\text{ren}$
+        \STATE 提取$C_\text{ren}$
+        \FOR {每个$it \in [1,10]$}
+    \STATE {将CoI中的每个点与$C_\text{ren}$中的点匹配}
+    \STATE {通过\autoref{eq:error}计算$e$}
+    \STATE 检查是否提前停止
+    \STATE {通过\autoref{eq:dedPC}计算$\frac{\partial e}{\partial \mathbf{P}_C'}$}
+    \STATE {通过\autoref{eq:dPCdxi}计算$\frac{\partial \mathbf{P}_C'}{\partial \mathbf{\xi}}$}
+    \STATE {通过\autoref{eq:dedxi}计算$\frac{\partial \mathbf{e}}{\partial \delta \xi}$}
+    \STATE {通过\autoref{eq:delta_si}计算$\mathbf{\delta \xi}$}
+    \STATE {通过\autoref{eq:update_rt}更新姿态$T_\text{it}$}
+    \ENDFOR
+        \RETURN 输出
+    \end{algorithmic}
+\end{algorithm}
+
+\subsection{实现细节}
+
+过程图概述如\autoref{fig: overview}所示。我们的实现基于SymNet\cite{symnet}，这是一种单目6D姿态估计方法，生成初始姿态$T_0$，并提供可见掩码$\mathbf{M}_\text{vis}$和完整掩码$\mathbf{M}_\text{all}$。最初，我们利用检测器分析RGB图像并提取感兴趣区域（RoI）。然后使用编码器模块生成完整掩码、可见掩码和解码器模块所需的其他特征。解码器模块生成初始姿态$\mathbf{T}_0$。在细化过程中，$\mathbf{C}_\text{ren}$根据当前姿态迭代计算，并随后更新姿态参数。
+
+我们使用CoI的所有点进行优化，总共约200个点。默认情况下，我们选择Tikhonov参数$\lambda = 10^4$，在细化过程中，我们采用提前停止，这意味着如果使用\autoref{eq:error}计算的误差不减少，则优化过程终止。
+
+值得一提的是，我们的方法也可以应用于其他先进技术，如ZebraPose\cite{su2022zebrapose}或GDR-net\cite{wang2021gdr}，只需进行少量修改，即可输出可见掩码和完整掩码。

@@ -1,0 +1,98 @@
+\section{EXPERIMENTS}
+
+In this section, we introduce evaluation metrics and briefly introduce a symmetry-aware version of ZebraPose~\cite{su2022zebrapose} - ZebraPoseSAT, then compare our method with other model-based approaches on the T-LESS~\cite{2017tless} and IC-BIN~\cite{icbin} datasets. These datasets encompass a variety of symmetric objects, while a large synthetic-to-real domain gap exists because of texture mismatch. This makes T-LESS and IC-BIN particularly suitable for evaluating the performance of methods on symmetric objects. Furthermore, we present ablation experiments on various hyperparameters and visualizations to intuitively demonstrate the impact of SymCode.
+
+\subsection{Evaluation Protocol}
+
+The Visible Surface Discrepancy (VSD) evaluates the proportion of visible pixels for which the depth absolute discrepancy falls below a threshold of $\tau=20mm$. We report the recall of correct 6D object poses at $e_{VSD}<0.3$~\cite{pitteri2019object}. We also adhere to the evaluation protocol outlined in the BOP challenge~\cite{hodan2024bop} using three metrics: Visible Surface Discrepancy (VSD), Maximum Symmetry-aware Surface Distance (MSSD), and Maximum Symmetry-aware Projection Distance (MSPD). 
+
+\subsection{ZebraPoseSAT: Alternative Symmetry-aware Solution}
+To provide a symmetry-aware version of ZebraPose~\cite{su2022zebrapose} for comparison, we additionally implement ZebraPoseSAT (SAT standing for Symmetry-Aware Training), which utilizes an analytical approach~\cite{pitteri2019object} to map all ground truth poses $\mathbf{T}_i$ to a unique $\mathbf{T}$ based on the Frobenius norm, prior to generating the ZebraPose encoding. 
+ZebraPoseSAT emerged as the winner of the Best RGB-Only Method in the BOP 2023 challenge~\cite{hodan2024bop}, providing a strong comparison baseline for SymNet.
+
+% However, a challenge arises from the discontinuity observed in the transformation from $\mathcal{F}(I) \rightarrow T$ (representing the network's inference process from an image to pose) around some rotations. For better understanding, let's consider a simple scenario of two-fold symmetry. If we map a degree value from the range $[180, 360)$ into $[0, 180)$, the resulting images at 1 degree and 179 degrees would appear similar, but their corresponding poses would be significantly different.
+
+\subsection{Comparison to State of the Art}
+
+\input{table/symnet/tless_vsd}
+\textbf{Results on T-LESS.} In \Cref{tab:tless_vsd}, we show a comparison with previous methods on the T-LESS dataset for $e_{VSD}<0.3$ recall. We generate the 2D detections using the FCOS~\cite{fcos} detector. The results demonstrate that SymNet outperforms all other methods, achieving a remarkable $25.0\%$ improvement over the results in RGB setting reported by Pitteri et al.~\cite{pitteri2019object}. It is worth noting that the number of recent works providing a comparison based on this specific metric is limited, as the BOP metric offers a more comprehensive and accurate evaluation pipeline. Pitteri et al.~\cite{pitteri2019object} provide the most recent results of $e_{VSD}<0.3$ recall we could find in an RGB setting. Unfortunately, the Retina detector code is outdated and unable to locate detection results. Therefore, we have included results from CosyPose~\cite{labbe2020cosypose}, which also provides BOP scores and $e_{VSD}<0.3$ recall simultaneously. We provide these results to facilitate comparisons with earlier works. Moreover, we have also included results obtained using real images for training. The performance gap between the models trained solely on synthetic data and those incorporating real images is not substantial. This demonstrates the strong generalization capabilities of our method across synthetic and real-world domains. The objects of T-LESS are grouped in 3 categories based on their symmetry type and we provide the average scores for all objects in each category.
+
+\input{table/symnet/tless_bop}
+\textbf{Results on BOP Benchmark.} We compare our results to other methods that are fully trained on synthetic data, as shown in \Cref{tab:tless_bop} and \Cref{tab:icbin_bop}. We use the default detections provided by BOP challenge 2023~\cite{hodan2024bop}. Since our method does not rely on a time-consuming pose refinement step and directly obtains the pose for every detection, our runtime is significantly reduced compared to the other methods. Our method achieves excellent results in terms of both accuracy and runtime. Specifically, our results match the accuracy of ZebraposeSAT-EffnetB4 but with a smaller backbone, and only at one third of the runtime. Note that we compare the run-time per object instance. However, it should not significantly increase the run-time if inferring multiple objects through parallelization.
+
+\input{table/symnet/icbin_bop}
+
+\subsection{Ablation Studies}
+\input{table/symnet/ablation_pnp}
+\textbf{Compare with PnP solver.} In \Cref{tab:ablation_pnp}, We compare the performance of our CPR module with that of RANSAC/PnP. To the best of our knowledge, this is the only approach to solving one-to-many correspondence scenarios, as demonstrated in SurfEmb~\cite{haugaard2022surfemb}. We randomly sample a one-to-one match from each one-to-many correspondence. Following ZebraPose, we employ the EPnP algorithm~\cite{EPnP}, using 150 iterations, with all correspondences utilized in a single computation step. We believe that with more parallel processing, like that in SurfEmb, we can achieve higher accuracy using RANSAC/PnP, albeit at the cost of time. The results reveal that using PnP alone is challenging in terms of obtaining accurate correspondences, which are crucial for achieving reliable pose estimation. On the other hand, our CPR module is capable of accurately calculating the final pose in real-time.
+
+\textbf{Compare with ZebraPose.} Due to the limitation of one-to-one correspondence, we initially assumed that ZebraPose would not perform well on symmetrical objects. However, in the BOP benchmark, we observe that ZebraPose achieves a satisfactory average recall score of 0.775, which is higher than our result of 0.767 when trained with real data. We attribute this to the utilization of real images during training. Since most objects are not perfectly symmetrical, the network trained with real data can capture subtle variations and mitigate the symmetry problem. We compare ZebraPose trained on real images with that trained on synthetic images in \Cref{fig:vis_zebrapose_gt_real_pbr_support} to support our claims. The results we can access are specifically for the model with a larger backbone, referred to as ZebraPoseSAT-EffnetB4, which has been trained solely on PBR data. However, the results for the ZebraPose model trained exclusively on PBR data are not publicly available. We performed the experiment ourselves using open-source project code, and the average recall score is $0.677$. In the same setting, our score $0.736$ exhibits improvements in both accuracy and inference time.
+\begin{figure}[ht]
+        \centerline{\includegraphics[width=1.0\textwidth]{figure/symnet/vis_zebrapose_gt_real_pbr_support.jpg}}
+        \caption{\textbf{ZebraPose(real) vs. ZebraPose(pbr).} Left: input image. \textcolor{green}{The green box} indicates the ground truth, \textcolor{red}{the red box} shows the ZebraPose encoding trained with real data, and \textcolor{blue}{the blue box} represents the ZebraPose encoding trained with synthetic data. We visualize two cases for the T-LESS obj04 object, which features a red section (indicated by the yellow arrow) at the top and two dents (indicated by the red arrows) in the middle, disrupting its continuous symmetry. It can be observed that the results of the model trained on real data are closer to the ground truth, as the network can leverage subtle surface distinctions to avoid ambiguity during training with real images. These subtle distinctions exist in the simulation data but are less pronounced; for instance, color information is absent in the T-LESS synthetic training data.}
+        \label{fig:vis_zebrapose_gt_real_pbr_support}
+\end{figure}
+
+\textbf{Length of SymCode.} The default setting of length for $d$ is $16$ as used in ZebraPose~\cite{su2022zebrapose}. We investigate the impact of varying $d$ on the training process, as illustrated in~\Cref{fig:ablation_bit}. The results indicate that our approach is robust to variations in the length of the binary code. Indeed, the accuracy achieved with different values of $d$ can be unpredictable, and there is no clear way to determine an optimized value beforehand. As a result, in our main results, we have chosen to fix the length of the binary code to the default value of $16$. As shown in \Cref{fig:compare_gt_est}, the network performs poorly on the last few bits, which can also be observed in ZebraPose. From \Cref{fig:ablation_bit}, it is evident that a length of 16 is the worst choice. This suggests that there is still room for optimization in the length of the code. So we performed comparisons using lengths of 16 and 10 for the add-s metric on YCB-V dataset, with results improving from 73.68 to 74.66. Since this improvement was not substantial, we did not explore other lengths further.
+% This ensures consistency in our experiments while avoiding potential biases introduced by selecting different values of it.
+
+\begin{figure}[th]
+        \centerline{\includegraphics[width=0.85\textwidth]{figure/symnet/ablation_bit.jpg}}
+        \caption{We performed an ablation study on object 27 from T-LESS dataset, which exhibits discrete symmetry, to determine the optimal length of the binary code $d$. We normalized the BOP score to represent accuracy. The resulting curve demonstrates that even with a small number of bits (8 bits), our method is capable of capturing the object's pose.}
+        \label{fig:ablation_bit}
+\end{figure}
+
+\begin{figure}[th]
+        \centerline{\includegraphics[width=0.85\textwidth]{figure/symnet/compare_gt_est.jpg}}
+        \caption{Left: Ground truth of the 16-bit SymCode. Right: Estimated SymCode. This suggests that there is still room for optimization in the length of the code.}
+        \label{fig:compare_gt_est}
+\end{figure}
+
+\textbf{Challenge of learning one-to-one correspondences.} We conducted experiments involving training our end-to-end network using ZebraPose encodings, which is an efficient way to encode one-to-one correspondences. In this case, the network achieved a BOP recall of 0.612, which is relatively weaker compared to SymNet's performance of 0.736. When we removed all the end-to-end loss and focused solely on training the ZebraPose encodings, \Cref{fig:difficult_learn_one_to_one} illustrates the challenges associated with learning one-to-one correspondence-based encodings.
+
+\begin{figure}[ht]
+    \centerline{\includegraphics[width=0.85\textwidth]{figure/symnet/difficulty_learn_one_to_one.jpg}}
+    \caption{\textbf{The challenge of learning one-to-one correspondences.} First line: The images with similar viewpoints. Second line: the 2nd bit prediction of SymCode. Third line: the 2nd bit prediction of ZebraPose Code. In order to achieve high accuracy pose estimation, ZebraPose Code relies on RANSAC-PnP to filter out inconsistent correspondences. However, there are still cases (second column) where ZebraPose struggles due to the ambiguity arising from symmetries. Please note that the result was obtained using our SymNet network trained with ZebraPose Code. To achieve a clear visualization, we have applied a mask based on the predicted mask to remove the background. In the visualization of the predictions, we have represented a value of 0 as black and a value of 1 as white. Any value between 0 and 1 is displayed as a shade of gray. }
+    \label{fig:difficult_learn_one_to_one}
+\end{figure}
+
+\begin{figure}[th]
+    \centerline{\includegraphics[width=0.85\textwidth]{figure/symnet/compare_code_map.jpg}}
+    \caption{\textbf{Comparison of code maps.} Detailed binary code maps representing SymCode and ZebraPose are visualized for two objects. The first and third rows depict the code maps for ZebraPose, while the second and fourth rows illustrate those for SymCode. The final columns aggregate the results for all the bits.}
+    \label{fig:compare_code_map}
+\end{figure}
+
+\begin{figure}[ht]
+    \centerline{\includegraphics[width=0.85\textwidth]{figure/symnet/visualization_tless.jpg}}
+    \caption{\textbf{Qualitative Result on T-LESS~\cite{2017tless}.} We render the objects with the estimated pose on top of the original images. The presented confidence scores are from the 2D object detection provided by BOP challenge 2023~\cite{hodan2024bop}. Each column represents a scene captured from a different viewpoint. The visualizations demonstrate that our method is capable of effectively handling severe occlusion in cluttered  environment.}
+    \label{fig:visualization_tless}
+\end{figure}
+
+\begin{figure}[th]
+        \centerline{\includegraphics[width=0.85\textwidth]{figure/symnet/compare_with_zebrapose.jpg}}
+        \caption{\textbf{Comparison with ZebraPose.} Upper Left: Ground truth of ZebraPose. Upper Right: Predicted output of ZebraPose. Bottom Left: Ground truth of SymCode. Bottom Right: Predicted output of SymCode. Only the first 8 bits are displayed. It appears that SymNet tends to be more confident in its outputs, often producing predictions closer to extreme values of 0 or 1. On the other hand, ZebraPose's predictions tend to be more centered around 0.5, indicating a lower level of confidence.}
+        \label{fig:compare_zebrapose}
+\end{figure}
+
+\textbf{Visualization.} Detailed binary code maps representing SymNet and ZebraPose are visualized in~\Cref{fig:compare_code_map}, which shows our binary codes contain symmetry information. Qualitative results on T-LESS~\cite{2017tless} can be found in~\Cref{fig:visualization_tless}. A visual representation of the ground truth and predicted code maps for ZebraPose and SymNet is shown in~\Cref{fig:compare_zebrapose}. From the visualization, it is evident that ZebraPose struggles to accurately reproduce the ground truth, whereas SymNet exhibits better performance in this regard.
+
+
+% In this section, we begin by introducing the implementation details, datasets, and evaluation metrics employed. Following that, we compare the performance of our method with other model-based approaches on the T-LESS dataset~\cite{2017tless}. The T-LESS dataset encompasses a variety of symmetric objects without textures, while a large synthetic-to-real domain gap exists because of texture mismatch. This makes T-LESS particularly suitable for evaluating the performance of methods on symmetric objects. Additionally, we present ablation experiments on different hyperparameters.
+
+% \subsection{Implementation Details}
+% The process of surface encoding and label generation is built upon Open3D~\cite{Zhou2018open3d}. By default, the length of the binary code, $d$, is set to be $16$. Our method is specifically designed for each object, as this setting remains crucial for high-precision applications, offering significant advantages compared to training a single model to cover multiple objects.
+
+% The input image is cropped and resized to an RoI with dimensions of $256\times 256\times 3$, based on the detection result. If not explicitly stated, we utilize the bounding box detected by YoloX~\cite{ge2021yolox}. The shape of the intermediate variables is set to be $128 \times 128$. During training, we employed a dynamic zoom-in strategy to generate noisy RoI with varying sizes in the range of $[1.2-1.5]$. However, during inference, the RoI scale rate is fixed at $1.3$. We apply strong augmentations to the input image, similar to the approach used in GDR-Net~\cite{wang2021gdr}, in order to simulate variations in lighting, occlusion, and a clustered environment. The network is trained for a maximum of $300$ epochs using the Adam optimizer~\cite{Kingma2014AdamAM}. We use a batch size of either $16$ or $32$ and a fixed learning rate of $2e-4$. The balancing weight in the loss function is set to a default value of $\alpha = 3$. Our network can be trained on a single NVIDIA 2080Ti GPU.
+
+% \subsection{Datasets}
+% We evaluated our method on the T-LESS dataset~\cite{2017tless}.
+
+% The T-LESS dataset consists of 30 industry-relevant objects that lack significant texture or discriminative color. These objects demonstrate symmetrical and morphological similarities, with some being composite structures. They are uniformly white and symmetrical, resembling typical industrial items. The dataset includes test images captured by the Primesense CARMINE 1.09, a structured-light RGB-D sensor, as well as the Microsoft Kinect v2, a time-of-flight RGB-D sensor. Scene complexity ranges from simple setups with a few isolated objects to highly challenging scenarios featuring multiple instances of objects amidst clutter and occlusion. Test images are drawn from 20 scenes, each presenting varying levels of complexity.
+
+% To mitigate the time-consuming process of annotating real data for object pose, we leverage publicly available synthetic physically-based rendered (pbr) images provided by the BOP challenge~\cite{hodan2018bop}. These synthetic images allow us to demonstrate the effectiveness of our network when trained solely on synthetic data.
+
+% \subsection{Evaluation Protocol}
+
+% The Visible Surface Discrepancy (VSD) is a widely used metric that compares ground truth measured depth maps with depth maps rendered based on estimated poses. It evaluates the proportion of visible pixels for which the depth absolute discrepancy falls below a threshold of $\tau=20mm$. Consistent with prior research~\cite{wen2020edge, pitteri2019object}, we report the recall of correct 6D object poses at $e_{VSD}<0.3$. Notably, this metric demonstrates reduced sensitivity to visual symmetries, as they often result in analogous symmetries within depth maps.
+
+% We adhere to the evaluation protocol outlined in the BOP challenge\cite{hodan2018bop}. BOP assesses pose accuracy using three metrics: Visible Surface Discrepancy (VSD), Maximum Symmetry-aware Surface Distance (MSSD), and Maximum Symmetry-aware Projection Distance (MSPD). Each metric computes an average recall ($AR_{VSD}$, $AR_{MSSD}$, $AR_{MSPD}$) based on predefined error thresholds, with the overall average recall $AR$ being the mean of these three values. Notably, the pose-error functions in BOP effectively enhance robustness to symmetry ambiguities compared to widely used ADD-S.

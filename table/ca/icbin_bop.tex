@@ -1,0 +1,17 @@
+\begin{sidewaystable}[ht]
+        \centering
+        \caption{
+                BOP results on dataset IC-BIN\cite{icbin}. The time is the runtime per image averaged over the dataset.
+        }
+        \begin{tabular}{l c c c c c c c c}
+        \toprule
+        6D object pose estimation method &Input type&Training type&$AR\uparrow$&$AR_{VSD}\uparrow$&$AR_{MSSD}\uparrow$&$AR_{MSPD}\uparrow$&Time (sec)$\downarrow$\\
+        \midrule
+        CRT-6D~\cite{castro2023crt}&RGB&pbr&53.7&\textbf{47.7}&51.7&61.8&0.120 \\
+        ZebraPoseSAT-EffnetB4&RGB&pbr&54.5&47.5&\textbf{53.5}&62.5&0.25 \\
+        SymNet&RGB&pbr&\textbf{54.7}&45.0&51.1&\textbf{67.8}&\textbf{0.088} \\
+        Contour Alignment(Ours)&RGB&pbr&\textbf{54.7}&45.4&51.1&67.7&0.098 \\
+        \bottomrule
+        \end{tabular}
+\label{tab:icbin_bop}
+\end{sidewaystable}

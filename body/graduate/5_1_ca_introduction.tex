@@ -1,0 +1,81 @@
+\section{引言}
+
+估计物体的六自由度（6DoF）姿态是计算机视觉领域的一个基本挑战。
+这一任务在增强现实\cite{10450983}和机器人技术\cite{9727342}中有着重要的应用。特别是在机器人操作任务中，识别物体的6D姿态（包括其3D位置和方向）的能力为抓取和运动规划提供了关键信息。
+
+我们专注于从单个RGB图像中估计目标物体姿态的场景。通常，姿态估计网络的架构\cite{su2022zebrapose, symnet}会生成一个可见掩码和/或一个完整掩码，以指示物体在图像中的位置。完整掩码描绘了不考虑其他物体遮挡的情况下物体的区域，而可见掩码表示物体可见的区域。此外，网络还生成其他特征以建立对应关系，这些特征随后用于确定最终的姿态。
+
+在现有的方法中\cite{labbe2020cosypose}，通常需要训练另一个网络来迭代地优化姿态，这可能会耗费大量时间。相比之下，我们提出的方法，如\autoref{fig:ca_teaser}所示，可以在不需要训练新网络的情况下实现姿态优化。此外，我们的优化方法可以无缝集成到目前全球使用的单目6D姿态估计方法中。
+
+从初始姿态和感兴趣轮廓（CoI）开始，我们的优化过程采用轮廓对齐，而不依赖于神经网络。
+
+\begin{figure}[t]
+    \centering
+    \begin{overpic}[width=0.48\textwidth]{figure/ca/teaser.jpg}
+        \put (1,16) {rgb image}
+        \put (23,15) {\rotatebox{270}{CNN}}
+        \put (23,45) {\rotatebox{270}{CNN}}
+        \put (61,2) {CoI}
+        \put (63,47) {initial pose}
+        \put (66,30) {\rotatebox{270}{refine}}
+        \put (85,11) {pose}
+    \end{overpic}
+    \caption{方法示意图}
+    % This process leads to a more precise estimation of the object's pose.
+    \label{fig:ca_teaser}
+\end{figure}
+
+我们假设学习到的掩码的准确性优于姿态的准确性。在物体轮廓与渲染轮廓不对齐的情况下，这种差异表明当前的姿态估计不够准确。在这种情况下，我们采用一个优化过程来优化估计的姿态。
+
+当深度信息可用时，像ICP或基于网络的优化方法\cite{lipson2022coupled}可以显著提升结果。然而，在没有深度图的情况下，常见的优化方法是训练一个依赖于渲染和比较机制的网络，例如EPnP\cite{EPnP}。
+
+如图，左图：在50,000张合成图像上进行训练。右图（第一行）：来自真实场景的测试图像。右图（第二行）：使用恢复的姿态在场景中渲染的物体模型。
+
+总之，我们的工作做出了以下关键贡献：
+
+\begin{enumerate}
+\item 我们引入了一种基于轮廓对齐的优化方法，作为网络优化方法的替代方案。该方法在时间紧迫的场景中特别有价值。
+\item 我们在YCB-V\cite{xiang2018posecnn}和IC-BIN\cite{icbin}等基准数据集上进行了实验，以展示我们提出方法的有效性和效率。
+\end{enumerate}
+
+
+\begin{figure}[thbp]
+    \centering
+    \begin{overpic}[width=0.6\textwidth]{figure/ca/main_explain_paper.jpg}
+        % \put (4, 26) {Training on synthetic images}
+        % \put (58, 26) {Inference on real images}
+    \end{overpic}
+    \caption{结果可视化}
+    \label{fig:ca_quantitative_results}
+\end{figure}
+
+给定一张RGB图像，我们的网络以检测器生成的放大兴趣区域（RoI）作为输入，并预测中间特征，包括可见掩码$\mathbf{M}_\text{vis}$和完整掩码$\mathbf{M}_\text{all}$。在优化过程中，$\mathbf{C}_\text{ren}$基于当前估计的姿态迭代计算，并通过兴趣轮廓（CoI）和$\mathbf{C}_\text{ren}$之间的轮廓对齐来相应地更新姿态参数。
+
+\begin{figure}[thbp]
+  \centering
+  \begin{overpic}[width=0.80\textwidth]{figure/ca/process.jpg}
+    \put (10, 5) {rgb image}
+    \put (27, 3.5) {other features}
+    \put (27.5, 13) {visible mask}
+    \put (26.5, 23) {complete mask}
+    \put (2, 39) {detector}
+    \put (15, 29) {RoI}
+    \put (29.5, 37.5) {\shortstack{Encoder \\Module}}
+    \put (25, 45) {Initial Process}
+    \put (47, 3.5) {\shortstack{Decoder \\Module}}
+    \put (50, 15) {$\mathbf{T}_0$}
+    \put (50, 30) {$\mathbf{C}_\text{ren}$}
+    \put (50, 40.5) {CoI}
+    \put (73, 45) {Refinement Process}
+    \put (71, 4.5) {$\mathbf{T}_n$}
+    \put (66.5, 19) {iteration $n$}
+    \put (66.5, 30.5) {iteration $2$}
+    \put (66.5, 40) {iteration $1$}
+    \put (81.5, 26) {$\mathbf{T}_2$}
+    \put (81.5, 37) {$\mathbf{T}_1$}
+    \put (92, 25) {$\mathbf{C}_\text{ren}$}
+    \put (92, 36.5) {$\mathbf{C}_\text{ren}$}
+  \end{overpic}
+  \caption{方法概览}
+  \label{fig: overview}
+\end{figure}
