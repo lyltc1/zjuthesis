@@ -260,30 +260,6 @@ doi = {10.1177/02783649241285161},
   year={2024}
 }
 
-@www{zjuthesisrules,
-    title = {浙江大学本科生毕业论文（设计）编写规则},
-    author = {浙江大学本科生院},
-    year = {2018},
-    url = {http://bksy.zju.edu.cn/attachments/2018-01/01-1517384518-1149149.pdf},
-}
-@www{tikz,
-    title = {tikz宏包},
-    author = {Till Tantau},
-    year = {2018},
-    url = {https://sourceforge.net/projects/pgf/},
-}
-@www{zjuthesis,
-    title = {浙江大学毕业设计/论文模板},
-    author = {王子轩},
-    year = {2019},
-    url = {https://github.com/TheNetAdmin/zjuthesis},
-}
-@www{zjugradthesisrules,
-    title = {浙江大学研究生学位论文编写规则},
-    author = {浙江大学研究生院},
-    year = {2008},
-    url = {http://grs.zju.edu.cn/redir.php?catalog_id=10038&object_id=12877},
-}
 @article{中国制造2025,
 title = {《中国制造2025》推动机器人发展},
 journal = {机器人技术与应用},
@@ -362,15 +338,6 @@ issn = {1004-6437},
   organization={Ieee}
 }
 
-@article{lepetit2009ep,
-  title={EPnP: An accurate O (n) solution to the PnP problem},
-  author={Lepetit, Vincent and Moreno-Noguer, Francesc and Fua, Pascal},
-  journal={International journal of computer vision},
-  volume={81},
-  pages={155--166},
-  year={2009},
-  publisher={Springer}
-}
 @inproceedings{kehl2017ssd,
   title={Ssd-6d: Making rgb-based 3d detection and 6d pose estimation great again},
   author={Kehl, Wadim and Manhardt, Fabian and Tombari, Federico and Ilic, Slobodan and Navab, Nassir},
@@ -391,6 +358,20 @@ issn = {1004-6437},
   year={2018},
   publisher={Robotics: Science and Systems Foundation}
 }
+# 相关工作
+@article{RANSAC,  
+  title={Random sample consensus}, 
+  author={Fischler, Martin A. and Bolles, Robert C.}, 
+  journal={COMMUN ACM}, 
+  year={1981}
+}
+
+@inproceedings{YOLO,
+  title={You only look once: Unified, real-time object detection},
+  author={Redmon, Joseph and Divvala, Santosh},
+  booktitle={CVPR},
+  year={2016}
+}
 
 @article{bukschat2020efficientpose,
   title={EfficientPose: An efficient, accurate and scalable end-to-end 6D multi object pose estimation approach},
@@ -399,12 +380,13 @@ issn = {1004-6437},
   year={2020}
 }
 @inproceedings{rad2017bb8,
-  title={Bb8: A scalable, accurate, robust to partial occlusion method for predicting the 3d poses of challenging objects without using depth},
+  title={{BB8}: A scalable, accurate, robust to partial occlusion method for predicting the 3d poses of challenging objects without using depth},
   author={Rad, Mahdi and Lepetit, Vincent},
   booktitle={Proceedings of the IEEE international conference on computer vision},
   pages={3828--3836},
   year={2017}
 }
+# YOLO6D
 @inproceedings{tekin2018real,
   title={Real-time seamless single shot 6d object pose prediction},
   author={Tekin, Bugra and Sinha, Sudipta N and Fua, Pascal},
@@ -412,12 +394,46 @@ issn = {1004-6437},
   pages={292--301},
   year={2018}
 }
-@inproceedings{hu2019segmentation,
-  title={Segmentation-driven 6d object pose estimation},
-  author={Hu, Yinlin and Hugonot, Joachim and Fua, Pascal and Salzmann, Mathieu},
-  booktitle={Proceedings of the IEEE/CVF conference on computer vision and pattern recognition},
-  pages={3385--3394},
+# 小块热图法
+@inproceedings{oberweger2018making,
+  title={Making deep heatmaps robust to partial occlusions for 3d object pose estimation},
+  author={Oberweger, Markus and Rad, Mahdi and Lepetit, Vincent},
+  booktitle={Proceedings of the European conference on computer vision (ECCV)},
+  pages={119--134},
+  year={2018}
+}
+# 小块关键点法
+@INPROCEEDINGS{Hu2019Segmentation,
+  title={Segmentation-driven 6d object pose estimation}, 
+  author={Hu, Yinlin and Hugonot, Joachim},
+  booktitle={CVPR}, 
   year={2019}
+}
+@inproceedings{guo2023knowledge,
+  title={Knowledge distillation for 6d pose estimation by aligning distributions of local predictions},
+  author={Guo, Shuxuan and Hu, Yinlin},
+  booktitle={CVPR},
+  year={2023}
+}
+@ARTICLE{Huang2021Confidence,
+  title={Confidence-based 6d object pose estimation}, 
+  author={Huang, Wei-Lun and Hung, Chun-Yi},
+  journal={IEEE TMM}, 
+  year={2021}
+}
+@inproceedings{liu2023linear,
+  title={Linear-covariance loss for end-to-end learning of 6d pose estimation},
+  author={Liu, Fulin and Hu, Yinlin},
+  booktitle={ICCV},
+  year={2023}
+}
+# DOPE
+@inproceedings{dope,
+ author = {Jonathan Tremblay and Thang To and Balakumar Sundaralingam and Yu Xiang and Dieter Fox and Stan Birchfield},
+ title = {Deep Object Pose Estimation for Semantic Robotic Grasping of Household Objects},
+ booktitle = {Conference on Robot Learning (CoRL)},
+ url = "https://arxiv.org/abs/1809.10790",
+ year = 2018
 }
 @inproceedings{hosseini2019ipose,
   title={ipose: instance-aware 6d pose estimation of partly occluded objects},
@@ -443,7 +459,12 @@ issn = {1004-6437},
   pages={1941--1950},
   year={2019}
 }
-
+@ARTICLE{Shugurov2021DPODv2,
+  title={Dpodv2: Dense correspondence-based 6 dof pose estimation}, 
+  author={Shugurov, Ivan and Zakharov, Sergey},
+  journal={IEEE TPAMI}, 
+  year={2021}
+}
 @inproceedings{li2019cdpn,
   title={Cdpn: Coordinates-based disentangled pose network for real-time rgb-based 6-dof object pose estimation},
   author={Li, Zhigang and Wang, Gu and Ji, Xiangyang},
@@ -606,6 +627,20 @@ issn = {1004-6437},
   booktitle={Proceedings of the IEEE/CVF conference on computer vision and pattern recognition},
   pages={11703--11712},
   year={2020}
+}
+
+@inproceedings{Chen2022EPro_PnP,
+  title={{Epro-PnP}: Generalized end-to-end probabilistic perspective-n-points for monocular object pose estimation},
+  author={Chen, Hansheng and Wang, Pichao},
+  booktitle={CVPR},
+  year={2022}
+}
+
+@article{wu2023geometric,
+  title={Geometric-aware dense matching network for 6D pose estimation of objects from RGB-D images},
+  author={Wu, Chenrui and Chen, Long},
+  journal={PR},
+  year={2023}
 }
 
 @inproceedings{cai2020reconstruct,
@@ -1172,15 +1207,7 @@ issn = {1004-6437},
   year={1991},
   publisher={IEEE Computer Society}
 }
-@article{lepetit2009ep,
-  title={EPnP: An accurate O (n) solution to the PnP problem},
-  author={Lepetit, Vincent and Moreno-Noguer, Francesc and Fua, Pascal},
-  journal={International journal of computer vision},
-  volume={81},
-  pages={155--166},
-  year={2009},
-  publisher={Springer}
-}
+
 @inproceedings{zhou2023deep,
   title={Deep Fusion Transformer Network with Weighted Vector-Wise Keypoints Voting for Robust 6D Object Pose Estimation},
   author={Zhou, Jun and Chen, Kai and Xu, Linlin and Dou, Qi and Qin, Jing},
