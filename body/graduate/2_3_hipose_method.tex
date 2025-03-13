@@ -1,6 +1,6 @@
 \section{点到面的对应关系}
 
-ZebraPose\cite{su2022zebrapose} 使用\autoref{sec:hipose_encoding}所述的二进制编码从单张RGB图像中进行位姿估计。ZebraPose训练了一个神经网络来估计物体检测框内每个像素 $\mathbf{p}_{u,v}$ 的 $d$ 位二进制编码，从而建立像素 $\mathbf{p}_{u,v}$ 和物体模型的坐标 $\mathbf{v}_{i}$ 之间的2D-3D对应关系。其中$\mathbf{p}_{u,v}$表示横坐标为$u$，纵坐标为$v$的像素点。这些对应关系被提供给一个Perspective-n-Point (PnP) 求解器（例如 RANSAC+EPnP\cite{lepetit2009ep}）来估计物体姿态。结果表明，这种编码的表面表示非常适合神经网络训练，避免网络直接学习一个准确的浮点数所造成的误差。
+ZebraPose\cite{su2022zebrapose} 使用\autoref{sec:hipose_encoding}所述的二进制编码从单张RGB图像中进行位姿估计。ZebraPose训练了一个神经网络来估计物体检测框内每个像素 $\mathbf{p}_{u,v}$ 的 $d$ 位二进制编码，从而建立像素 $\mathbf{p}_{u,v}$ 和物体模型的坐标 $\mathbf{v}_{i}$ 之间的2D-3D对应关系。其中$\mathbf{p}_{u,v}$表示横坐标为$u$，纵坐标为$v$的像素点。这些对应关系被提供给一个Perspective-n-Point (PnP) 求解器（例如 RANSAC+EPnP\cite{EPnP}）来估计物体姿态。结果表明，这种编码的表面表示非常适合神经网络训练，避免网络直接学习一个准确的浮点数所造成的误差。
 
 然而，这种方法：(1) 在预测对应关系阶段没有使用深度信息，(2) 没有明确利用编码表面预测的层次结构，(3) 没有利用预测表面编码的固有置信度。相反，范围 $[0,1]$ 内的连续二进制编码估计被量化为离散的位值，从而丢弃了所有置信度信息。
 
