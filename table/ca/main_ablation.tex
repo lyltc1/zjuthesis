@@ -1,17 +1,16 @@
-\begin{table}
+\begin{table}[ht]
   \centering
-  \caption{Ablation study on refinement and Tikhonov regularization}
+  \caption{关于优化和 Tikhonov 正则化的消融研究}
   \begin{tabular}{@{}c|c|c|c@{}}
     \toprule
-    Refinement & Tikhonov Regularization & $AR\uparrow$ & time (sec) \\
+    使用优化 & Tikhonov 正则化 & $AR\uparrow$ & 运行时间 (秒) \\
     \midrule
                &                         & 73.9         & 0.091      \\
     \checkmark &                         & 69.8         & 0.110      \\
     \checkmark & \checkmark              & 74.8         & 0.111      \\
     \bottomrule
   \end{tabular}
-  \vspace{-0.2cm}
-  \label{tab:main_ablation}
+  \label{tab:ca_main_ablation}
 \end{table}
 
 

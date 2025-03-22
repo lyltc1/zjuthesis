@@ -1,14 +1,13 @@
-\section{方法介绍}
+\section{方法}
 
-给定一张RGB-D图像、已知的相机内参$K$以及一组物体的CAD模型，我们的目标是估计每个物体的姿态。该姿态由旋转矩阵$\mathbf{R} \in SO(3)$和平移向量$\mathbf{t} \in \mathbb{R}^3$定义。
+给定一张RGB-D图像、已知的相机内参$K$以及一组物体的CAD模型，我们的目标是估计每个物体的位姿。该位姿由旋转矩阵$\mathbf{R} \in SO(3)$和平移向量$\mathbf{t} \in \mathbb{R}^3$定义，其中$\mathbf{R}$表示物体在三维空间中的旋转，而$\mathbf{t}$表示物体在相机坐标系中的位置。
 
-在本节中，我们首先介绍我们的网络，并与之前的方法DenseFusion\cite{wang2019densefusion}和FFB6D\cite{he2021ffb6d}进行比较。随后，我们详细描述了CNN分支中的融合模块的架构。最后，我们描述了损失框架，包括双分支的损失和一致性损失。
+在本节中，我们首先介绍我们的网络，并与之前的方法DenseFusion\cite{wang2019densefusion}和FFB6D\cite{he2021ffb6d}进行比较，分析它们的架构以及我们方法的改进之处。随后，我们详细描述了CNN分支和PCN分支中的融合模块的架构设计，阐述了如何通过双向信息交互提升特征提取的效果。接着，我们讨论了一致性损失的设计原理及其在保持两个分支输出一致性方面的作用。最后，我们描述了损失函数，包括双分支的损失和一致性损失。
 
-% The network's dual branches independently extract features from distinct modalities without intercommunication. These features are then merged in the final Dense Fusion Module.
+\subsection{BCFN方法概览}
 
-% Bidirectional fusion modules serve as bridges for information exchange throughout the entire flow of the two branches, with fusion occurring at every encoding and decoding layer. CNN features are concatenated into point cloud features for pose estimation
+融合来自不同模态的信息在RGB-D物体位姿估计中仍然是一个长期存在的挑战。在\autoref{fig:comparison}中，我们将我们的网络与DenseFusion\cite{wang2019densefusion}和FFB6D\cite{he2021ffb6d}进行比较，这些网络都基于编码器-解码器架构。网络的一个分支处理RGB图像，称为CNN分支，而另一个分支处理点云，称为PCN分支。解码器输出的特征分别称为CNN特征和PCN特征。CNN特征表示为每像素特征，而PCN特征表示为每点云顶点的特征。
 
-% CNN features are fused into PCN features, and vice versa, enabling mutual enhancement. Each branch undergoes supervised learning independently, while a consistency loss is applied across both branches to ensure alignment.
 
 \begin{figure}[htbp]
     \centering
@@ -57,20 +56,21 @@
     \label{fig:comparison}
 \end{figure}
 
-\subsection{BCFN方法概览}
+DenseFusion\cite{wang2019densefusion} 使用一种后拼接的融合策略，采用了如\autoref{fig:dense_fusion}所示的融合方式来实现图像信息和深度信息的融合。CNN和PCN分支分别对图像和点云中的特征进行提取。网络的双分支独立地从不同模态中提取特征，彼此之间没有信息交互。这些特征最终在密集融合模块中进行合并。然而，在物体表面反光的情况下，CNN分支所处理得到的特征不包含有效信息，在深度图质量不佳的边缘位置PCN分支也无法提取有效信息。这些情况对单独的CNN或PCN特征提取过程构成了挑战。尽管通过拼接或者DenseFusion的融合模块可以在高层特征层面进行一个融合，但由于该结构没有在像素或者点云层面完成特征的融合，导致低层特征准确度不高。
 
-融合来自不同模态的信息在RGB-D物体姿态估计中仍然是一个长期存在的挑战。在\autoref{fig:comparison}中，我们将我们的网络与DenseFusion~\cite{wang2019densefusion}和FFB6D~\cite{he2021ffb6d}进行比较，这些网络都基于编码器-解码器架构。网络的一个分支处理RGB图像，称为CNN分支，而另一个分支处理点云，称为PCN分支。解码器输出的特征分别称为CNN特征和PCN特征。CNN特征表示为每像素特征，而PCN特征表示为每顶点特征。
+FFB6D网络采用跨模态融合架构，在编码器与解码器的每个层级实现RGB与点云特征的双向交互，如\autoref{fig:ffb6d}所示。双向融合模块在两个分支的整个流程中充当信息交换的桥梁，在每个编码和解码层进行融合。CNN特征被拼接到点云特征中以进行位姿估计。该设计的核心理念在于：RGB模态携带的表观信息与点云模态蕴含的几何信息在特征提取过程中具有互补价值。值得注意的是，网络在最终阶段选择将CNN特征注入PCN特征流，并以PCN特征作为最终表征。
 
-DenseFusion~\cite{wang2019densefusion} 引入了一种超越简单拼接的融合策略，采用了如\autoref{fig:dense_fusion}所示的密集融合模块，从而提升了性能。然而，当CNN和PCN分支分离时，无论是特征拼接还是DenseFusion在处理外观相似或表面反光的物体时，性能都会下降。这些情况对单独的CNN或PCN特征提取过程构成了挑战。FFB6D网络在每个编码和解码层进行融合，以从RGB-D图像中学习表示，如\autoref{fig:ffb6d}所示。这里的一个关键见解是，RGB的外观信息和点云的几何信息在特征提取过程中可以作为互补输入。然而，在最后阶段，FFB6D将CNN特征融合到PCN特征中，最终的表示形式来自PCN特征。我们方法的见解在于认识到将CNN特征融合到PCN特征与反之的区别。前者保留了结构信息，使相邻顶点之间的过渡更加平滑，而后者确保了像素之间的过渡。这意味着如果两个顶点在3D空间中很接近，它们更可能通过PCN分支学习受益，而在图像空间中接近的两个像素可以更容易地从CNN分支中获得相似的特征。
+我们对特征融合方向的深入分析：当CNN特征向PCN分支融合时，三维空间邻域顶点间的结构连续性得以保持，特征过渡更为平滑；而反向融合则更有利于维护二维图像空间相邻像素的特征一致性。由此产生的优势是：三维空间中邻近的顶点通过PCN分支可有效捕获几何关联性，而图像空间中相邻的像素则能借助CNN分支获得视觉特征相似性。因此，如\autoref{fig:bcfn}所示,我们的网络BCFN同时保留三维空间的顶点特征，也保留了图像空间的像素特征。CNN特征与PCN特征相互融合，从而实现互相增强。每个分支独立进行监督学习，同时在两个分支之间施加一致性损失以确保对齐。
 
 \subsection{融合模块}
-在我们的网络中，我们为两个分支分别设计了两个头。PCN头模仿了FFB6D的融合模块，其中每个顶点的特征与最近的CNN特征拼接在一起（如果该顶点投影到图像上）。同样，新设计的CNN头也基于相同的原理：每个像素特征与最近的PCN特征拼接在一起（如果顶点投影到图像上）。CNN头由五个卷积层组成，每个卷积层后面跟着批归一化和ReLU激活函数。
+
+\par 在我们的网络架构中，我们分别为PCN分支和CNN分支设计了两个输出模块。具体而言，PCN输出模块采用了与FFB6D相似的特征融合机制：对于每个顶点，其特征与最近邻的CNN特征进行拼接。同样地，新设计的CNN输出模块基于相同的融合理念：将每个像素的特征与最近邻的PCN特征进行拼接。其中，CNN输出模块由五个卷积层构成，每个卷积层后均接续批归一化和ReLU激活函数。
 
 \subsection{一致性损失}
 
-ZebraPose~\cite{su2022zebrapose} 和 HiPose~\cite{2024hipose} 使用二进制编码作为中间变量来代替直接学习姿态，并在RGB和RGB-D设置中显示出很好的效果。为了监督，我们对CNN分支采用与ZebraPose相同的策略，使用掩码和二进制编码，并采用HiPose的方法对PCN分支中的每个顶点进行监督。对两个分支都应用L1损失。具体来说，我们生成一个掩码来表示顶点或像素是否是物体的一部分，以及一个表示物体框架内坐标的编码。
+\par 基于中间表征的学习范式在姿态估计领域展现出显著优势，如ZebraPose\cite{su2022zebrapose}采用二进制编码替代直接回归位姿，HiPose\cite{2024hipose}在RGB-D场景中进一步扩展了该方法。本研究沿袭该范式并作出改进：对于CNN分支，采用ZebraPose的掩码监督与二进制编码监督机制；对于PCN分支，则应用HiPose提出的顶点级监督策略。具体而言，我们为每个分支构建两个监督信号——表征目标存在性的掩码，以及物体坐标系空间位置的二进制编码，二者均采用L1范数进行优化。
 
-然而，分别训练两个分支可能会导致它们之间的输出不一致。为了保持一致性，我们对它们的输出施加了一致性损失。对于匹配的顶点和像素，掩码和二进制编码的输出应该是相同的。
+\par 值得注意的是，独立优化两个分支会导致跨模态特征空间的不对齐。为此，我们创新性地引入跨分支一致性约束：对于通过深度投影建立几何对应的顶点-像素对，强制其掩码预测值和坐标编码特征在隐空间保持一致性。该约束通过计算对应位置特征向量的L2距离实现，有效避免了双分支预测结果的互斥性，确保表观信息与几何信息的协同优化。
 
 \subsection{实现细节}
 
@@ -82,6 +82,6 @@ Loss = L_\text{mask}^{PCN} + \alpha L_\text{code}^{PCN} + L_\text{mask}^{CNN} + 
 
 对于网络骨干，我们采用了最近的ConvNext架构，如ConvNext~\cite{Liu2022ACF}所述，该架构基于ResNet~\cite{He2015DeepRL}。ConvNext展示了与Vision Transformer~\cite{Dosovitskiy2020AnII}相当的性能，同时保持了ResNet的效率和简洁性。
 
-我们使用Adam优化器~\cite{Kingma2014AdamAM}，以固定的学习率$1e-4$，批量大小为32，训练我们的网络$380K$次迭代。在训练过程中，我们对RGB图像应用了ZebraPose~\cite{su2022zebrapose}中的增强方法，并对深度图应用了MegaPose~\cite{Labbe2022MegaPose6P}中的深度增强方法。我们的训练数据集由BOP挑战赛~\cite{hodan2024bop}提供，仅包含合成图像。我们旨在证明我们的方法可以有效地弥合模拟数据和真实数据之间的域间差距。
+我们使用Adam优化器~\cite{Kingma2014AdamAM}，以固定的学习率$1e-4$，批量大小为32，训练我们的网络$380K$次迭代。在训练过程中，我们对RGB图像应用了ZebraPose~\cite{su2022zebrapose}中的增强方法，并对深度图应用了MegaPose\cite{Labbe2022MegaPose6P}中的深度增强方法。我们的训练数据集由BOP挑战赛~\cite{hodan2024bop}提供，仅包含合成图像。我们旨在证明我们的方法可以有效地弥合模拟数据和真实数据之间的域间差距。
 
 在推理阶段，我们仅使用PCN分支的输出。前景顶点的二进制编码通过查找表确定在物体坐标系中的对应坐标。随后，使用RANSAC-Kabsch求解器计算最终的姿态。

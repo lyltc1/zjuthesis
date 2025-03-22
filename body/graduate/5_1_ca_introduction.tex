@@ -1,81 +1,70 @@
 \section{引言}
 
-估计物体的六自由度（6DoF）姿态是计算机视觉领域的一个基本挑战。
-这一任务在增强现实\cite{10450983}和机器人技术\cite{9727342}中有着重要的应用。特别是在机器人操作任务中，识别物体的6D姿态（包括其3D位置和方向）的能力为抓取和运动规划提供了关键信息。
+六自由度（6D）物体位姿估计是计算机视觉领域的核心挑战之一，在增强现实\cite{10450983}和机器人技术\cite{9727342}中具有重要应用价值。尤其在机器人操作任务中，准确获取物体的三维位置与方向信息，可为抓取规划和运动控制提供关键支撑。本章重点研究基于单目RGB图像的物体位姿估计方法。当前主流方法\cite{su2022zebrapose, symnet}通常通过神经网络生成可见掩码（物体可见区域）和完整掩码（无遮挡情况下的物体区域），并结合其他特征建立空间对应关系以推导最终位姿。
 
-我们专注于从单个RGB图像中估计目标物体姿态的场景。通常，姿态估计网络的架构\cite{su2022zebrapose, symnet}会生成一个可见掩码和/或一个完整掩码，以指示物体在图像中的位置。完整掩码描绘了不考虑其他物体遮挡的情况下物体的区域，而可见掩码表示物体可见的区域。此外，网络还生成其他特征以建立对应关系，这些特征随后用于确定最终的姿态。
+位姿优化指的是在有一个精度较低的初始位姿的条件下，通过某一方法提升该初始位姿的精度，输出更有的位姿估计结果，这种方法往往依赖渲染。例如，CIR\cite{lipson2022coupled}通过一种新颖的可微分求解器层，在渲染和比较策略下迭代地同时优化姿态和密集对应关系。PFA\cite{hu2022perspective}提出了一种非迭代的姿态优化策略，通过预测渲染图像和真实图像之间的密集对应场来实现。迭代最近点算法（ICP）通常作为一种优化策略，与仅使用RGB的初始姿态估计相结合，利用深度信息将估计的物体点云与图像对齐。目前，依赖于像PFA和CIR这样的网络实现位姿精度的进一步提升是一种主流方法。然而，这些方法需要额外训练迭代优化网络，而我们希望实现一个通用的优化方法，甚至不需要额外的训练。我们考虑基于轮廓的对齐方式。这是因为轮廓信息在位姿估计任务中通常没有显式使用，而轮廓对齐又往往作为评价的指标的一部分。
 
-在现有的方法中\cite{labbe2020cosypose}，通常需要训练另一个网络来迭代地优化姿态，这可能会耗费大量时间。相比之下，我们提出的方法，如\autoref{fig:ca_teaser}所示，可以在不需要训练新网络的情况下实现姿态优化。此外，我们的优化方法可以无缝集成到目前全球使用的单目6D姿态估计方法中。
+基于轮廓的对齐是一种广泛应用于6DoF物体跟踪的方法\cite{wuest2005adaptive}，这种方法不依赖物体模型中的颜色和纹理。RGBT\cite{RGBT}和SRT3D\cite{SRT3D}是基于区域的6DoF物体跟踪的高效方法。这些方法仅依赖单目RGB相机，通过基于直方图的建模来建立轮廓位置概率。我们的方法从这些方法中汲取灵感，在位姿估计的背景下应用了这一技术。与这些方法不同，我们的方法通过利用掩码进行轮廓提取，而不直接使用直方图搜寻物体的轮廓。
 
-从初始姿态和感兴趣轮廓（CoI）开始，我们的优化过程采用轮廓对齐，而不依赖于神经网络。
+相比之下，我们提出的方法（如\autoref{fig:ca_teaser}所示），无需训练新网络即可实现姿态优化。此外，该优化方法可无缝集成到现有的单目6D姿态估计方法中，从而更精确地估计物体的位姿。
 
-\begin{figure}[t]
-    \centering
-    \begin{overpic}[width=0.48\textwidth]{figure/ca/teaser.jpg}
-        \put (1,16) {rgb image}
-        \put (23,15) {\rotatebox{270}{CNN}}
-        \put (23,45) {\rotatebox{270}{CNN}}
-        \put (61,2) {CoI}
-        \put (63,47) {initial pose}
-        \put (66,30) {\rotatebox{270}{refine}}
-        \put (85,11) {pose}
-    \end{overpic}
-    \caption{方法示意图}
-    % This process leads to a more precise estimation of the object's pose.
-    \label{fig:ca_teaser}
+\begin{figure}[ht]
+  \centering
+  \begin{overpic}[width=0.85\textwidth]{figure/ca/teaser.jpg}
+      \put (1,16) {RGB图像}
+      \put (23,15) {\rotatebox{270}{CNN}}
+      \put (23,45) {\rotatebox{270}{CNN}}
+      \put (61,2) {CoI}
+      \put (63,47) {初始位姿}
+      \put (66,33) {\rotatebox{270}{迭代优化}}
+      \put (85,11) {位姿输出}
+  \end{overpic}
+  \caption{方法示意图}
+  \label{fig:ca_teaser}
 \end{figure}
 
-我们假设学习到的掩码的准确性优于姿态的准确性。在物体轮廓与渲染轮廓不对齐的情况下，这种差异表明当前的姿态估计不够准确。在这种情况下，我们采用一个优化过程来优化估计的姿态。
+我们假设学习到的掩码的准确性优于初始位姿估计的准确性。这个假设一般都能够成立，因为学习掩码本身就是网络的中间过程，其精度能够直接影响位姿估计精度。我们的实验结果也能够支持这一观点。在物体轮廓与渲染轮廓不对齐的情况下，这种差异表明当前的姿态估计不够准确。在这种情况下，我们采用一个优化过程来优化估计的姿态。
 
-当深度信息可用时，像ICP或基于网络的优化方法\cite{lipson2022coupled}可以显著提升结果。然而，在没有深度图的情况下，常见的优化方法是训练一个依赖于渲染和比较机制的网络，例如EPnP\cite{EPnP}。
-
-如图，左图：在50,000张合成图像上进行训练。右图（第一行）：来自真实场景的测试图像。右图（第二行）：使用恢复的姿态在场景中渲染的物体模型。
+当深度信息可用时，像ICP或基于网络的优化方法\cite{lipson2022coupled}可以显著提升结果。然而，在没有深度图的情况下，常见的优化方法是训练一个依赖于渲染和比较机制的网络，例如EPnP\cite{EPnP}。从初始姿态和感兴趣轮廓（CoI）开始，我们的优化过程采用轮廓对齐，而不依赖于神经网络。
 
 总之，我们的工作做出了以下关键贡献：
 
 \begin{enumerate}
-\item 我们引入了一种基于轮廓对齐的优化方法，作为网络优化方法的替代方案。该方法在时间紧迫的场景中特别有价值。
-\item 我们在YCB-V\cite{xiang2018posecnn}和IC-BIN\cite{icbin}等基准数据集上进行了实验，以展示我们提出方法的有效性和效率。
+\item 我们引入了一种基于轮廓对齐的优化方法，作为网络优化方法的替代方案。该方法能够作为组件用于现有位姿估计方法中。
+\item 我们证明了即使是密集特征得到的位姿估计结果，显式使用边缘信息仍然能够进一步提升精度。
+\item 这种轮廓的优化方法可以作为位姿估计结果都评价指标和自我测评方案，有效减少网络输出的假正例。
+\item 我们在YCB-V\cite{ycbv}和IC-BIN\cite{icbin}等基准数据集上进行了实验，以展示我们提出方法的有效性和效率。
 \end{enumerate}
 
 
-\begin{figure}[thbp]
-    \centering
-    \begin{overpic}[width=0.6\textwidth]{figure/ca/main_explain_paper.jpg}
-        % \put (4, 26) {Training on synthetic images}
-        % \put (58, 26) {Inference on real images}
-    \end{overpic}
-    \caption{结果可视化}
-    \label{fig:ca_quantitative_results}
-\end{figure}
 
-给定一张RGB图像，我们的网络以检测器生成的放大兴趣区域（RoI）作为输入，并预测中间特征，包括可见掩码$\mathbf{M}_\text{vis}$和完整掩码$\mathbf{M}_\text{all}$。在优化过程中，$\mathbf{C}_\text{ren}$基于当前估计的姿态迭代计算，并通过兴趣轮廓（CoI）和$\mathbf{C}_\text{ren}$之间的轮廓对齐来相应地更新姿态参数。
+% 给定一张RGB图像，我们的网络以检测器生成的放大兴趣区域（RoI）作为输入，并预测中间特征，包括可见掩码$\mathbf{M}_\text{vis}$和完整掩码$\mathbf{M}_\text{all}$。在优化过程中，$\mathbf{C}_\text{ren}$基于当前估计的姿态迭代计算，并通过兴趣轮廓（CoI）和$\mathbf{C}_\text{ren}$之间的轮廓对齐来相应地更新姿态参数。
 
-\begin{figure}[thbp]
-  \centering
-  \begin{overpic}[width=0.80\textwidth]{figure/ca/process.jpg}
-    \put (10, 5) {rgb image}
-    \put (27, 3.5) {other features}
-    \put (27.5, 13) {visible mask}
-    \put (26.5, 23) {complete mask}
-    \put (2, 39) {detector}
-    \put (15, 29) {RoI}
-    \put (29.5, 37.5) {\shortstack{Encoder \\Module}}
-    \put (25, 45) {Initial Process}
-    \put (47, 3.5) {\shortstack{Decoder \\Module}}
-    \put (50, 15) {$\mathbf{T}_0$}
-    \put (50, 30) {$\mathbf{C}_\text{ren}$}
-    \put (50, 40.5) {CoI}
-    \put (73, 45) {Refinement Process}
-    \put (71, 4.5) {$\mathbf{T}_n$}
-    \put (66.5, 19) {iteration $n$}
-    \put (66.5, 30.5) {iteration $2$}
-    \put (66.5, 40) {iteration $1$}
-    \put (81.5, 26) {$\mathbf{T}_2$}
-    \put (81.5, 37) {$\mathbf{T}_1$}
-    \put (92, 25) {$\mathbf{C}_\text{ren}$}
-    \put (92, 36.5) {$\mathbf{C}_\text{ren}$}
-  \end{overpic}
-  \caption{方法概览}
-  \label{fig: overview}
-\end{figure}
+% \begin{figure}[thbp]
+%   \centering
+%   \begin{overpic}[width=0.80\textwidth]{figure/ca/process.jpg}
+%     \put (10, 5) {rgb image}
+%     \put (27, 3.5) {other features}
+%     \put (27.5, 13) {visible mask}
+%     \put (26.5, 23) {complete mask}
+%     \put (2, 39) {detector}
+%     \put (15, 29) {RoI}
+%     \put (29.5, 37.5) {\shortstack{Encoder \\Module}}
+%     \put (25, 45) {Initial Process}
+%     \put (47, 3.5) {\shortstack{Decoder \\Module}}
+%     \put (50, 15) {$\mathbf{T}_0$}
+%     \put (50, 30) {$\mathbf{C}_\text{ren}$}
+%     \put (50, 40.5) {CoI}
+%     \put (73, 45) {Refinement Process}
+%     \put (71, 4.5) {$\mathbf{T}_n$}
+%     \put (66.5, 19) {iteration $n$}
+%     \put (66.5, 30.5) {iteration $2$}
+%     \put (66.5, 40) {iteration $1$}
+%     \put (81.5, 26) {$\mathbf{T}_2$}
+%     \put (81.5, 37) {$\mathbf{T}_1$}
+%     \put (92, 25) {$\mathbf{C}_\text{ren}$}
+%     \put (92, 36.5) {$\mathbf{C}_\text{ren}$}
+%   \end{overpic}
+%   \caption{方法概览}
+%   \label{fig: overview}
+% \end{figure}

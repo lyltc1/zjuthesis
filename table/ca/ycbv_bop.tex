@@ -1,11 +1,12 @@
-\begin{sidewaystable}[ht]
+\begin{table}[ht]
         \centering
         \caption{
-                BOP results on the YCB-V~\cite{xiang2018posecnn}. THE TIME IS THE RUNTIME PER IMAGE AVERAGED OVER THE DATASET.
+                YCB-V数据集上的BOP评估结果
         }
+        \resizebox{\textwidth}{!}{%
         \begin{tabular}{l c c c c c c c c}
         \toprule
-        6D object pose estimation method &Input type&Training type&$AR\uparrow$&$AR_{VSD}\uparrow$&$AR_{MSSD}\uparrow$&$AR_{MSPD}\uparrow$&Time (sec)$\downarrow$\\       %表格第一行，&的位置对齐
+        6D 物体位姿估计方法 & 输入类型 & 训练类型&$AR\uparrow$&$AR_{VSD}\uparrow$&$AR_{MSSD}\uparrow$&$AR_{MSPD}\uparrow$&时间(s)$\downarrow$\\       %表格第一行，&的位置对齐
         \midrule
         CDPNv2~\cite{li2019cdpn}&RGB&pbr&53.2&39.6&57.0&63.1&0.143 \\
         CosyPose~\cite{labbe2020cosypose}&RGB&pbr&57.4&51.6&55.4&65.3&0.342\\
@@ -22,5 +23,6 @@
         FFB6D~\cite{he2021ffb6d}&RGBD&pbr&75.1&70.6&82.7&74.0&0.199\\
         \bottomrule
         \end{tabular}
-\label{tab:ycbv_bop}
-\end{sidewaystable}
+        }
+\label{tab:ca_ycbv_bop}
+\end{table}

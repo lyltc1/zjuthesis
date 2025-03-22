@@ -1,8 +1,9 @@
 \begin{table}
   \centering
+  \caption{YCB-V数据集上ADD(-S)与AUC评估结果}
   \begin{tabular}{@{}l|c|c|c@{}}
     \toprule
-     Method & ADD(-S) & \makecell{AUC of\\ADD-S} & \makecell{AUC of\\ADD(-S)} \\
+     方法 & ADD(-S) & \makecell{AUC of\\ADD-S} & \makecell{AUC of\\ADD(-S)} \\
     \midrule
     SegDriven\cite{2019segmentation} & 39.0 &  - &  -  \\
     SingleStage\cite{hu2020single} & 53.9 &  - &  - \\
@@ -11,8 +12,8 @@
     GDR-Net~\cite{wang2021gdr} & 60.1 & 91.6 &  84.4 \\
     SO-Pose~\cite{di2021so} & 56.8 &  90.9 &  83.9 \\
     ZebraPose~\cite{su2022zebrapose} & 80.5 &  90.1 & 85.3  \\
+    SymNet(Ours) & 74.66 & 
     \bottomrule
   \end{tabular}
-  \caption{\textbf{Comparison on YCB-V}. We compare with state of the art w.r.t ADD(-S), AUC of ADD(-S) and AUC of ADD-S in \%. (-) denotes results missing from the original paper.}
   \label{tab:ycbv_results_table}
 \end{table}

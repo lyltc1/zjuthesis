@@ -1,30 +1,61 @@
 \section{方法}
 
-% 本节详细描述了我们提出的基于轮廓对齐的6D物体姿态估计的细化方法。该过程包括使用可见和完整掩码提取CoI，并基于CoI细化姿态估计。
+本节详细描述了我们提出的基于轮廓对齐的6D物体位姿估计的优化方法。该过程包括使用可见和完整掩码提取感兴趣轮廓（Contour of Interest，CoI），并基于CoI优化位姿估计。
 
-\subsection{概述}
+\subsection{方法架构}
 
-给定一个具有已知相机内参$K$的RGB图像和一组物体的CAD模型，我们的目标是估计每个物体的姿态。姿态包括旋转矩阵$\mathbf{R} \in SO(3)$和平移向量$\mathbf{t} \in \mathbb{R}^3$。定量结果请参见\autoref{fig:quantitative results}。
+给定一个具有已知相机内参$K$的RGB图像和一组物体的CAD模型，我们的目标是估计每个物体的位姿。位姿通过旋转矩阵$\mathbf{R} \in SO(3)$和平移向量$\mathbf{t} \in \mathbb{R}^3$进行描述。
 
-与其他需要两个独立网络的方法\cite{labbe2020cosypose}相比，我们的方法依赖于一个单一网络进行初始姿态估计和细化。整个过程的概述请参见\autoref{fig: overview}。细化过程涉及迭代调整初始姿态$\mathbf{T}_0=[\mathbf{R}_0|\mathbf{t}_0]$，从而得到后续的姿态$\mathbf{T}_1, \mathbf{T}_2$，等等。
+与其他需要两个独立网络的方法\cite{labbe2020cosypose}相比，我们的方法通过一个网络实现初始位姿估计和优化。整个过程的概述请参见\autoref{fig:ca_overview}。在初始过程中，我们通过检测器提取RGB图像中的RoI区域，接着通过编码网络得到物体的完整掩码，可见部分掩码以及其他特征。通过完整掩码和可见部分掩码，我们通过图形学处理的方式得到CoI。通过解码器可以得到物体的初始位姿$\mathbf{T}_0$。优化过程涉及迭代调整初始位姿$\mathbf{T}_0=[\mathbf{R}_0|\mathbf{t}_0]$，从而得到后续的位姿$\mathbf{T}_1$，$\mathbf{T}_2$，等等。
 
-% 完整掩码$\mathbf{M}_\text{amo}$包含整个物体区域而不考虑遮挡，而可见掩码$\mathbf{M}_\text{vis}$仅表示图像中可见的物体区域。
-
-在本工作中，我们将像素$\mathbf{p} = [u, v]$描述为图像中像素的坐标。此外，我们将3D物体顶点定义为$\mathbf{P}=[X, Y, Z] \in \mathbb{R}^3$。为了方便起见，我们也使用相同的符号$\mathbf{P}$表示$\mathbf{P}$的齐次形式，表示为$\mathbf{P}=[X, Y, Z, 1]$。此外，默认情况下，一维向量被假定为列向量。
-
-\begin{figure}[thbp]
+\begin{figure}[htbp]
     \centering
-    \begin{overpic}[width=0.45\textwidth]{figure/ca/CoI.jpg}
-        \put (1,1) {感兴趣轮廓}
-        \put (1, 27) {可见掩码}
-        \put (1, 53) {完整掩码}
+    \begin{overpic}[width=1.0\textwidth]{figure/ca/process.jpg}
+        \put (10, 5) {RGB图像}
+        \put (30, 3.5) {\scriptsize 其他特征}
+        \put (30, 13) {\scriptsize 可见掩码}
+        \put (30, 23) {\scriptsize 完整掩码}
+        \put (2, 39) {检测器}
+        \put (15, 28.5) {RoI}
+        \put (29.5, 39) {\shortstack{编码器}}
+        \put (25, 45) {初始过程}
+        \put (47, 5) {\shortstack{解码器}}
+        \put (50, 15) {$\mathbf{T}_0$}
+        \put (50, 30) {$\mathbf{C}_\text{ren}$}
+        \put (50, 40.5) {CoI}
+        \put (73, 45) {优化过程}
+        \put (71, 4.5) {$\mathbf{T}_n$}
+        \put (66.5, 19) {迭代$n$}
+        \put (66.5, 30.5) {迭代$2$}
+        \put (66.5, 40) {迭代$1$}
+        \put (81.5, 26) {$\mathbf{T}_2$}
+        \put (81.5, 37) {$\mathbf{T}_1$}
+        \put (92, 25) {$\mathbf{C}_\text{ren}$}
+        \put (92, 36.5) {$\mathbf{C}_\text{ren}$}
     \end{overpic}
-    \caption{\textbf{感兴趣轮廓（CoI）。} \normalsize{\textcircled{\scriptsize{1}}}\enspace CoI; \normalsize{\textcircled{\scriptsize{2}}}\enspace 由遮挡生成的轮廓; \normalsize{\textcircled{\scriptsize{3}}}\enspace 由于遮挡不可见的轮廓。}
-    \label{fig:CoI}
+    \caption{方法概览}
+    \label{fig:ca_overview}
 \end{figure}
 
+完整掩码$\mathbf{M}_\text{all}$表示整个物体的区域，不受遮挡影响，而可见掩码$\mathbf{M}_\text{vis}$仅表示图像中可见的物体部分。
+
+在本研究中，我们使用像素坐标$\mathbf{p} = [u, v]$来描述图像中的像素位置。此外，3D物体的顶点表示为$\mathbf{P}=[X, Y, Z] \in \mathbb{R}^3$。为了简化表示，我们也使用相同的符号$\mathbf{P}$来表示其齐次形式，即$\mathbf{P}=[X, Y, Z, 1]$。默认情况下，一维向量被假定为列向量。
+
+% 。 \ding{172}\enspace CoI; \ding{173}\enspace 由遮挡生成的轮廓; \ding{174}\enspace 由于遮挡不可见的轮廓。
+
 \subsection{感兴趣轮廓}
-在最近的研究中，可见掩码通常被用作辅助变量，通常表示为大小为$H \times W$的特征图，范围在0到1之间。很容易将层扩展为同时包含可见掩码和完整掩码，大小为$H \times W$。通过二值化可见掩码$\mathbf{M}_\text{vis}$和完整掩码$\mathbf{M}_\text{all}$，并使用OpenCV中的边缘提取算法\cite{itseez2015opencv}，我们可以提取可见掩码的轮廓$\mathbf{C}_\text{vis}$以及完整掩码的轮廓$\mathbf{C}_\text{all}$。CoI定义为可见掩码轮廓$\mathbf{C}_\text{vis}$和完整掩码轮廓$\mathbf{C}_\text{all}$的交集。数学上，CoI可以表示为$\text{CoI} = \mathbf{C}_\text{vis} \cap \mathbf{C}_\text{all}$。为了确定可见轮廓$\mathbf{C}_\text{vis}$中的像素$\mathbf{p}_\text{vis}$是否属于CoI，我们迭代每个像素并检查它是否存在于$\mathbf{C}_\text{all}$中，过程如\autoref{fig:CoI}所示。
+在最近的研究中，可见掩码通常被用作辅助变量，通常表示为大小为$H \times W$的特征图，范围在0到1之间。通过拓展掩码输出层的参数，将输出层扩展为同时包含可见掩码和完整掩码，大小为$H \times W$。通过二值化可见掩码$\mathbf{M}_\text{vis}$和完整掩码$\mathbf{M}_\text{all}$，并使用OpenCV中的边缘提取算法\cite{itseez2015opencv}，我们可以提取可见掩码的轮廓$\mathbf{C}_\text{vis}$以及完整掩码的轮廓$\mathbf{C}_\text{all}$。CoI定义为可见掩码轮廓$\mathbf{C}_\text{vis}$和完整掩码轮廓$\mathbf{C}_\text{all}$的交集。数学上，CoI可以表示为$\text{CoI} = \mathbf{C}_\text{vis} \cap \mathbf{C}_\text{all}$。为了确定可见轮廓$\mathbf{C}_\text{vis}$中的像素$\mathbf{p}_\text{vis}$是否属于CoI，我们迭代每个像素并检查它是否存在于$\mathbf{C}_\text{all}$中，过程如\autoref{fig:ca_CoI}所示，图中\ding{172}\enspace 为 CoI; \ding{173}\enspace 是由遮挡生成的轮廓; \ding{174}\enspace 是由于遮挡不可见的轮廓。对于可见轮廓$\mathbf{C}_\text{vis}$以及完整掩码的轮廓$\mathbf{C}_\text{all}$包含的像素坐标较少时，我们直接使用双重循环进行遍历，检测是否能够找到$(\mathbf{p}_\text{vis} - \mathbf{p}_\text{all})^2 < \delta^2$。其中$\delta$为阈值，此时算法复杂度为$O(n^2)$。若可见轮廓$\mathbf{C}_\text{vis}$以及完整掩码的轮廓$\mathbf{C}_\text{all}$包含像素过多，则可以先把完整轮廓$\mathbf{C}_\text{all}$通过二维的形式存储在图像中，通过遍历可见轮廓$\mathbf{C}_\text{vis}$坐标周围的像素点坐标是否有完整轮廓来实现$O(n)$的算法。
+
+\begin{figure}[htbp]
+    \centering
+    \begin{overpic}[width=0.6\textwidth]{figure/ca/CoI.jpg}
+        \put (2, 1) {\small 感兴趣轮廓}
+        \put (3.5, 27) {\small 可见掩码}
+        \put (3.5, 53) {\small 完整掩码}
+    \end{overpic}
+    \caption{感兴趣轮廓（CoI）生成过程}
+    \label{fig:ca_CoI}
+\end{figure}
 
 \subsection{基于轮廓对齐的细化}
 
@@ -38,8 +69,7 @@
 \end{equation}
 在这个方程中，变量$f_x$和$f_y$对应焦距，而$c_x$和$c_y$表示主点的坐标。术语$\mathbf{P}_C$指的是相机坐标系中的顶点。
 
-模型坐标系中的顶点可以使用齐次形式轻松转换到相机坐标系中，如下所示：
-
+\par 模型坐标系中的顶点可以使用齐次形式转换到相机坐标系中，如下所示：
 \begin{equation}
 \mathbf{P}_C = \mathbf{T}\mathbf{P}_M=
 \begin{bmatrix}
@@ -48,7 +78,6 @@
 \end{bmatrix}
 \mathbf{P}_M
 \end{equation}
-
 这里，$\mathbf{P}_M$表示在模型坐标系中表示的3D模型顶点。
 
 我们使用向量$\mathbf{\theta}_r \in \mathbb{R}^3$表示旋转变化，使用向量$\mathbf{\theta}_t \in \mathbb{R}^3$表示平移变化。对于姿态的小变化，我们推导出更新方程如下：
@@ -85,7 +114,6 @@
 \mathbf{P}_M
 \label{eq:update_pc}
 \end{equation}
-
 这里，$P_C'$表示相机坐标系中更新后的模型顶点。
 
 对于每个点$\mathbf{p}_i=[p_{ui}, p_{vi}] \in \mathbf{C}_{pri}$，我们将在渲染轮廓$\mathbf{C}_{ren}$中找到最近的点$\mathbf{r}_i=[r_{ui}, r_{vi}]$。误差模型定义如下：
@@ -103,7 +131,7 @@
 \end{equation}
 这里，$\xi=[\mathbf{\theta}_r \  \mathbf{\theta}_t] \in \mathbb{R}^6$。
 
-第一个术语可以使用相机模型\autoref{eq:camera}和误差模型\autoref{eq:error}推导出来。为了简化公式，我们将省略下标$i$。
+第一项可以使用相机模型\autoref{eq:camera}和误差模型\autoref{eq:error}推导出来。为了简化公式，我们将省略下标$i$。
 
 \begin{equation}
 \frac{\partial e}{\partial \mathbf{P}_C'}=
@@ -116,7 +144,7 @@
 \label{eq:dedPC}
 \end{equation}
 
-第二个术语可以从更新方程\autoref{eq:update_rt}和\autoref{eq:update_pc}推导出来。
+第二项可以从更新方程\autoref{eq:update_rt}和\autoref{eq:update_pc}推导出来。
 
 \begin{equation}
     \frac{\partial \mathbf{P}_C'}{\partial \mathbf{\xi}}=
@@ -128,7 +156,7 @@
 
 \subsection{优化}
 
-对于单步细化，使用带有Tikhonov正则化的牛顿优化计算更新向量，可以表示为：
+对于单步优化，使用带有Tikhonov正则化的牛顿优化计算更新向量，可以表示为：
 \begin{equation}
 \mathbf{\delta \xi} = 
   \left( 
@@ -143,11 +171,11 @@ $\mathbf{g}$和$\mathbf{H}$分别表示梯度向量和Hessian矩阵，定义如�
     \mathbf{g} = \sum_{i}\frac{\partial e_i}{\partial \delta \mathbf{\xi}}, \ \ \mathbf{H} = \mathbf{g} \mathbf{g}^T
 \label{eq:gH}
 \end{equation}
-和$\lambda$是正则化参数。
+其中，$\lambda$是正则化参数。
 
 我们算法的伪代码简要概述在\autoref{alg:refinement}中。
 
-\begin{algorithm}[!h]
+\begin{algorithm}[!ht]
     \caption{渲染和优化过程}
     \label{alg:refinement}
     \renewcommand{\algorithmicrequire}{\textbf{输入:}}
@@ -175,8 +203,8 @@ $\mathbf{g}$和$\mathbf{H}$分别表示梯度向量和Hessian矩阵，定义如�
 
 \subsection{实现细节}
 
-过程图概述如\autoref{fig: overview}所示。我们的实现基于SymNet\cite{symnet}，这是一种单目6D姿态估计方法，生成初始姿态$T_0$，并提供可见掩码$\mathbf{M}_\text{vis}$和完整掩码$\mathbf{M}_\text{all}$。最初，我们利用检测器分析RGB图像并提取感兴趣区域（RoI）。然后使用编码器模块生成完整掩码、可见掩码和解码器模块所需的其他特征。解码器模块生成初始姿态$\mathbf{T}_0$。在细化过程中，$\mathbf{C}_\text{ren}$根据当前姿态迭代计算，并随后更新姿态参数。
+如\autoref{fig:ca_overview}所示，我们的方法基于上一章的SymNet网络生成初始姿态$\mathbf{T}_0$，并提供可见掩码$\mathbf{M}_\text{vis}$和完整掩码$\mathbf{M}_\text{all}$。首先，检测器分析RGB图像并提取感兴趣区域（RoI）。随后，编码器模块生成完整掩码、可见掩码以及解码器模块所需的其他特征。解码器模块生成初始位姿$\mathbf{T}_0$。在优化过程中，根据当前姿态迭代计算$\mathbf{C}_\text{ren}$并更新位姿参数。
 
-我们使用CoI的所有点进行优化，总共约200个点。默认情况下，我们选择Tikhonov参数$\lambda = 10^4$，在细化过程中，我们采用提前停止，这意味着如果使用\autoref{eq:error}计算的误差不减少，则优化过程终止。
+优化过程中，我们使用CoI的所有点，总计约200个点。默认情况下，Tikhonov参数设置为$\lambda = 10^4$。采用提前停止策略，即当\autoref{eq:error}计算的误差不再减少时，终止优化。
 
-值得一提的是，我们的方法也可以应用于其他先进技术，如ZebraPose\cite{su2022zebrapose}或GDR-net\cite{wang2021gdr}，只需进行少量修改，即可输出可见掩码和完整掩码。
+值得注意的是，我们的方法可扩展至其他先进技术，如ZebraPose\cite{su2022zebrapose}或GDR-net\cite{wang2021gdr}，仅需少量修改即可输出可见掩码和完整掩码。
