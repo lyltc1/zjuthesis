@@ -82,6 +82,6 @@ Loss = L_\text{mask}^{PCN} + \alpha L_\text{code}^{PCN} + L_\text{mask}^{CNN} + 
 
 对于网络骨干，我们采用了最近的ConvNext架构，如ConvNext~\cite{Liu2022ACF}所述，该架构基于ResNet~\cite{He2015DeepRL}。ConvNext展示了与Vision Transformer~\cite{Dosovitskiy2020AnII}相当的性能，同时保持了ResNet的效率和简洁性。
 
-我们使用Adam优化器~\cite{Kingma2014AdamAM}，以固定的学习率$1e-4$，批量大小为32，训练我们的网络$380K$次迭代。在训练过程中，我们对RGB图像应用了ZebraPose~\cite{su2022zebrapose}中的增强方法，并对深度图应用了MegaPose\cite{Labbe2022MegaPose6P}中的深度增强方法。我们的训练数据集由BOP挑战赛~\cite{hodan2024bop}提供，仅包含合成图像。我们旨在证明我们的方法可以有效地弥合模拟数据和真实数据之间的域间差距。
+我们使用Adam优化器~\cite{Kingma2014AdamAM}，以固定的学习率$1e-4$，批量大小为32，训练我们的网络$380K$次迭代。在训练过程中，我们对RGB图像应用了ZebraPose~\cite{su2022zebrapose}中的增强方法，并对深度图应用了MegaPose\cite{Labbe2022MegaPose6P}中的深度增强方法。我们的训练数据集由BOP挑战赛~\cite{hodan2024bop}提供，仅包含仿真图像。我们的方法可以有效地弥合仿真数据和真实数据之间的域间差距。
 
-在推理阶段，我们仅使用PCN分支的输出。前景顶点的二进制编码通过查找表确定在物体坐标系中的对应坐标。随后，使用RANSAC-Kabsch求解器计算最终的姿态。
+在推理阶段，我们仅使用PCN分支的输出。前景顶点的二进制编码通过查找表确定在物体坐标系中的对应坐标。随后，使用RANSAC-Kabsch求解器计算最终的位姿。

@@ -10,8 +10,8 @@
     \end{aligned}
     \right.
 \end{equation}
+其中 下标$(\cdot)_{\min}$ 表示该分量的最小值，下标$(\cdot)_{\max}$ 表示该分量的最大值。
 
-其中 $(\cdot)_{\min}$ 表示该分量的最小值，$(\cdot)_{\max}$ 表示该分量的最大值。
 \begin{figure}[ht]
     \centering
     \includegraphics[width=0.75\linewidth]{hipose/坐标颜色映射.png}
@@ -23,7 +23,7 @@ ZebraPose~\cite{su2022zebrapose}第一次提出使用离散的物体表面编码
 
 首先，使用聚类算法迭代地将物体表面网格划分为两个部分，并为每个组分配一个比特，如\autoref{fig:聚类过程}所示。聚类步骤1将整个物体表面划分为 \ding{172} 和\ding{173} 两个部分。聚类步骤2将\ding{172}表面划分为\ding{172} 和\ding{173} 两个部分并把\ding{173}划分为\ding{174}和\ding{175}两个部分。聚类步骤3将\ding{172}划分为 \ding{172} 和\ding{173} 两个部分，以此类推。
 
-\begin{figure}[ht]
+\begin{figure}[htbp]
     \centering
     \includegraphics[width=0.75\linewidth]{hipose/聚类过程.png}
     \caption{聚类过程}
@@ -32,14 +32,14 @@ ZebraPose~\cite{su2022zebrapose}第一次提出使用离散的物体表面编码
 
 即在第 $j, j \in \{1, \ldots, d\}$ 次表面划分迭代后，我们有 $2^{j}$ 个独立的子表面。假设一个表面包含 $L$ 个顶点，使用平衡 k-means 进行划分，结果是两个子表面分别包含 $\lfloor L/2 \rfloor$ 和 $L-\lfloor L/2 \rfloor$ 个顶点。\autoref{fig:聚类结果}展示了聚类步骤2和聚类步骤3将物体表面进行划分的结果。
 
-\begin{figure}[ht]
+\begin{figure}[htbp]
     \centering
     \includegraphics[width=0.5\linewidth]{hipose/聚类结果.png}
     \caption{聚类结果}
     \label{fig:聚类结果}
 \end{figure}
 
-我们将每次划分的两个子表面分别用0和1进行编码表示，将聚类步骤1到聚类步骤 $j$ 的编码组成一个二进制串作为该表面的划分编码。\autoref{fig:灰度图}展示了聚类过程中的编码，每一幅图中将二进制的$(0...0)_2$用黑色表示，$(1...1)_2$用白色表示。其他二进制数用相对应的灰度值进行可视化。
+我们将每次划分的两个子表面分别用0和1进行编码表示，将聚类步骤1到聚类步骤 $j$ 的编码组成一个二进制串作为该表面的划分编码。\autoref{fig:灰度图}展示了聚类过程中的编码，每一幅图中将二进制的$(0...0)_2$用黑色表示，$(1...1)_2$用白色表示。其他二进制数用相对应的灰度值进行可视化。下标表示二进制编码。
 
 \begin{figure}[ht]
     \centering

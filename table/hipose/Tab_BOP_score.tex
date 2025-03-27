@@ -1,20 +1,22 @@
-\begin{sidewaystable}
+\begin{table}
   \centering
+  \resizebox{\textwidth}{!}{%
   \begin{tabular}{l|c|c|c|c|c|c|c}
     \toprule
-     \textbf{Method} & training data & Refinement & LM-O & YCB-V & T-LESS & mean & time(sec) \\
+     方法 & 训练数据 & 后优化方法 & LM-O & YCB-V & T-LESS & 均值 & 时间(秒) \\
     \midrule
     FFB6D-CVPR21-PBR-NoRefinement\cite{he2021ffb6d} & PBR &  - & 68.7 &  75.8  & - & 72.3$^*$ & 0.19$^*$\\
     RCVPose 3D\_SingleModel\_VIVO\_PBR\cite{wu2022vote} & PBR &  ICP~\cite{Rusinkiewicz2001EfficientVO} & 72.9 &  84.3  & 70.8 & 76.0 & 1.33\\
-    SurfEmb-PBR-RGBD\cite{haugaard2022surfemb} & PBR &  custom~\cite{Haugaard2021SurfEmbDA} & 76.0 &  79.9  & 82.8 & 79.6 & 9.04\\
+    SurfEmb-PBR-RGBD\cite{haugaard2022surfemb} & PBR & custom\cite{haugaard2022surfemb} & 76.0 &  79.9  & 82.8 & 79.6 & 9.04\\
     RADet+PFA-PBR-RGBD\cite{Hai2023RigidityAwareDF} & PBR &  PFA~\cite{hu2022perspective} & 79.7 &  82.6  & 80.2 & 80.8 & 2.63\\
     GDRNPP-PBR-RGBD-MModel\cite{liu2022gdrnpp_bop} & PBR &  $\sim$CIR~\cite{lipson2022coupled} & 77.5 &  90.6  & \textbf{85.2} & 84.4 & 6.37\\
-    HiPose (ours) & PBR &  - & \textbf{79.9} &  \textbf{90.7}   & 83.3 & \textbf{84.6} & \textbf{0.16}\\
+    HiPose (本章) & PBR &  - & \textbf{79.9} &  \textbf{90.7}   & 83.3 & \textbf{84.6} & \textbf{0.16}\\
     \bottomrule
   \end{tabular}
+  }
   \caption{在BOP挑战赛上的对比结果}
   \label{tab:bop_score_table}
-\end{sidewaystable}
+\end{table}
 
 
 

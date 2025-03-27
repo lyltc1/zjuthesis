@@ -1,14 +1,15 @@
-\begin{sidewaystable}
+\begin{table}
   \centering
+  \resizebox{\textwidth}{!}{%
   \begin{tabular}{c|c|c|c|c|c|c|c}
     \toprule 
-    \multirow{2}{*}{Method} & \multicolumn{2}{c|}{RGB Input} & \multicolumn{5}{c}{RGB-D Input} \\ 
+    \multirow{2}{*}{方法} & \multicolumn{2}{c|}{RGB 输入方法} & \multicolumn{5}{c}{RGB-D 输入方法} \\ 
          \cline{2-8}
-      & GDR-Net~\cite{wang2021gdr} 
-& ZebraPose~\cite{su2022zebrapose}&  PR-GCN~\cite{Zhou2021PRGCNAD} 
-&  FFB6D~\cite{he2021ffb6d} 
-& RCVPose~\cite{wu2022vote} 
-& DFTr~\cite{zhou2023deep} &\textbf{Ours}\\
+      & GDR-Net\cite{wang2021gdr} 
+& ZebraPose\cite{su2022zebrapose}&  PR-GCN\cite{Zhou2021PRGCNAD} 
+&  FFB6D\cite{he2021ffb6d} 
+& RCVPose\cite{wu2022vote} 
+& DFTr\cite{zhou2023deep} &本文方法\\
     \midrule
      ape & 46.8 
 & 57.9& 40.2 
@@ -51,10 +52,11 @@
 & 75.2 
 & 86.8 &  95.2  \\
      \hline
-     mean & 62.2 & 76.9&  65.0 &  66.2 &  70.2 & 77.7 & \textbf{89.6}\\
+     均值 & 62.2 & 76.9&  65.0 &  66.2 &  70.2 & 77.7 & \textbf{89.6}\\
     \bottomrule
   \end{tabular}
+  }
   \caption{LM-O数据集上ADD-S对比结果}
   \label{tab:lmo_results_table_}
-\end{sidewaystable}
+\end{table}
 

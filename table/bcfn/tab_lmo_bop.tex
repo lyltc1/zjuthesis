@@ -1,21 +1,23 @@
 \begin{table}[htbp]
         \centering
         \caption{
-                BOP results on dataset LM-O. The time is the runtime per image averaged over the dataset.
+                LM-O 数据集上的 BOP 结果
         }
+        \resizebox{\textwidth}{!}{%
         \begin{tabular}{l c c c c c c c c}
         \toprule
-        6D object pose estimation method &Input type&Training type&$AR\uparrow$&$AR_{VSD}\uparrow$&$AR_{MSSD}\uparrow$&$AR_{MSPD}\uparrow$&Time (sec)$\downarrow$\\
+        6D 物体位姿估计方法 & 输入类型 & 训练类型 &$AR\uparrow$&$AR_{VSD}\uparrow$&$AR_{MSSD}\uparrow$&$AR_{MSPD}\uparrow$&时间 (秒)$\downarrow$\\
         \midrule
-        CDPNv2~\cite{li2019cdpn} & RGB-D & pbr & 	63.0	&46.9&	68.9&	73.1&	0.506 \\
-        FFB6D~\cite{he2021ffb6d} & RGB-D & pbr & 68.7 & 55.0 & 71.8	& 79.2	& 0.189 \\
-        DPODv2~\cite{shugurov2021dpodv2} & RGB-D & pbr & 70.0&	56.5&	74.8&	78.8&	0.334 \\
-        CosyPose~\cite{labbe2020cosypose} & RGB-D & pbr & 71.4 &	56.7 &	74.8 &	82.6 &	8.289 \\
-        CIR~\cite{lipson2022cir} & RGB-D & pbr & 	73.4	&60.1&	77.8&	82.4	&-1.000 \\
-        SurfEmb~\cite{haugaard2022surfemb} & RGB-D & pbr &	76.0&	61.5&	80.9&	85.6&	11.943 \\
+        CDPNv2\cite{li2019cdpn} & RGB-D & pbr & 	63.0	&46.9&	68.9&	73.1&	0.506 \\
+        FFB6D\cite{he2021ffb6d} & RGB-D & pbr & 68.7 & 55.0 & 71.8	& 79.2	& 0.189 \\
+        DPODv2\cite{Shugurov2021DPODv2} & RGB-D & pbr & 70.0&	56.5&	74.8&	78.8&	0.334 \\
+        CosyPose\cite{labbe2020cosypose} & RGB-D & pbr & 71.4 &	56.7 &	74.8 &	82.6 &	8.289 \\
+        CIR\cite{lipson2022coupled} & RGB-D & pbr & 	73.4	&60.1&	77.8&	82.4	&-1.000 \\
+        SurfEmb\cite{haugaard2022surfemb} & RGB-D & pbr &	76.0&	61.5&	80.9&	85.6&	11.943 \\
         \midrule
         BCFN (Ours) & RGB-D& pbr & 75.7 & 60.4 & 81.3 & 85.5 & 0.197\\
         \bottomrule
         \end{tabular}
+        }
 \label{tab:lmo_bop}
 \end{table}

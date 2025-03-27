@@ -182,7 +182,7 @@
 \begin{equation}
     Loss = L_\text{masks} + L_\text{code} + L_\text{params} + L_\text{ADD-S}
 \end{equation}
-$L_\text{params}$ 对应于端到端训练的损失，使用$L1$损失来处理 $\mathbf{R}_{6d}$ 和 $\mathbf{t}_\text{SITE}$。此外，$L_\text{ADD-S}$ 项源自PoseCNN的工作~\cite{xiang2018posecnn}。
+$L_\text{params}$ 对应于端到端训练的损失，使用$L1$损失来处理 $\mathbf{R}_{6d}$ 和 $\mathbf{t}_\text{SITE}$。此外，$L_\text{ADD-S}$ 项源自PoseCNN的工作\cite{ycbv}。
 
 在训练过程中，所有损失同时进行训练，没有任何参数被冻结。在我们的初步实验中，我们还探索了一种非端到端的训练策略，其中 $L_\text{masks} + L_\text{code}$ 用于训练二进制编码模块，而 $L_\text{params} + L_\text{ADD-S}$ 仅用于训练 CPR 模块；然而，这导致了结果的轻微下降。
 

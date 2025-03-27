@@ -2,22 +2,22 @@
   \centering
   \begin{tabular}{@{}c|c|c@{}}
     \toprule
-     A0 &Kabsch& 86.65 \\
-     A1 &RANSAC+ Kabsch& 89.12 \\
-     A2 &Our Hierarchical Pruning &\textbf{89.62}\\
+     A0 &Kabsch算法& 86.65 \\
+     A1 &RANSAC+ Kabsch算法& 89.12 \\
+     A2 &层次化剪枝算法 &\textbf{89.62}\\
      \midrule
-     B0 &Trust Bit Threshold 0.08& 89.55 \\
-     B1 &Trust Bit Threshold 0.06& 89.61 \\
-     B2 &Trust Bit Threshold 0.04& 89.59 \\
+     B0 &信任位阈值 0.08& 89.55 \\
+     B1 &信任位阈值 0.06& 89.61 \\
+     B2 &信任位阈值 0.04& 89.59 \\
      \midrule
-     C0 &Inlier Threshold: median $\rightarrow$ mean & 89.47 \\
+     C0 &内点阈值选择方式: 中位数 $\rightarrow$ 均值 & 89.47 \\
      \midrule
-     D0 & ConvNext-B~\cite{Liu2022ACF} $\rightarrow$ ResNet34~\cite{He2015DeepRL} & 88.64 \\
+     D0 & ConvNext-B\cite{Liu2022ACF} $\rightarrow$ ResNet34\cite{He2015DeepRL} & 88.64 \\
      \midrule
      E0 & ZebraPose(pbr)+RANSAC Kabsch&87.0\\
      E1 & ConcatRGBD+RANSAC Kabsch&84.5\\
     \bottomrule
   \end{tabular}
   \caption{在LM-O数据集上的消融实验}
-  \label{tab:ablation_study}
+  \label{tab:hipose_ablation_study}
 \end{table}

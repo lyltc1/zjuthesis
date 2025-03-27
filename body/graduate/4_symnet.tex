@@ -5,3 +5,6 @@
 \inputbody{4_1_symnet_introduction.tex}
 \inputbody{4_2_symnet_method.tex}
 \inputbody{4_3_symnet_experiment.tex}
+
+\section{本章小结}
+本章提出了一种从单张RGB图像中估计物体6D位姿的方法，这一任务在处理对称物体时更具挑战性。传统方法通常在图像像素与3D物体表面观测点之间建立一对一的对应关系，但这种做法在对称物体上引入了歧义性。为了解决这一问题，我们提出了SymCode，一种对称感知的表面编码方法。SymCode基于一对多的对应关系对物体表面顶点进行编码，有效消除了单一对应关系带来的歧义问题。此外，我们还引入了SymNet，一个快速的端到端深度学习网络。SymNet能够直接回归6D位姿参数，而无需通过PnP问题进行求解，从而显著提升了位姿估计的效率与准确性。
