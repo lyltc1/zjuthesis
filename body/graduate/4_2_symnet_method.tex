@@ -1,4 +1,4 @@
-\section{方法}
+\section{方法}\label{symnet_方法}
 
 \par 本节系统阐述基于一对多对应关系与对称感知的6D物体位姿估计方法。该方法旨在突破传统一对一对应方法在对称模糊性问题上的局限性，通过将传统二进制编码方案（已在单目对应方法中验证有效性\cite{2024hipose, su2022zebrapose}）拓展至一对多对应编码，构建对称感知的编码方式。经过网络端到端学习后，该编码可直接解码生成最终位姿预测结果，无需依赖RANSAC算法及基于渲染的后处理流程。
 
@@ -40,7 +40,7 @@
 \label{eq:projection_one_to_many}
 \end{equation}
 
-\par $\mathbf{T}_k$ 是所有可能的真实姿态。
+\par $\mathbf{T}_k$ 是所有可能的真值位姿。
 我们定义了一对多对应关系集 $\mathbf{O}_\text{sym} = \{\mathbf{o}_1, \mathbf{o}_2, ..., \mathbf{o}_m\}$，包含 $m$ 个一对多对应关系，其中 $\mathbf{o}_r = (\mathbf{p}_i, \mathbf{Y}_j)$。
 \autoref{fig:many_many_corres}展示了立方体和圆柱体的一对多对应关系。图中用相同的颜色纹理表示3D点属于相同的一对多对应关系。\autoref{fig:many_many_corres}左图假设立方体只有沿z轴旋转0度、90度、180度和270度的4种对称性，蓝色线条和绿色线条分别展示了角和侧面中心的两组一对多对应关系。不可见部分用虚线，可见部分用实线。\autoref{fig:many_many_corres}右图：展示了圆柱体的一对多对应关系，其中侧面和顶部表面的两个特定一对多对应关系用线条表示。
 
@@ -135,14 +135,14 @@
 \end{equation}
 
 如\autoref{fig:SymCode生成过程}(e)所示，该物体的主顶点由彩色顶点表示。在对应关系中，只有一个顶点不是对称的，它将作为主顶点，颜色为绿色。
-对于连续对称性，主顶点（红色）位于通过~\autoref{eq:rotation_projection}计算的平面上。
+对于连续对称性，主顶点（红色）位于通过\autoref{eq:rotation_projection} 计算的平面上。
 对于2重对称性，坐标值较高部分的顶点将作为主顶点，颜色为蓝色。
 
-\textbf{迭代编码生成 } 这一部分的灵感来自于一对一对应方法中使用的二进制编码\cite{su2022zebrapose}。ZebraPose\cite{su2022zebrapose} 构建了一个包含 $N$ 个物体模型顶点的二进制编码，定义了唯一对应于顶点 $\mathbf{P}_j$ 的 $d$ 位二进制代码 $\mathbf{c}_{j}$。二进制编码是通过迭代构建的，在每一步中将网格分成相等数量的顶点，并为每组分配一个位。在表面划分的第 $it$ 次迭代中，$it \in \{0, 1, \text{\textellipsis}, d-1\}$，我们有 $2^{it+1}$ 个独立的子组。给定一组顶点，划分是通过平衡的 k-means 进行的，结果形成两个子组。对于非对称物体，一对多对应关系等同于一对一对应关系，因为没有由于对称性引起的歧义。
+\textbf{迭代编码生成 } 迭代编码的灵感来自于一对一对应方法中使用的二进制编码\cite{su2022zebrapose}。ZebraPose\cite{su2022zebrapose} 构建了一个包含 $N$ 个物体模型顶点的二进制编码，定义了唯一对应于顶点 $\mathbf{P}_j$ 的 $d$ 位二进制编码 $\mathbf{c}_{j}$。二进制编码是通过迭代构建的，在每一步中将网格分成相等数量的顶点，并为每组分配一个位。在表面划分的第 $it$ 次迭代中，$it \in \{0, 1, \text{\textellipsis}, d-1\}$，我们有 $2^{it+1}$ 个独立的子组。给定一组顶点，划分是通过平衡的 k均值聚类（k-means）进行的，结果形成两个子组。对于非对称物体，一对多对应关系等同于一对一对应关系，因为没有由于对称性引起的歧义。
 
-给定一对多对应关系集，我们希望用一个二进制代码 $\mathbf{c}_i \in {0, 1}^d$ 来表示每个对应关系 $\mathbf{o}_i$，其中 $d$ 是二进制代码的长度。我们基于每个对应关系的主顶点构建这样的编码。
+给定一对多对应关系集，我们希望用一个二进制编码 $\mathbf{c}_i \in {0, 1}^d$ 来表示每个对应关系 $\mathbf{o}_i$，其中 $d$ 是二进制编码的长度。我们基于每个对应关系的主顶点构建这样的编码。
 
-在\autoref{fig:SymCode生成过程}(e)中，我们展示了执行 $d$ 次主顶点分组迭代的过程。分组迭代从所有主顶点的集合 $G$ 开始。对于具有二进制代码 $\mathbf{c}_i$ 的组 $G_{i}$，我们使用 k-means 将其分成两组。结果组被分配代码 $\mathbf{c}_i \ll 1$ 和 $(\mathbf{c}_i \ll 1) + 1$，其中操作 $\ll$ 表示二进制左移。最终，我们获得 $2^d$ 个组，每个组都有其二进制代码。这些二进制代码可以用从 $0$ 到 $2^d - 1$ 的十进制形式表示。表面编码器如\autoref{fig:SymCode生成过程}(f)所示，其中颜色表示二进制代码 $\mathbf{c}_i$ 的十进制值。
+在\autoref{fig:SymCode生成过程}(e)中，我们展示了执行 $d$ 次主顶点分组迭代的过程。分组迭代从所有主顶点的集合 $G$ 开始。对于具有二进制编码 $\mathbf{c}_i$ 的组 $G_{i}$，我们使用非平衡的k均值聚类（k-means）将其分成两组。结果组被分配编码 $\mathbf{c}_i \ll 1$ 和 $(\mathbf{c}_i \ll 1) + 1$，其中操作 $\ll$ 表示二进制左移。最终，我们获得 $2^d$ 个组，每个组都有其二进制编码。这些二进制编码可以用从 $0$ 到 $2^d - 1$ 的十进制形式表示。表面编码器如\autoref{fig:SymCode生成过程}(f)所示，其中颜色表示二进制编码 $\mathbf{c}_i$ 的十进制值，白色表示$2^d - 1$，黑色表示$0$，灰色为十进制数的线性映射颜色渐变。
 
 \textbf{渲染 } 如\autoref{fig:SymCode生成过程}(f)，对于标签位姿，我们能够渲染出唯一的渲染标签。渲染标签通过RGB格式进行存储，在使用过程中需要解码为16位的渲染标签作为辅助变量引导网络学习物体的真实位姿。如\autoref{fig:渲染与存储}中，最左侧图像为存储图像，右侧的图像为若干位解码后的渲染标签。
 
@@ -159,11 +159,11 @@
     \label{fig:SymNet框架}
 \end{figure}
 
-本小节介绍SymNet框架。给定一张RGB图像，我们的SymNet以放大的兴趣区域（RoI）作为输入，并预测包括掩码和二进制编码图在内的中间特征。然后，CPR模块直接回归6D物体姿态。整个过程是一个端到端的过程，消除了对PnP的精细化或RANSAC过程的需求。
+本小节介绍SymNet框架。给定一张RGB图像，我们的SymNet以放大的兴趣区域（RoI）作为输入，并预测包括掩码和二进制编码图在内的中间特征。然后，CPR模块直接回归6D物体姿态。整个过程是一个端到端的过程，消除了对PnP/RANSAC精调过程的需求。
 
 在\autoref{fig:SymNet框架}中，通过检测器，我们找到物体的检测区域。通过对检测区域进行裁剪和分割，得到一个尺寸为$256 \times 256 \times 3$的RoI。RoI传入二进制编码模块,输出的中间变量包括尺寸为$128 \times 128$的物体完整掩码$M_{\text{amo}}$、尺寸为$128 \times 128$的可见掩码$M_\text{{vis}}$和尺寸为$128 \times 128 \times 16$的SymCode图。随后，这些中间变量被用作对应关系姿态回归（CPR）模块的输入。
 
-二进制编码模块包括一个ResNet-34骨干网络\cite{he2016resnet}，并利用了空洞空间金字塔池化（ASPP）\cite{chen2017deeplabv3}，该方法在并行的空洞卷积中对特征进行不同尺度的重采样非常有效。我们还尝试了不同的卷积策略和来自CDPN\cite{li2019cdpn}的上采样方法作为网络架构的一部分，但结果没有显著差异。我们最终采用的网络细节图见\autoref{fig:SymNet网络细节图}。
+二进制编码模块包括一个ResNet-34骨干网络\cite{he2016resnet}，并利用了空洞空间金字塔池化（ASPP）\cite{chen2017deeplabv3}，该方法在并行的空洞卷积中对特征进行不同尺度的重采样非常有效。我们还尝试了不同的卷积策略和来自CDPN\cite{li2019cdpn}的上采样方法作为网络架构的一部分，但结果没有显著差异。我们最终采用的网络细节见\autoref{fig:SymNet网络细节图}。
 
 \begin{figure}[htbp]
     \centering
@@ -182,7 +182,38 @@
 \begin{equation}
     Loss = L_\text{masks} + L_\text{code} + L_\text{params} + L_\text{ADD-S}
 \end{equation}
-$L_\text{params}$ 对应于端到端训练的损失，使用$L1$损失来处理 $\mathbf{R}_{6d}$ 和 $\mathbf{t}_\text{SITE}$。此外，$L_\text{ADD-S}$ 项源自PoseCNN的工作\cite{ycbv}。
+$L_\text{params}$ 对应于端到端训练的损失，使用$L1$损失来处理 $\mathbf{R}_{6d}$ 和 $\mathbf{t}_\text{SITE}$。此外，$L_\text{ADD-S}$ 项源自PoseCNN的工作\cite{ycbv}：
+\begin{equation}
+L_\text{ADD-S} = \sum_{\mathbf{p} \in \mathbf{P}} \left\| \mathbf{R}_\text{gt} \cdot \mathbf{m} \cdot \mathbf{p} - \mathbf{R}_\text{pred} \cdot \mathbf{p} \right\|
+\end{equation}
+其中，
+\begin{equation}
+    \mathbf{m} = \mathop{\arg\min}\limits_{\mathbf{m} \in \mathbf{M}} \, re\left( \mathbf{R}_{\mathrm{gt}} \cdot \mathbf{m}, \mathbf{R}_{\mathrm{pred}} \right)
+\end{equation}
+这里 $re(\cdot, \cdot)$ 表示旋转角度误差的计算函数。
 
 在训练过程中，所有损失同时进行训练，没有任何参数被冻结。在我们的初步实验中，我们还探索了一种非端到端的训练策略，其中 $L_\text{masks} + L_\text{code}$ 用于训练二进制编码模块，而 $L_\text{params} + L_\text{ADD-S}$ 仅用于训练 CPR 模块；然而，这导致了结果的轻微下降。
 
+
+\section{ZebraPoseSAT}
+
+\par \autoref{symnet_方法}中我们介绍了一对一对应关系以及一对多对应关系，那么我们是否能够构造出基于一对一对应关系，但是没有对称歧义的方法呢？
+
+\par 我们在ZebraPose\cite{su2022zebrapose}框架基础上实现ZebraPoseSAT（Symmetry-aware Training，SAT）。该方案通过解析方法\cite{pitteri2019object}，在生成ZebraPose编码前，将所有真实位姿 $\mathbf{T}_i$ 基于Frobenius范数映射至唯一$\mathbf{T}$。作为BOP 2023挑战赛\cite{hodan2024bop}最佳纯RGB方法获奖方案，ZebraPoseSAT为SymNet提供了强有力的对比基准。
+
+\par 在这个方案中，我们的目的是保证同样输入的图片需要有唯一的标签，因此我们可以设计唯一性指标，从所有的对称性真值姿态$R_i$映射到同一真值姿态$R$。该映射关系可以用函数$\mathbf{f}$进行表示：
+\begin{equation}
+    \mathbf{R} = \mathbf{f}(\mathbf{R_i}) = \mathbf{R_i} \cdot \mathbf{m}, \quad \mathbf{m} = \arg\min_{\mathbf{m} \in \mathbf{M}} \|\mathbf{R_i} \cdot \mathbf{m} - \mathbf{I}\|
+\end{equation}
+不难发现，对于所有的$\mathbf{R_i} \cdot \mathbf{m}$都会映射为$\mathbf{R}$。\autoref{zebraposesat}展现了一个连续对称物体的真值姿态转换过程。这个过程并不会影响$\mathbf{t}$。
+
+\begin{figure}[htbp]
+    \centering
+    \begin{overpic}[width=0.7\textwidth]{figure/symnet/zebraposesat.pdf}
+    \end{overpic}
+    \caption{ZebraPoseSAT姿态映射}
+    \label{fig:zebraposesat}
+\end{figure}
+
+\par 尽管该方法能够实现一对一映射，从而避免了位姿估计中的歧义问题，但其仍存在一个可能影响神经网络学习效果的潜在挑战：旋转参数的不连续性。具体而言，在网络从图像到位姿的推理过程中，某些旋转参数的变化会引入不连续现象。以绕轴180度的二重对称场景为例，当将$[180,360)$度区间的角度值映射至$[0,180)$区间时，真值为1度的图像仍保持1度的标签，而真值为359度的图像则被映射为179度。然而，真值为1度与真值为359度的图像在视觉上高度相似，但其对应的位姿参数却存在显著差异。这种不连续性要求神经网络能够有效区分视觉上极为接近的图像，并输出差异较大的位姿参数，从而增加了学习难度。尽管如此，实验结果表明，该方法在基础方案上仍实现了约$1\%$
+的精度提升。

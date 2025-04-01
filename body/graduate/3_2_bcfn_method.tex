@@ -4,7 +4,7 @@
 
 在本节中，我们首先介绍我们的网络，并与之前的方法DenseFusion\cite{wang2019densefusion}和FFB6D\cite{he2021ffb6d}进行比较，分析它们的架构以及我们方法的改进之处。随后，我们详细描述了CNN分支和PCN分支中的融合模块的架构设计，阐述了如何通过双向信息交互提升特征提取的效果。接着，我们讨论了一致性损失的设计原理及其在保持两个分支输出一致性方面的作用。最后，我们描述了损失函数，包括双分支的损失和一致性损失。
 
-\subsection{BCFN方法概览}
+\subsection{融合方案对比}
 
 融合来自不同模态的信息在RGB-D物体位姿估计中仍然是一个长期存在的挑战。在\autoref{fig:comparison}中，我们将我们的网络与DenseFusion\cite{wang2019densefusion}和FFB6D\cite{he2021ffb6d}进行比较，这些网络都基于编码器-解码器架构。网络的一个分支处理RGB图像，称为CNN分支，而另一个分支处理点云，称为PCN分支。解码器输出的特征分别称为CNN特征和PCN特征。CNN特征表示为每像素特征，而PCN特征表示为每点云顶点的特征。
 
@@ -18,7 +18,7 @@
             \put(20, 2.5){\shortstack{Point Cloud\\Encoder}}
             \put(47, 2.5){\shortstack{Point Cloud\\Decoder}}
             \put(74, 17.5){\shortstack{Dense\\Fusion}}
-            \put(88, 21.5){output}
+            \put(89, 21.5){输出}
         \end{overpic}
         \caption{DenseFusion 网络结构}
         \label{fig:dense_fusion}
@@ -31,7 +31,7 @@
             \put(20, 2.5){\shortstack{Point Cloud\\Encoder}}
             \put(47, 2.5){\shortstack{Point Cloud\\Decoder}}
             \put(74, 21.5){Fusion}
-            \put(88, 21.5){output}
+            \put(89, 21.5){输出}
             \put(81, 42){\shortstack{Fusion\\Module}}
         \end{overpic}
         \caption{FFB6D 网络架构}
@@ -44,10 +44,10 @@
             \put(47, 47.5){CNN Decoder}
             \put(20, 2.5){\shortstack{Point Cloud\\Encoder}}
             \put(47, 2.5){\shortstack{Point Cloud\\Decoder}}
-            \put(88, 13.5){output}
+            \put(89, 13.5){输出}
             \put(74, 13.5){Fusion}
             \put(74, 30){Fusion}
-            \put(81, 44){\shortstack{Consistent\\Loss}}
+            \put(81, 47){\shortstack{一致性损失}}
         \end{overpic}
         \caption{双向一致性信息融合网络架构}
         \label{fig:bcfn}
@@ -68,7 +68,7 @@ FFB6D网络采用跨模态融合架构，在编码器与解码器的每个层级
 
 \subsection{一致性损失}
 
-\par 基于中间表征的学习范式在姿态估计领域展现出显著优势，如ZebraPose\cite{su2022zebrapose}采用二进制编码替代直接回归位姿，HiPose\cite{2024hipose}在RGB-D场景中进一步扩展了该方法。本研究沿袭该范式并作出改进：对于CNN分支，采用ZebraPose的掩码监督与二进制编码监督机制；对于PCN分支，则应用HiPose提出的顶点级监督策略。具体而言，我们为每个分支构建两个监督信号——表征目标存在性的掩码，以及物体坐标系空间位置的二进制编码，二者均采用L1范数进行优化。
+\par 基于中间表征的学习范式在姿态估计领域展现出显著优势，如ZebraPose\cite{su2022zebrapose}采用二进制编码替代直接回归位姿，上一章HiPose在RGB-D场景中进一步扩展了该方法。本章沿袭该范式并作出改进：对于CNN分支，采用ZebraPose的掩码监督与二进制编码监督机制；对于PCN分支，则应用HiPose提出的顶点级监督策略。具体而言，我们为每个分支构建两个监督信号——表征目标存在性的掩码，以及物体坐标系空间位置的二进制编码，二者均采用L1范数进行优化。
 
 \par 值得注意的是，独立优化两个分支会导致跨模态特征空间的不对齐。为此，我们创新性地引入跨分支一致性约束：对于通过深度投影建立几何对应的顶点-像素对，强制其掩码预测值和坐标编码特征在隐空间保持一致性。该约束通过计算对应位置特征向量的L2距离实现，有效避免了双分支预测结果的互斥性，确保表观信息与几何信息的协同优化。
 
