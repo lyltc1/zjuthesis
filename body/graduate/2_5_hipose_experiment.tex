@@ -1,136 +1,80 @@
-\section{实验}\label{sec:exp}
+\section{实验验证与分析}\label{sec:exp}
 
-在本节中，我们对本章方法使用的数据集以及评价指标进行介绍。接下来的小节则对相关消融实验进行介绍。最后我们展示我们的实验结果并与相关文献进行对比分析。
+本节介绍了所使用的数据集以及评价指标。接下来的小节详细描述了相关消融实验。最后展示实验结果并与相关文献进行对比分析。
 
 \subsection{数据集}
-我们在LM-O\cite{lmo}、YCB-V\cite{ycbv}和T-LESS\cite{tless}数据集上进行实验。这些数据集涵盖了广泛的场景，包括严重遮挡、纹理缺失和具有对称的物体。LM-O数据集包含8个家用弱纹理物体。YCB-V数据集由21个物体组成，包括有纹理和无纹理的物体。T-LESS数据集为工业物体模型数据集，包含30个工业物体，模型不包含模型的纹理，渲染的仿真图像也不包含真实纹理。
+实验在LM-O\cite{lmo}、YCB-V\cite{ycbv}和T-LESS\cite{tless}数据集上进行。这些数据集涵盖了广泛的场景，包括严重遮挡、纹理缺失和具有对称的物体。LM-O数据集包含8个家用弱纹理物体。YCB-V数据集由21个物体组成，包括有纹理和无纹理的物体。T-LESS数据集为工业物体模型数据集，包含30个工业物体，模型不包含模型的纹理，渲染的仿真图像也不包含真实纹理。
 
-BOP挑战赛\cite{Sundermeyer2023BOPC2}使用这些数据集提供的物体模型，针对每个数据集生成五万张基于物理渲染（Physically-Based Rendering，PBR）合成图像。我们将采用这些PBR图像用于训练，但在数据集提供的真实场景中进行测试。
+BOP挑战赛\cite{Sundermeyer2023BOPC2}使用这些数据集提供的物体模型，针对每个数据集生成五万张基于物理渲染（Physically-Based Rendering，PBR）合成图像。本研究采用这些PBR图像进行训练，但在数据集提供的真实场景中进行测试。
 
-\subsection{评价指标}
+\subsection{评价指标}\label{subsec:评价指标}
 
-\par 对于LM-O数据集，我们使用ADD与ADD-S指标进行评测，这是该数据集上常用的指标之一。ADD计算物体坐标系坐标分别用估计位姿和真实位姿投影到相机坐标系，计算对应投影点间距离在阈值内的百分比。
-对于对称物体，通产采用ADD-S，ADD-S指标与ADD指标的不同之处在于它匹配估计位姿和真实位姿间距离时，需要寻找最近的模型点而不是完全相同的模型点。
-阈值的计算通常有两种方式，一种为固定数值，例如10厘米，另一种为与物体直径成比例关系，例如0.1d表示阈值设定为物体直径的$10\%$。
-对于YCB-V数据集，我们还计算ADD(-S)的曲线下面积（AUC），最大阈值为10厘米，如文献\cite{ycbv}所述。
+\par 对于LM-O数据集，使用ADD与ADD-S指标进行评测，这是该数据集上常用的指标之一。ADD计算物体坐标系坐标分别用估计位姿和真实位姿投影到相机坐标系，计算对应投影点间距离在阈值内的百分比。其公式为：
+\begin{equation}
+  \text{ADD} = \frac{1}{n}\sum_{x_i \in M} \| (R_{gt}x_i + t_{gt}) - (R_{est}x_i + t_{est}) \|,
+\end{equation}
+其中，$M$为物体的3D模型点集，$R_{gt}$和$t_{gt}$为真实位姿的旋转和平移，$R_{est}$和$t_{est}$为估计位姿的旋转和平移。
 
-\par 此外，对于这两个数据集，我们还报告BOP挑战赛定义的BOP评价指标\cite{Sundermeyer2023BOPC2}。该评估采用三个指标：可见表面差异（VSD）、最大对称感知表面距离（MSSD）和最大对称感知投影距离（MSPD）。这三个指标的平均值，称为AR，作为整体性能指标。
+\par 对于对称物体，通常采用ADD-S，ADD-S指标与ADD指标的不同之处在于匹配估计位姿和真实位姿间距离时，需要寻找最近的模型点而不是完全相同的模型点。其公式为：
+\begin{equation}
+  \text{ADD-S} = \frac{1}{n}\sum_{x_i \in M} \min\limits_{x_j \in M} \| (R_{gt}x_i + t_{gt}) - (R_{est}x_j + t_{est}) \|.
+\end{equation}
+通常对于非对称物体，选择用ADD指标，对于对称物体，选用ADD-S指标。这种混合指标的平均值称为ADD-(S)指标。
 
-\subsection{消融实验}
+\par 此外，为了确定有多少概率能够实现网络输出的精度达到要求，对于ADD、ADD-S以及ADD-(S)会设定阈值。阈值的计算通常有两种方式，一种为固定数值，例如10厘米，另一种为与物体直径成比例关系，例如0.1d表示阈值设定为物体直径的$10\%$。对于YCB-V数据集，还计算ADD(-S)在不同阈值的曲线下面积（AUC），最大阈值为10厘米，如文献\cite{ycbv}所述。
 
-我们进行了多项消融实验和分析，以探究 HiPose 在不同设计选择下的表现，探索不同参数的影响和各个模块在算法中发挥的作用。
+\par 此外，对于这两个数据集，还对比了BOP挑战赛定义的BOP评价指标\cite{Sundermeyer2023BOPC2}。该评估采用三个指标：可见表面差异（Visible Surface Discrepancy，VSD）、最大对称感知表面距离（Maximum Symmetry-Aware Surface Distance，MSSD）和最大对称感知投影距离（Maximum Symmetry-Aware Projection Distance，MSPD）。VSD通过仅考虑物体的可见部分，将不可区分的位姿视为等效。该指标通过比较估计位姿和真实位姿下物体模型的可见表面，评估两者之间的差异。MSSD考虑了一组预先识别的全局物体对称性，通过测量3D空间中物体表面的偏差来评估位姿的准确性。MSPD同样考虑物体的对称性，但通过测量物体在图像平面上的可感知偏差来评估位姿的准确性。这三个指标的召回率平均值，称为AR，作为整体性能指标。
 
-\input{table/hipose/Tab_ablation}
+\par VSD的计算公式为：
+\begin{equation}
+e_\mathrm{VSD}\big(\hat{D}, \bar{D}, \hat{V}, \bar{V}, \tau\big) =
+\mathrm{avg}_{\bm{p} \in \hat{V} \cup \bar{V}}
+\begin{cases}
+0 & \text{如果 } \bm{p} \in \hat{V} \cap \bar{V} \text{且 } \big|\hat{D}(\bm{p}) - \bar{D}(\bm{p})\big| < \tau \\
+1 & \text{否则}
+\end{cases}
+\end{equation}
+其中，$\hat{D}$ 和 $\bar{D}$ 表示通过渲染物体模型 $M$ 在估计位姿 $\hat{P}$ 和真实位姿 $\bar{P}$ 下得到的距离图。将这些距离图与测试图像 $I$ 的距离图 $D_I$ 进行比较，得到可见性掩码 $\hat{V}$ 和 $\bar{V}$，即模型 $M$ 在图像 $I$ 中可见的像素集合。参数 $\tau$ 表示错位容忍度。
 
-\textbf{对应关系剪枝的有效性 }
-在\autoref{tab:hipose_ablation_study}中，我们首先对比分层对应关系剪枝算法与Kabsch算法在精度上的区别。在A0实验中，我们直接使用Kabsch算法求解物体位姿。A2实验使用的是分层对应关系剪枝算法。结果表明A2实验的精度比直接使用Kabsch算法的精度高$2.97\%$，验证了分层对应关系剪枝算法的有效性。该实验也说明了网络预测的二进制编码中存在少量离群值。
+\par MSSD的计算公式为：
+\begin{equation}
+e_{\text{MSSD}}\big(\hat{\bm{P}}, \bar{\bm{P}}, S_M, V_M\big) = \min_{\bm{S} \in S_M} \max_{\bm{x} \in V_M}
+\big\Vert \hat{\bm{P}}\bm{x} - \bar{\bm{P}}\bm{S}\bm{x} \big\Vert_2
+\end{equation}
+其中，$S_M$ 是物体模型 $M$ 的全局对称变换集合，$V_M$ 是模型顶点的集合，2-范数$\big\Vert \cdot \big\Vert_2$表示距离。
 
-\begin{table}
-  \centering
-  \begin{tabular}{@{}c|c|c|c|c|c|c@{}}
-    \toprule
-    对应关系数量  & 4 & 6 & 8 & 10 & 20 & 30 \\
-     \midrule
-     500 次迭代 & 88.7 & 89.0 & 89.0	& \textbf{89.1} & 89 & 88.7 \\
-     1000 次迭代 & 89.0 & \textbf{89.1} & 88.9 & \textbf{89.1} & \textbf{89.1} & 88.8 \\
-     1500 次迭代 & 89.0 & \textbf{89.1} & \textbf{89.1} & \textbf{89.1} & 88.9 & 88.8 \\
-    \bottomrule
-  \end{tabular}
-  \caption{RANSAC+Kabsch 参数对A1实验结果的影响}
-  \label{tab:ablation_study_RANSAC_parameters}
-\end{table}
-
-将A1实验与A0实验进行比较，A1实验使用RANSAC框架识别离群值。实验结果表明，相对于A0的结果，A1的召回率提高了$2.47\%$。A1的结果受到若干超参数选择的影响，例如每次迭代中使用的对应关系数量、RANSAC迭代次数和每次迭代中的内点阈值等。此外，随机种子（seed）的变化对结果也有微弱的影响。在此实验中，我们使用了Open3D\cite{zhou2018open3d}提供的RANSAC和Kabsch算法。我们探索了多种参数组合，并报告了其中的最佳结果。A1实验中，RANSAC+Kabsch方案的实现使用Open3D中的$registration\_ransac\_based\_on\_correspondence$ 函数。我们调整了每次RANSAC迭代中的对应关系数量和RANSAC迭代次数。使用RANSAC+Kabsch方法得到的结果不如我们分层方法的结果，如\autoref{tab:ablation_study_RANSAC_parameters}所示。我们调整了每次RANSAC迭代中的对应关系数量和RANSAC迭代次数，最大对应点对距离为2厘米。结果以ADD(-S)的平均召回率（\%）表示。根据表格，每次RANSAC迭代使用10个对应关系时效果最佳。然而，使用RANSAC+Kabsch方法得到的结果不如我们分层方法的结果。
-
-与RANSAC方案A1相比，我们的分层对应关系剪枝方案A2提供了稳定的结果，随机种子的选取对其影响更小。在实验A2中，我们选择第 $10$ 位作为初始位，并根据预测值高于$0.52$或低于$0.48$定义置信位。如\autoref{tab:hipose_ablation_study}所示，与不使用任何离群值策略A0相比，方法A2将召回率提高了$2.97\%$，同时超过了RANSAC可实现的最佳结果。
-
-我们在\autoref{tab:ourlier_removal_metrics}中评估每次迭代中离群值移除的准确性，进一步显示对应关系剪枝的有效性。\autoref{tab:ourlier_removal_metrics}展示不同阈值下，网络估计的内点数量的精度和准确率。精度和准确率的提高证实了低质量对应关系的逐步移除。精度（Precision）指的是模型预测的正样本中实际为正样本的比例。精度越高，表示模型预测的正样本中错误的比例越低。准确率（Accuracy）指的是模型预测正确的样本占总样本的比例。准确率越高，表示模型整体预测的正确性越高。
-
-\input{table/hipose/Tab_outlier_removal_metrics}
-
-在接下来的消融实验中，我们验证HiPose方法对若干参数选择的鲁棒性。
-
-\input{table/hipose/line_chart}
-
-\textbf{默认初始位的影响 }不同的初始位影响着后续迭代次数和初始位姿估计的准确性。
-如\autoref{fig:ablation_initial_bit}所示，我们在LM-O的所有物体上测试从$m_{default} = 5$到$m_{default}=11$对ADD指标造成的影响。对于有些物体，当初始位$m_{default}$大于$11$时，我们观察到性能下降，这是因为迭代次数不足以定位所有离群值。平坦的曲线部分说明默认初始位的设置具有鲁棒性。当我们从$12$位开始时，我们观察到一些性能下降，而直接设置$m_{default} = 16$位时，此时算法退化为无迭代过程，性能显著下降，说明了分层对应关系剪枝的重要性。通过计算LM-O数据集中所有物体的平均召回率，我们注意到使用$9$到$11$位作为初始位提供了略高的结果。考虑到准确性和计算效率，我们始终使用$10$位作为默认初始位。
-
-\textbf{置信位的阈值 }
-每个点的初始位和我们的内点识别策略与置信位的选择密切相关。在实验A2中，内点识别策略所使用的阈值为$0.02$，即网络预测值大于0.52或小于0.48时认为网络能够预测该位的二进制编码。如\autoref{tab:hipose_ablation_study}实验结果所示，当阈值大于$0.08$时，我们开始观察到小幅性能下降，而在阈值小于$0.08$时，结果保持相对稳定。这表明我们的方法对置信位选择具有一定的鲁棒性。
-
-\textbf{对应关系剪枝中使用的准则 }
-在对应关系剪枝中区分内点和离群值的默认准则是基于\autoref{eq:l}中定义的距离$l$的中位数。我们将实验A2中使用的内点阈值的中位数替换为均值，在实验C0中导致ADD值的下降。这是由于中位数能够忽略极值的影响，而离群值会导致平均数的计算出现严重偏差。
-
-\textbf{CNN骨干网络的影响 }
-为了确保与最近使用transformer架构和ConvNeXt\cite{Liu2022ACF}骨干网络的研究具有可比性，我们默认使用ConvNeXt作为我们的图像特征提取网络。此外，我们在\autoref{tab:hipose_ablation_study}中提供了使用ResNet作为骨干网络的实验(D0)结果，以便与其他方法进行进一步比较。如\autoref{tab:hipose_ablation_study}结果表明，特征骨干网络的选择仅有微小影响。
-
-\textbf{与ZebraPose的3D扩展版本对比 }
-如\autoref{tab:hipose_ablation_study}所示，在实验E0中，我们尝试将ZebraPose算法扩展为能够利用3D信息。具体而言，我们首先利用深度图和像素点的对应关系，将2D像素信息反投影到3D点，从而将ZebraPose使用的2D-3D对应关系扩展为3D-3D对应关系，并使用RANSAC + Kabsch进行位姿估计。在实验E1中，我们进一步尝试将RGB图像和深度图像拼接成6通道输入，并使用ZebraPose网络进行训练。然而，由于缺乏6通道输入的预训练模型，实验结果表现较差。这两组实验均未能超越HiPose的结果，表明HiPose的网络架构在学习3D-3D对应关系方面更为高效。
-
-\textbf{ICP算法的影响 }
-迭代最近点算法（ICP）通常作为一种优化策略，利用深度信息来优化位姿估计结果。我们在\autoref{tab:influence_of_icp}中评估了ICP对HiPose和ZebraPose的影响，这两者均仅使用PBR图像进行训练。对于HiPose，我们提供了真实的物体掩码以便应用ICP。令人惊讶的是，ICP未能带来任何改进，反而使结果变差。在ZebraPose中，结果则有显著改善。然而，一旦姿态达到令人满意的准确度，例如使用RANSAC Kabsch（召回率大于$87\%$），引入ICP并不会带来更好的结果。这种情况可能归因于深度图的准确度不足。这说明，若位姿估计结果已达到一定的准确度，引入ICP并不会带来更多的提升。
-
-\begin{table}[h]
-    \centering
-    \begin{tabular}{@{}l|c@{}}
-      \toprule
-      实验设置 & ADD(-S)，\% \\
-      \midrule
-      ZebraPose (仅使用pbr数据训练) & 63.5\\
-      ZebraPose (pbr) + ICP & 83.9\\
-      ZebraPose (pbr) + RANSAC Kabsch & 87.0\\
-      ZebraPose (pbr) + RANSAC Kabsch + ICP & 87.0\\
-      \midrule
-      \textbf{HiPose} (本章方法) &  \textbf{89.6}\\
-      HiPose + ICP (使用物体掩码真值) &  89.3\\
-      \bottomrule
-    \end{tabular}
-    \caption{评估ICP对算法的影响}
-    \label{tab:influence_of_icp}
-  \end{table}
-
-\textbf{深度图噪声的影响 }
-在训练过程中，我们对深度图进行了高斯噪声增强，并随机丢弃像素，以使网络对噪声不那么敏感。并且评估的三个数据集采用不同型号的深度传感器，这表明HiPose对不同噪声水平具有鲁棒性。我们在\autoref{tab:influence_of_noisy_depth}中进行了额外的实验，显示HiPose对深度图中缺失的测量值具有相当的鲁棒性。然而，不准确的测量值确实会略微影响性能。
-
-\begin{table}[h]
-    \centering
-        \begin{tabular}{@{}l|c@{}}
-          \toprule
-          实验设置 & ADD(-S)， \% \\
-          \midrule
-          \textbf{HiPose} (本章方法) &  \textbf{89.6}\\
-          \midrule
-          深度图添加均值为零、标准差为0.01的高斯噪声 & 89.0\\
-          随机丢弃深度图中$20\%$的点 & 89.5 \\
-          \bottomrule
-        \end{tabular}
-    \caption{深度图噪声对结果的影响}
-    \label{tab:influence_of_noisy_depth}
-\end{table}
+\par MSPD的计算公式为：
+\begin{equation}
+e_{\text{MSPD}}\big(\hat{\bm{P}}, \bar{\bm{P}}, S_M, V_M\big) = \min_{\bm{S} \in S_M} \max_{\bm{x} \in V_M}
+\big\Vert \text{proj}\big( \hat{\bm{P}}\bm{x} \big) - \text{proj}\big( \bar{\bm{P}}\bm{S}\bm{x} \big) \big\Vert_2
+\end{equation}
+函数 $\text{proj}(\cdot)$ 表示二维投影（结果以像素为单位），其他符号的含义与 MSSD 中相同。
 
 \subsection{与现有方法进行比较}
-在本小节中，我们在多个通用数据集上与现有方法进行比较。
+本小节对多个通用数据集上的实验结果与现有方法进行了比较。
 
 \input{table/hipose/Tab_LMO_ADD}
 
-\textbf{LM-O数据集上的结果 } 在\autoref{tab:lmo_results_table_}中，我们将HiPose与现有技术在LM-O数据集上的ADD(-S)评分进行了比较。我们使用了CDPN~\cite{li2019cdpn}提供的2D检测结果，该检测器基于FCOS~\cite{Tian2019FCOSFC}进行训练，且仅使用BOP挑战赛提供的PBR图像进行训练。结果表明，HiPose相比于最好的RGB-D方法DFTr高出$11.9\%$，相比于最好的仅使用RGB的方法ZebraPose高出$12.7\%$，表现优异。
+\textbf{LM-O数据集上的结果 } 在\autoref{tab:lmo_results_table_}中，HiPose与现有方法在LM-O数据集上的ADD(-S)评分进行了比较。使用了CDPN\cite{li2019cdpn}提供的2D检测结果，该检测器基于FCOS\cite{Tian2019FCOSFC}进行训练，且仅使用BOP挑战赛提供的PBR图像进行训练。结果表明，HiPose相比于最好的RGB-D方法DFTr高出$11.9\%$，相比于最好的仅使用RGB的方法ZebraPose高出$12.7\%$，表现优异。
 
 \input{table/hipose/Tab_YCBV_AUC}
 
-\textbf{YCB-V数据集上的结果 } 在\autoref{tab:ycbv_results_table}中，我们将HiPose与现有方法在YCB-V数据集上的ADD和ADD-S评分进行了比较。所有其他方法在训练中均使用了真实和合成图像。为了公平比较，这里使用的2D FCOS检测器也在真实和合成图像上进行了训练。结果表明，HiPose在YCB-V数据集上的表现再次超越了所有其他方法，具有显著的优势（约$1\%$的提升），考虑到YCB-V数据集的评分已经接近饱和，这一结果尤为突出。
+\textbf{YCB-V数据集上的结果 } 在\autoref{tab:ycbv_results_table}中，HiPose与现有方法在YCB-V数据集上的ADD和ADD-S评分进行了比较。所有其他方法在训练中均使用了真实和合成图像。为了公平比较，此处使用的2D FCOS检测器也在真实和合成图像上进行了训练。结果表明，HiPose在YCB-V数据集上的表现再次超越了所有其他方法，具有显著的优势（约$1\%$的提升）。考虑到YCB-V数据集的评分已经接近饱和，这一结果尤为突出。
 
-我们在\autoref{tab:ycbv_full_results_AUC}中总结了YCB-V数据集上每个物体的结果。如表所示，我们在大多数测试物体上都优于其他方法。我们报告了ADD(-S)和ADD-S的AUC的平均召回率（以百分比表示），并与现有方法进行了比较。(*)表示对称物体。
+\autoref{tab:ycbv_full_results_AUC}总结了YCB-V数据集上每个物体的结果。如表所示，大多数测试物体上的性能优于其他方法。展示了ADD(-S)和ADD-S的AUC的平均召回率（以百分比表示），并与现有方法进行了比较。(*)表示对称物体。
 
 \input{table/hipose/Tab_BOP_score}
 
 \begin{table}[ht]
     \centering
+    \caption{各物体在YCB-V数据集上的结果}
+    \label{tab:ycbv_full_results_AUC}
     \resizebox{\textwidth}{!}{%
     \begin{tabular}{@{}l|c|c|c|c|c|c|c|c@{}}
       \toprule 
-       方法 & \multicolumn{2}{c|}{PVN3D\cite{he2020pvn3d}} & \multicolumn{2}{c|}{FFB6D\cite{he2021ffb6d}} &  \multicolumn{2}{c|}{DFTr\cite{zhou2023deep}} &  \multicolumn{2}{c}{\textbf{本文}}\\
+       方法 & \multicolumn{2}{c|}{PVN3D\cite{he2020pvn3d}} & \multicolumn{2}{c|}{FFB6D\cite{he2021ffb6d}} &  \multicolumn{2}{c|}{DFTr\cite{zhou2023deep}} &  \multicolumn{2}{c}{\textbf{本章方法}}\\
       \midrule
-      指标 & \makecell{AUC of ADD-S} & \makecell{AUC of ADD(-S)} &\makecell{AUC of ADD-S} & \makecell{AUC of ADD(-S)} & \makecell{AUC ofADD-S} & \makecell{AUC of ADD(-S)} & \makecell{AUC of ADD-S} & \makecell{AUC of ADD(-S)} \\ 
+      指标 & \makecell{AUC of ADD-S} & \makecell{AUC of ADD(-S)} &\makecell{AUC of ADD-S} & \makecell{AUC of ADD(-S)} & \makecell{AUC of ADD-S} & \makecell{AUC of ADD(-S)} & \makecell{AUC of ADD-S} & \makecell{AUC of ADD(-S)} \\ 
       \midrule
        002\_master\_chef\_can & 96.0&  80.5&  96.3& 80.6& \textbf{97.0}& \textbf{92.3}      & 96.4	&86.2\\
        003\_cracker\_box      & 96.1&  94.8&  96.3& 94.6 &95.9 &93.9         & \textbf{97.7}&	\textbf{96.7}\\
@@ -158,24 +102,114 @@ BOP挑战赛\cite{Sundermeyer2023BOPC2}使用这些数据集提供的物体模�
       \bottomrule
     \end{tabular}
     }
-    \caption{各物体在YCB-V数据集上的结果}
-    \label{tab:ycbv_full_results_AUC}
 \end{table}
 
-\textbf{BOP挑战赛上的结果 } \autoref{tab:bop_score_table}展示了所有仅在PBR仿真合成数据下训练的结果，($\sim$) 表示类似于 CIR\cite{lipson2022coupled}。$^*$ 仅在 LM-O 和 YCB-V 上取平均，因为该方法未提供 T-LESS 的结果。 BOP挑战赛提供了更公平的比较平台，提供了统一的训练数据集和标准2D检测结果，以及更具信息量的评价指标~\cite{hodan2018bop}。我们使用了BOP挑战赛2023提供的默认检测结果。
+\textbf{BOP挑战赛上的结果 } \autoref{tab:bop_score_table}展示了所有仅在PBR仿真合成数据下训练的结果，($\sim$) 表示类似于 CIR\cite{lipson2022coupled}。$^*$ 仅在 LM-O 和 YCB-V 上取平均，因为该方法未提供 T-LESS 的结果。 BOP挑战赛提供了更公平的比较平台，提供了统一的训练数据集和标准2D检测结果，以及更具信息量的评价指标\cite{hodan2018bop}。本章方法使用了BOP挑战赛2023提供的默认检测结果。
 
+大多数在\autoref{tab:bop_score_table}中的方法依赖于耗时的基于渲染的位姿优化步骤，而HiPose无需任何渲染对比过程即可直接估计出精确的物体位姿。HiPose在LM-O和YCB-V数据集上超越了现有方法，并在T-LESS数据集上取得了与领先方法非常接近的结果。综合考虑三个数据集的平均召回率，HiPose的召回率高于所有其他方法。
 
+GDRNPP\cite{liu2022gdrnpp_bop} 的结果与 HiPose 最为接近，但 HiPose 的速度约为 GDRNPP（包含优化步骤）的 $40$ 倍。这表明 HiPose 既准确又计算高效。
 
-大多数在\autoref{tab:bop_score_table}中的方法依赖于耗时的基于渲染的位姿优化步骤，而HiPose无需任何渲染对比过程即可直接估计出精确的物体位姿。HiPose在LM-O和YCB-V数据集上超越了现有技术，并在T-LESS数据集上取得了与领先方法非常接近的结果。综合考虑三个数据集的平均召回率，HiPose的召回率高于所有其他方法。
+\subsection{消融实验}
 
-GDRNPP\cite{liu2022gdrnpp_bop} 的结果与 HiPose 最为接近，但 HiPose 的速度约为 GDRNPP（包含优化步骤）的 $\mathbf{40}$ 倍。这表明 HiPose 既准确又计算高效。
+本小节通过多项消融实验和分析全面探讨 HiPose 在不同设计选择下的表现，分析不同参数的影响以及各模块在算法中的作用。所有消融实验均在LM-O数据集上完成，\autoref{tab:hipose_ablation_study} 汇总了不同实验设置下的结果，结果以ADD(-S)的平均召回率（\%）表示。
+
+\input{table/hipose/Tab_ablation}
+
+\textbf{对应关系剪枝的有效性 }
+在\autoref{tab:hipose_ablation_study}中，首先对比分层对应关系剪枝算法与Kabsch算法在精度上的区别。在A0实验中，直接使用Kabsch算法求解物体位姿。A2实验使用的是分层对应关系剪枝算法。结果表明A2实验的精度比直接使用Kabsch算法的ADD(-S)的平均召回率高$2.97\%$，验证了分层对应关系剪枝算法的有效性。该实验也说明了网络预测的二进制编码中存在少量离群值。
+
+\begin{table}[htbp]
+  \centering
+  \caption{RANSAC+Kabsch 参数对A1实验ADD-(S)结果的影响}
+  \label{tab:ablation_study_RANSAC_parameters}
+  \begin{tabular}{@{}c|c|c|c|c|c|c@{}}
+    \toprule
+    对应关系数量  & 4 & 6 & 8 & 10 & 20 & 30 \\
+     \midrule
+     500 次迭代 & 88.7 & 89.0 & 89.0	& \textbf{89.1} & 89 & 88.7 \\
+     1000 次迭代 & 89.0 & \textbf{89.1} & 88.9 & \textbf{89.1} & \textbf{89.1} & 88.8 \\
+     1500 次迭代 & 89.0 & \textbf{89.1} & \textbf{89.1} & \textbf{89.1} & 88.9 & 88.8 \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+将A1实验与A0实验进行比较，A1实验使用RANSAC框架识别离群值。实验结果表明，相对于A0的结果，A1的召回率提高了$2.47\%$。A1的结果受到若干超参数选择的影响，例如每次迭代中使用的对应关系数量、RANSAC迭代次数和每次迭代中的内点阈值等。此外，随机种子（seed）的变化对结果也有微弱的影响。此实验使用了Open3D\cite{zhou2018open3d}提供的RANSAC和Kabsch算法。
+探索了多种参数组合，并展示了其中的最佳结果。在A1实验中，RANSAC+Kabsch方案通过Open3D库中的registration\_ransac\_based\_on\_correspondence函数实现。调整了每次RANSAC迭代中使用的对应关系数量和迭代次数，结果如\autoref{tab:ablation_study_RANSAC_parameters}所示。实验表明，尽管RANSAC+Kabsch方法能够提升一定的性能，但其效果仍不如分层对应关系剪枝方法。
+调整了每次RANSAC迭代中的对应关系数量和RANSAC迭代次数，最大对应点对距离为2厘米。结果以ADD(-S)的平均召回率（\%）表示。根据表格，每次RANSAC迭代使用10个对应关系时效果最佳。然而，使用RANSAC+Kabsch方法得到的结果不如分层方法的结果。
+
+与RANSAC方案A1相比，分层对应关系剪枝方案A2提供了稳定的结果，随机种子的选取对其影响更小。在实验A2中，第 $10$ 位被选择为初始位，并根据预测值高于$0.52$或低于$0.48$定义置信位。如\autoref{tab:hipose_ablation_study}所示，与不使用任何离群值策略A0相比，方法A2将召回率提高了$2.97\%$，同时超过了RANSAC可实现的最佳结果。
+
+在\autoref{tab:ourlier_removal_metrics}中评估每次迭代中离群值移除的准确性，进一步显示对应关系剪枝的有效性。\autoref{tab:ourlier_removal_metrics}展示不同阈值下，网络估计的内点数量的精度和准确率。精度和准确率的提高证实了低质量对应关系的逐步移除。精度（Precision）指的是模型预测的正样本中实际为正样本的比例。精度越高，表示模型预测的正样本中错误的比例越低。准确率（Accuracy）指的是模型预测正确的样本占总样本的比例。准确率越高，表示模型整体预测的正确性越高。
+
+\input{table/hipose/Tab_outlier_removal_metrics}
+
+以下消融实验验证了HiPose方法对若干参数选择的鲁棒性。
+
+\input{table/hipose/line_chart}
+
+\textbf{默认初始位的影响 }
+不同的初始位影响着后续迭代次数和初始位姿估计的准确性。如\autoref{fig:ablation_initial_bit}所示，在LM-O的所有物体上测试从$m_{default} = 5$到$m_{default}=11$对ADD指标造成的影响。对于有些物体，当初始位$m_{default}$大于$11$时，观察到性能下降，这是因为迭代次数不足以定位所有离群值。平坦的曲线部分说明默认初始位的设置具有鲁棒性。从$12$位开始时，观察到一些性能下降，而直接设置$m_{default} = 16$位时，此时算法退化为无迭代过程，性能显著下降，说明了分层对应关系剪枝的重要性。通过计算LM-O数据集中所有物体的平均召回率，注意到使用$9$到$11$位作为初始位提供了略高的结果。考虑到准确性和计算效率，始终使用$10$位作为默认初始位。
+
+\textbf{置信位的阈值 }
+每个点的初始位和内点识别策略与置信位的选择密切相关。在实验A2中，内点识别策略所使用的阈值为$0.02$，即网络预测值大于0.52或小于0.48时认为网络能够预测该位的二进制编码。如\autoref{tab:hipose_ablation_study}实验结果所示，当阈值大于$0.08$时，开始观察到小幅性能下降，而在阈值小于$0.08$时，结果保持相对稳定。这表明该方法对置信位选择具有一定的鲁棒性。
+
+\textbf{对应关系剪枝中使用的准则 }
+在对应关系剪枝中区分内点和离群值的默认准则是基于\autoref{eq:l}中定义的距离$l$的中位数。将实验A2中使用的内点阈值的中位数替换为均值，在实验C0中导致ADD值的下降。这是由于中位数能够忽略极值的影响，而离群值会导致平均数的计算出现严重偏差。
+
+\textbf{CNN骨干网络的影响 }
+为了确保与最近使用transformer架构和ConvNeXt\cite{Liu2022ACF}骨干网络的研究具有可比性，本章方法默认使用ConvNeXt作为图像特征提取网络。此外，在\autoref{tab:hipose_ablation_study}中提供了使用ResNet作为骨干网络的实验D0结果，以便与其他方法进行进一步比较。如\autoref{tab:hipose_ablation_study}结果表明，特征骨干网络的选择仅有微小影响。
+
+\textbf{与ZebraPose的3D扩展版本对比 }
+如\autoref{tab:hipose_ablation_study}所示，在实验E0中，尝试将ZebraPose算法扩展为能够利用3D信息。具体而言，首先利用深度图和像素点的对应关系，将2D像素信息反投影到3D点，从而将ZebraPose使用的2D-3D对应关系扩展为3D-3D对应关系，并使用RANSAC + Kabsch进行位姿估计。在实验E1中，进一步尝试将RGB图像和深度图像拼接成6通道输入，并使用ZebraPose网络进行训练。然而，由于缺乏6通道输入的预训练模型，实验结果表现较差。这两组实验均未能超越HiPose的结果，表明HiPose的网络架构在学习3D-3D对应关系方面更为高效。
+
+\textbf{ICP算法的影响 }
+迭代最近点算法（ICP）通常作为一种优化策略，利用深度信息优化位姿估计结果。在\autoref{tab:influence_of_icp}中评估了ICP对HiPose和ZebraPose的影响，这两者均仅使用PBR图像进行训练。对于HiPose，使用了真实的物体掩码以便应用ICP。令人惊讶的是，ICP未能带来任何改进，反而使结果变差。在ZebraPose中，结果则有显著改善。然而，一旦问题达到令人满意的准确度，例如使用RANSAC Kabsch（召回率大于$87\%$），引入ICP并不会带来更好的结果。这种情况可能归因于深度图的准确度不足。这说明，若位姿估计结果已达到一定的准确度，引入ICP并不会带来更多提升。
+
+\begin{table}[h]
+    \centering
+    \caption{评估ICP对算法的影响}
+    \label{tab:influence_of_icp}
+    \begin{tabular}{@{}l|c@{}}
+      \toprule
+      实验设置 & ADD(-S)，\% \\
+      \midrule
+      ZebraPose (仅使用pbr数据训练) & 63.5\\
+      ZebraPose (pbr) + ICP & 83.9\\
+      ZebraPose (pbr) + RANSAC Kabsch & 87.0\\
+      ZebraPose (pbr) + RANSAC Kabsch + ICP & 87.0\\
+      \midrule
+      \textbf{HiPose} (本章方法) &  \textbf{89.6}\\
+      HiPose + ICP (使用物体掩码真值) &  89.3\\
+      \bottomrule
+    \end{tabular}
+  \end{table}
+
+\textbf{深度图噪声的影响 }
+在训练过程中，深度图被添加了高斯噪声并随机丢弃像素，以增强网络对噪声的鲁棒性。评估所使用的三个数据集来源于不同型号的深度传感器，这进一步验证了HiPose对不同噪声水平的适应能力。实验结果如\autoref{tab:influence_of_noisy_depth}所示，HiPose对深度图中缺失的测量值表现出较强的鲁棒性，但不准确的测量值会对性能产生轻微影响。
+
+\begin{table}[h]
+    \centering
+    \caption{深度图噪声对结果的影响}
+    \label{tab:influence_of_noisy_depth}
+        \begin{tabular}{@{}l|c@{}}
+          \toprule
+          实验设置 & ADD(-S)， \% \\
+          \midrule
+          \textbf{HiPose} (本章方法) &  \textbf{89.6}\\
+          \midrule
+          深度图添加均值为零、标准差为0.01的高斯噪声 & 89.0\\
+          随机丢弃深度图中$20\%$的点 & 89.5 \\
+          \bottomrule
+        \end{tabular}
+\end{table}
 
 \subsection{运行效率分析}
 
-推理时间主要包括两个部分：1）物体检测和2）物体位姿估计。为了公平比较，我们使用与GDRNPP相同的方法在RTX3090 GPU上计算推理速度。我们在LM-O、YCB-V和T-LESS数据集上的平均物体位姿估计时间为每张图像$0.075$秒。这三个数据集上使用YOLOX\cite{Ge2021YOLOXEY}进行2D检测的平均时间为$0.081$秒。快速的物体位姿估计确保了我们方法的实时适用性，这是由于方法上我们避免了耗时的基于渲染的优化方法。
+推理时间主要包括两个部分：1）物体检测和2）物体位姿估计。为了公平比较，本章使用与GDRNPP相同的方法在RTX3090 GPU上计算推理速度。在LM-O、YCB-V和T-LESS数据集上的平均物体位姿估计时间为每张图像$0.075$秒。这三个数据集上使用YOLOX\cite{Ge2021YOLOXEY}进行2D检测的平均时间为$0.081$秒。快速的物体位姿估计确保了该方法的实时适用性，这是由于方法上避免了耗时的基于渲染的优化步骤。
 
 \subsection{可视化结果}
-我们在\autoref{fig:Qualitative_LMO}、\autoref{fig:Qualitative_YCBV}和\autoref{fig:Qualitative_TLESS}中展示了LM-O\cite{Brachmann2016UncertaintyDriven6P}、YCB-V\cite{ycbv}和T-LESS\cite{tless}数据集上的可视化结果。我们使用估计的姿态将物体渲染到图像中。可以清楚地看到，渲染物体的轮廓与图像中的真实物体无缝对齐，证明了我们估计姿态的准确性。此外，显而易见的是，我们提出的HiPose在处理无纹理物体和遮挡方面表现良好。
+\autoref{fig:Qualitative_LMO}、\autoref{fig:Qualitative_YCBV}和\autoref{fig:Qualitative_TLESS}分别展示了LM-O\cite{Brachmann2016UncertaintyDriven6P}、YCB-V\cite{ycbv}和T-LESS\cite{tless}数据集上的可视化结果。通过将估计的位姿用于物体渲染，可以观察到渲染物体的轮廓与图像中的真实物体高度吻合，验证了估计位姿的准确性。此外，结果表明，HiPose在处理无纹理物体和遮挡场景时具有良好的表现。我们进一步对比不同方法，如\autoref{fig:Qualitative_different_methods}。对于不同的场景图片，我们将输出位姿进行渲染，并输出深度方向的误差图。深度图中，若误差范围小于0.15米，则红色通道为255，否则为0。白色区域和红色区域表示误差较大，粉色区域的颜色越浅表示准确度越高。
 
 \begin{figure}
     \centering
@@ -196,4 +230,11 @@ GDRNPP\cite{liu2022gdrnpp_bop} 的结果与 HiPose 最为接近，但 HiPose 的
     \includegraphics[width=1\linewidth]{figure/hipose/tless_visulize.pdf}
     \caption{T-LESS数据集可视化结果}
     \label{fig:Qualitative_TLESS}
+\end{figure}
+
+\begin{figure}
+  \centering
+  \includegraphics[width=1\linewidth]{figure/hipose/compare_visualize.pdf}
+  \caption{不同方法对比可视化结果}
+  \label{fig:Qualitative_different_methods}
 \end{figure}

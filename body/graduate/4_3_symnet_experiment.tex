@@ -1,32 +1,33 @@
-\section{实验}
+\section{实验验证与分析}
 
 本节首先阐述评估指标，随后在T-LESS\cite{tless}和IC-BIN\cite{icbin}数据集上，将本方法与现有基于模型的方法进行对比测试。这两个数据集具有以下特性：1) 包含丰富的对称目标类别；2) 存在因纹理失配导致的合成-真实域差异。这些特性使其成为评估对称物体处理方法的理想基准。此外，通过超参数消融实验与可视化效果展示，直观揭示SymCode算法对各关键模块的影响机制。
 
-\subsection{评估指标}
-
-可见表面差异(VSD)评估深度绝对差值低于阈值$\tau=20mm$的可见像素比例，我们以 $e_{VSD}<0.3$\cite{pitteri2019object}为条件报告正确6D物体位姿的召回率。同时严格遵循BOP挑战赛\cite{hodan2024bop}制定的评估标准，采用三项核心指标：可见表面差异(VSD)、最大对称感知表面距离(MSSD)和最大对称感知投影距离(MSPD)。
-
 \subsection{数据集}
 
-\par 我们在T-LESS数据集\cite{tless}上对我们的方法进行了全面评估，并与现有的基于模型的方法进行了对比分析。T-LESS数据集是一个用于评估对称物体姿态估计性能的基准数据集，其特点在于包含30个工业相关的无纹理对称物体。这些物体具有以下显著特性：首先，它们缺乏显著的纹理特征或辨别颜色，这使得传统的基于纹理匹配的方法难以有效工作；其次，这些物体展示了高度的对称性和形态相似性，其中部分物体还具有复合结构，这为姿态估计带来了额外的挑战。由于这些物体的对称性，T-LESS数据集特别适合评估方法在对称物体上的表现。
+\par 在T-LESS数据集\cite{tless}上对该方法进行了全面评估，并与现有的基于模型的方法进行了对比分析。T-LESS数据集是一个用于评估对称物体姿态估计性能的基准数据集，其特点在于包含30个工业相关的无纹理对称物体。这些物体具有以下显著特性：首先，它们缺乏显著的纹理特征或辨别颜色，这使得传统的基于纹理匹配的方法难以有效工作；其次，这些物体展示了高度的对称性和形态相似性，其中部分物体还具有复合结构，这为姿态估计带来了额外的挑战。由于这些物体的对称性，T-LESS数据集特别适合评估方法在对称物体上的表现。
 \par T-LESS数据集使用了两种不同的RGB-D传感器进行数据采集：一种是基于结构光技术的Primesense CARMINE 1.09传感器，另一种是基于飞行时间技术的Microsoft Kinect v2传感器。数据集中的测试图像涵盖了从简单场景到复杂场景的多种情况。简单场景包含少量孤立的物体，而复杂场景则包含多个物体实例，并伴有显著的背景杂乱和物体间的遮挡现象。整个数据集包含了来自20个不同场景的测试图像，每个场景都呈现出不同程度的复杂性，这为评估方法的鲁棒性提供了丰富的实验条件。
-\par 考虑到为物体姿态标注真实数据的耗时性，我们采用了BOP挑战赛\cite{hodan2018bop}提供的公开可用的合成物理渲染(pbr)图像。这些高质量的合成图像使我们能够有效验证仅在合成数据上训练的网络性能。通过这种方式，我们不仅能够评估我们的方法在真实场景下的表现，还能够验证其在合成数据上的泛化能力。这一实验设计使得我们能够全面评估我们的方法在不同数据域下的适应性和鲁棒性。
+\par 考虑到为物体位姿标注真实数据的耗时性，采用了BOP挑战赛\cite{hodan2018bop}提供的公开可用的合成物理渲染(pbr)图像。这些高质量的合成图像使我们能够有效验证仅在合成数据上训练的网络性能。通过这种方式，不仅能够评估该方法在真实场景下的表现，还能够验证其在合成数据上的泛化能力。这一实验设计使得我们能够全面评估该方法在不同数据域下的适应性和鲁棒性。
 
-\subsection{与现有技术的对比}
+\subsection{评估指标}
 
-\textbf{T-LESS数据集VSD测试结果 } 如\autoref{tab:tless_vsd}所示，本研究在T-LESS数据集上通过 $e_{VSD}<0.3$ 召回率指标与现有方法进行了对比分析。基于FCOS\cite{fcos}检测器生成的2D检测结果，SymNet展现出显著优势，相较于Pitteri等人\cite{pitteri2019object}在RGB模态下报告的结果，实现了25.0\%的显著提升。需要说明的是，由于BOP评估体系具有更全面的评价维度，近期研究多采用该指标进行方法对比 $e_{VSD}<0.3$ 对比数据较为有限。本实验中，Pitteri等人的研究被选为基准对比对象，因其提供了当前最新的RGB模态评估结果。鉴于原Retina检测器代码已不可用，我们同时纳入CosyPose\cite{labbe2020cosypose}的实验数据，该工作同时报告了BOP指标和 $e_{VSD}<0.3$ 召回率，以增强与早期研究的可比性。值得注意的是，在模型训练策略的对比中，仅使用合成数据训练的模型与结合真实图像训练的模型之间未呈现显著性能差异（平均召回率差值<6\%）。这一现象表明我们的方法在跨域泛化能力方面具有显著优势，能够有效弥合合成数据与真实场景之间的域间差异。为深入分析模型性能，我们根据物体对称特性将T-LESSS数据集划分为3个类别，并分别给出各类别的平均评估分数。实验结果表明，SymNet在不同对称类型的物体上均保持稳定的检测性能，最高类别平均召回率达到78.02\%。
+可见表面差异(VSD)评估深度绝对差值低于阈值$\tau=20mm$的可见像素比例，以 $e_{VSD}<0.3$\cite{pitteri2019object}为条件评估正确6D物体位姿的召回率。同时严格遵循BOP挑战赛\cite{hodan2024bop}制定的评估标准，采用三项核心指标：可见表面差异(VSD)、最大对称感知表面距离(MSSD)和最大对称感知投影距离(MSPD)。关于评价指标的详细内容参照\autoref{subsec:评价指标}。
+
+
+\subsection{与现有方法的对比}
+
+\textbf{T-LESS数据集VSD测试结果 } 如\autoref{tab:tless_vsd}所示，本研究在T-LESS数据集上通过 $e_{VSD}<0.3$ 召回率指标与现有方法进行了对比分析。基于FCOS\cite{fcos}检测器生成的2D检测结果，SymNet展现出显著优势，相较于Pitteri等人\cite{pitteri2019object}在RGB模态下报告的结果，实现了25.0\%的显著提升。需要说明的是，由于BOP评估体系具有更全面的评价维度，近期研究多采用该指标进行方法对比 $e_{VSD}<0.3$ 对比数据较为有限。本实验中，Pitteri等人的研究被选为基准对比对象，因其提供了当前最新的RGB模态评估结果。鉴于原Retina检测器代码已不可用，我们同时纳入CosyPose\cite{labbe2020cosypose}的实验数据，该工作同时报告了BOP指标和 $e_{VSD}<0.3$ 召回率，以增强与早期研究的可比性。值得注意的是，在模型训练策略的对比中，仅使用合成数据训练的模型与结合真实图像训练的模型之间未呈现显著性能差异（平均召回率差值<6\%）。这一现象表明该方法在跨域泛化能力方面具有显著优势，能够有效弥合合成数据与真实场景之间的域间差异。为深入分析模型性能，根据物体对称特性将T-LESSS数据集划分为3个类别，并分别给出各类别的平均评估分数。实验结果表明，SymNet在不同对称类型的物体上均保持稳定的检测性能，最高类别平均召回率达到78.02\%。
 
 \input{table/symnet/tless_vsd}
 
-\textbf{T-LESS数据集BOP测试结果 } 在T-LESS数据集上的BOP基准测试结果如\autoref{tab:tless_bop}所示。我们采用BOP挑战赛2023\cite{hodan2024bop}提供的默认检测结果，与完全基于合成数据训练的其他方法进行对比。由于我们的方法无需依赖耗时的姿态优化步骤，能够直接从每个检测结果中获取姿态，因此运行时间显著优于现有方法。实验表明，我们的模型在保持与ZebraposeSAT-EffnetB4相当精度的同时，使用更轻量的骨干网络（运行时间仅为后者的三分之一）。需要注意的是，此处的运行时间为单物体实例处理耗时，若采用多物体并行推理策略，整体运行时间可进一步优化。
+\textbf{T-LESS数据集BOP测试结果 } 在T-LESS数据集上的BOP基准测试结果如\autoref{tab:tless_bop}所示。采用BOP挑战赛2023\cite{hodan2024bop}提供的默认检测结果，与完全基于合成数据训练的其他方法进行对比。由于该方法无需依赖耗时的姿态优化步骤，能够直接从每个检测结果中获取姿态，因此运行时间显著优于现有方法。实验表明，该模型在保持与ZebraposeSAT-EffnetB4相当精度的同时，使用更轻量的骨干网络（运行时间仅为后者的三分之一）。需要注意的是，此处的运行时间为单物体实例处理耗时，若采用多物体并行推理策略，整体运行时间可进一步优化。
 
 \input{table/symnet/tless_bop}
 
-\textbf{IC-BIN数据集BOP测试结果 } 在IC-BIN数据集上的BOP基准测试结果如\autoref{tab:icbin_bop}所示。同样基于合成数据训练的对比实验显示，我们的方法在精度与效率间实现了优异平衡。与T-LESS数据集类似，我们通过端到端姿态估计流程避免了传统姿态优化的计算开销，从而在运行速度上取得显著优势。实验进一步验证了模型的泛化能力：即使在高度遮挡的工业场景（IC-BIN数据集特性）中，我们的方法仍能保持稳定的检测精度，且单实例推理耗时仅为同类方法的$30\%-40\%$。
+\textbf{IC-BIN数据集BOP测试结果 } 在IC-BIN数据集上的BOP基准测试结果如\autoref{tab:icbin_bop}所示。同样基于合成数据训练的对比实验显示，该方法在精度与效率间实现了优异平衡。与T-LESS数据集类似，通过端到端位姿估计流程避免了传统位姿优化的计算开销，从而在运行速度上取得显著优势。实验进一步验证了模型的泛化能力：即使在高度遮挡的工业场景（IC-BIN数据集特性）中，该方法仍能保持稳定的检测精度，且单实例推理耗时仅为同类方法的$30\%-40\%$。
 
 \input{table/symnet/icbin_bop}
 
-\textbf{YCB-V数据集BOP测试结果 } 在\autoref{tab:ycbv_bop}中，我们将我们的结果与其他方法在YCB-V数据集上的表现进行了对比。实验结果相对较差的物体包括036 wood block, 037 scissors, 024 bowl, 以及 010 potted meat can。其中，036和024是对称物体。我们发现，在显著遮挡的情况下，输出的二进制编码仍然表现出特定姿态的特征，尽管该姿态是错误的。我们怀疑这一问题是由于训练数据中遮挡不足导致。
+\textbf{YCB-V数据集BOP测试结果 } 在\autoref{tab:ycbv_bop}中，将本章结果与其他方法在YCB-V数据集上的表现进行了对比。实验结果相对较差的物体包括036 wood block, 037 scissors, 024 bowl, 以及 010 potted meat can。其中，036和024是对称物体。可以发现，在显著遮挡的情况下，输出的二进制编码仍然表现出特定姿态的特征，尽管该姿态是错误的。我们怀疑这一问题是由于训练数据中遮挡不足导致。
 
 \input{table/symnet/ycbv_bop}
 
@@ -38,9 +39,9 @@
 
 \input{table/symnet/ablation_pnp}
 
-\textbf{与ZebraPose的对比分析 } 受限于一对一对应关系的设计范式，我们预期ZebraPose在对称物体上的性能表现可能受限。然而BOP基准测试显示：当ZebraPose使用真实数据训练时，其平均召回率达到0.775，略高于本方法真实数据训练版本的0.767。我们推测这种差异源于真实图像对物体细微非对称特征的捕捉能力——尽管物体具有宏观对称性，但实际制造中存在的表面色差（如T-LESS obj04顶部的红色区块）或结构缺陷（如中间区域的凹陷特征）在真实图像中形成可辨识的弱非对称线索，从而缓解了对称歧义问题。该推论通过\autoref{fig:vis_zebrapose_gt_real_pbr_support}中真实图像训练与合成图像训练ZebraPose的对比实验得到验证：绿色框表示真实标注，红色框为真实数据训练的ZebraPose预测结果，蓝色框为合成数据训练版本。以T-LESS obj04物体为例，其顶部红色区块（黄色箭头指示）和中间凹陷结构（红色箭头指示）在真实图像中形成关键判别特征。可见真实数据训练的模型预测框与真实标注框重合度更高，这得益于网络能够学习实际场景中存在的细微色差与几何变形特征，而合成数据因缺乏色彩信息（如obj04合成数据中红色区块未被渲染）导致对应特征辨识度不足。
+\textbf{与ZebraPose的对比分析 } 受限于一对一对应关系的设计范式，应该预期ZebraPose在对称物体上的性能表现可能受限。然而BOP基准测试显示：当ZebraPose使用真实数据训练时，其平均召回率达到0.775，略高于本方法真实数据训练版本的0.767。可以推测这种差异源于真实图像对物体细微非对称特征的捕捉能力——尽管物体具有宏观对称性，但实际制造中存在的表面色差（如T-LESS obj04顶部的红色区块）或结构缺陷（如中间区域的凹陷特征）在真实图像中形成可辨识的弱非对称线索，从而缓解了对称歧义问题。该推论通过\autoref{fig:vis_zebrapose_gt_real_pbr_support}中真实图像训练与合成图像训练ZebraPose的对比实验得到验证：绿色框表示真实标注，红色框为真实数据训练的ZebraPose预测结果，蓝色框为合成数据训练版本。以T-LESS obj04物体为例，其顶部红色区块（黄色箭头指示）和中间凹陷结构（红色箭头指示）在真实图像中形成关键判别特征。可见真实数据训练的模型预测框与真实标注框重合度更高，这得益于网络能够学习实际场景中存在的细微色差与几何变形特征，而合成数据因缺乏色彩信息（如obj04合成数据中红色区块未被渲染）导致对应特征辨识度不足。
 
-\par 在合成数据训练场景下，我们重点对比了ZebraPoseSAT-EffnetB4模型（基于PBR数据训练且采用更大骨干网络）的公开结果。需要说明的是，纯PBR数据训练的ZebraPose完整结果尚未公开，我们基于开源代码复现实验获得其平均召回率为0.677。在同等实验设置下，本方法实现了0.736的平均召回率，同时在推理效率方面展现出更优的时间性能。
+\par 在合成数据训练场景下，重点对比了ZebraPoseSAT-EffnetB4模型（基于PBR数据训练且采用更大骨干网络）的公开结果。需要说明的是，纯PBR数据训练的ZebraPose完整结果尚未公开，基于开源代码复现实验获得其平均召回率为0.677。在同等实验设置下，本方法实现了0.736的平均召回率，同时在推理效率方面展现出更优的时间性能。
 
 \begin{figure}[ht]
         \centerline{\includegraphics[width=1.0\textwidth]{figure/symnet/vis_zebrapose_gt_real_pbr_support.jpg}}
@@ -48,7 +49,7 @@
         \label{fig:vis_zebrapose_gt_real_pbr_support}
 \end{figure}
 
-\textbf{SymCode编码长度分析 } 默认情况下，我们遵循ZebraPose\cite{su2022zebrapose}的设置将对称编码长度 $d$ 固定为16。 如\autoref{fig:ablation_bit}所示，我们在T-LESS数据集中具有离散对称性的物体27上进行了对比实验，以确定二进制编码长度 $d$ 的最优值。实验将BOP评分标准化为准确率表征，结果表明：即使采用较少的编码位数（如8位），我们的方法仍能有效捕捉物体位姿。通过对不同编码长度的消融实验发现：模型性能对$d$值的变化呈现稳健性，但不同长度对应的精度提升具有非确定性特征，且缺乏先验理论指导最优参数选择。因此，在主体实验中我们保持$d=16$以保证对比实验的基准一致性。值得注意的是，\autoref{fig:compare_gt_est}显示网络对编码末尾比特位的预测存在误差累积现象，该问题在ZebraPose中同样存在。实验数据表明，$d=16$并非最优解（\autoref{fig:compare_gt_est}中其性能处于次优区间），这暗示编码长度仍存在优化空间。为进一步验证，我们在YCB-V数据集上对比$d=16$与$d=10$的指标，结果显示精度从73.68提升至74.66。由于这一改进并不显著，为避免参数过拟合风险并保持方法通用性，最终仍采用$d=16$作为标准配置。此策略在平衡方法可复现性与性能优化需求的同时，有效规避了超参数选择偏差对实验结论的影响。
+\textbf{SymCode编码长度分析 } 默认情况下，遵循ZebraPose\cite{su2022zebrapose}的设置将对称编码长度 $d$ 固定为16。 如\autoref{fig:ablation_bit}所示，在T-LESS数据集中具有离散对称性的物体27上进行了对比实验，以确定二进制编码长度 $d$ 的最优值。实验将BOP评分标准化为准确率表征，结果表明：即使采用较少的编码位数（如8位），该方法仍能有效捕捉物体位姿。通过对不同编码长度的消融实验发现：模型性能对$d$值的变化呈现稳健性，但不同长度对应的精度提升具有非确定性特征，且缺乏先验理论指导最优参数选择。因此，在主体实验中保持$d=16$以保证对比实验的基准一致性。值得注意的是，\autoref{fig:compare_gt_est}显示网络对编码末尾比特位的预测存在误差累积现象，该问题在ZebraPose中同样存在。实验数据表明，$d=16$并非最优解（\autoref{fig:compare_gt_est}中其性能处于次优区间），这暗示编码长度仍存在优化空间。为进一步验证，在YCB-V数据集上对比$d=16$与$d=10$的指标，结果显示精度从73.68提升至74.66。由于这一改进并不显著，为避免参数过拟合风险并保持方法通用性，最终仍采用$d=16$作为标准配置。此策略在平衡方法可复现性与性能优化需求的同时，有效规避了超参数选择偏差对实验结论的影响。
 
 \begin{figure}[ht]
         \centerline{\includegraphics[width=1.0\textwidth]{figure/symnet/ablation_bit.jpg}}
@@ -61,8 +62,8 @@
         \caption{SymCode的真实值和对应学习结果}
         \label{fig:compare_gt_est}
 \end{figure}
-
-\textbf{学习一对一对应关系的挑战 } 我们进行了实验，使用ZebraPose编码训练我们的端到端网络SymNet，这是一种编码一对一对应关系的有效方法。在这种情况下，网络的BOP召回率为0.612，相对于SymNet的0.736表现较弱。当我们移除所有端到端损失并专注于训练ZebraPose编码时，\autoref{fig:difficult_learn_one_to_one}展示了学习基于一对一对应关系编码的困难。 第一行：具有相似视角的图像。第二行：SymCode的第二位预测结果，对于相似的视角，SymCode的预测结果非常准确。第三行：ZebraPose Code的第二位预测结果，对于相似的视角，ZebraPose Code的预测结果可能出现不一致甚至完全模糊的结果。为实现高精度姿态估计，ZebraPose Code依赖RANSAC-PnP算法过滤不一致的对应关系，但在对称性导致的歧义场景中（如第二列所示）仍存在困难。需要说明的是，该结果使用我们基于SymNet网络但使用ZebraPose Code进行训练获得。为清晰可视化，我们采用预测掩码去除背景干扰，并在预测结果中将数值0映射为黑色、1映射为白色，0-1之间的中间值以灰度渐变形式呈现。
+\textbf{学习一对一对应关系的挑战 } 尝试使用ZebraPose编码训练端到端网络SymNet，这种编码方法旨在有效表示一对一对应关系。
+在这种情况下，网络的BOP召回率为0.612，相对于SymNet的0.736表现较弱。当移除所有端到端损失并专注于训练ZebraPose编码时，\autoref{fig:difficult_learn_one_to_one}展示了学习基于一对一对应关系编码的困难。 第一行：具有相似视角的图像。第二行：SymCode的第二位预测结果，对于相似的视角，SymCode的预测结果非常准确。第三行：ZebraPose Code的第二位预测结果，对于相似的视角，ZebraPose Code的预测结果可能出现不一致甚至完全模糊的结果。为实现高精度姿态估计，ZebraPose Code依赖RANSAC-PnP算法过滤不一致的对应关系，但在对称性导致的歧义场景中（如第二列所示）仍存在困难。需要说明的是，该结果使用基于SymNet网络但使用ZebraPose Code进行训练获得。为清晰可视化，采用预测掩码去除背景干扰，并在预测结果中将数值0映射为黑色、1映射为白色，0-1之间的中间值以灰度渐变形式呈现。
 
 \begin{figure}[ht]
     \centerline{\includegraphics[width=1.0\textwidth]{figure/symnet/difficulty_learn_one_to_one.jpg}}
@@ -72,7 +73,7 @@
 
 \subsection{可视化} 
 
-\autoref{fig:compare_code_map}通过对比揭示了SymCode与ZebraPose的二进制编码特性差异：首行与第三行呈现ZebraPose编码图，第二行与第四行展示SymCode编码图，末列则为各比特位的聚合可视化结果。该对比清晰揭示了SymCode编码体系对物体对称性信息的有效整合。从图\autoref{fig:compare_code_map}我们观察到ZebraPose编码不具备明显的规律，而SymNet则展现出更优的对称一致性。
+\autoref{fig:compare_code_map}通过对比揭示了SymCode与ZebraPose的二进制编码特性差异：首行与第三行呈现ZebraPose编码图，第二行与第四行展示SymCode编码图，末列则为各比特位的聚合可视化结果。该对比清晰揭示了SymCode编码体系对物体对称性信息的有效整合。从\autoref{fig:compare_code_map}观察到ZebraPose编码不具备明显的规律，而SymNet则展现出更优的对称一致性。
 
 \begin{figure}[htbp]
         \centerline{\includegraphics[width=1.0\textwidth]{figure/symnet/compare_code_map.jpg}}
@@ -96,21 +97,11 @@
         \label{fig:compare_zebrapose}
 \end{figure}
 
-我们进一步可视化了正确和错误的示例，如\autoref{fig:ycbv_bowl_vis}所示。我们发现，在显著遮挡的情况下，输出的二进制编码仍然表现出特定姿态的特征，尽管该姿态是错误的。第一列为真实值，第二列为估计的姿态。第一个示例是正确估计的情况，而第二个示例是错误估计的情况。右侧的第一行和第三行为SymCode的真实值，第二行和第四行为估计值。
-
 \begin{figure}[ht]
         \centerline{\includegraphics[width=1.0\textwidth]{figure/symnet/ycbv_bowl_vis.jpg}}
         \caption{YCB-V数据集的正确和错误的示例}
         \label{fig:ycbv_bowl_vis}
 \end{figure}
 
-% \subsection{Implementation Details}
-% The process of surface encoding and label generation is built upon Open3D~\cite{Zhou2018open3d}. By default, the length of the binary code, $d$, is set to be $16$. Our method is specifically designed for each object, as this setting remains crucial for high-precision applications, offering significant advantages compared to training a single model to cover multiple objects.
+进一步可视化了正确和错误的示例，如\autoref{fig:ycbv_bowl_vis}所示。可以发现，在显著遮挡的情况下，输出的二进制编码仍然表现出特定姿态的特征，尽管该姿态是错误的。第一列为真实值，第二列为估计的姿态。第一个示例是正确估计的情况，而第二个示例是错误估计的情况。右侧的第一行和第三行为SymCode的真实值，第二行和第四行为估计值。
 
-% The input image is cropped and resized to an RoI with dimensions of $256\times 256\times 3$, based on the detection result. If not explicitly stated, we utilize the bounding box detected by YoloX~\cite{ge2021yolox}. The shape of the intermediate variables is set to be $128 \times 128$. During training, we employed a dynamic zoom-in strategy to generate noisy RoI with varying sizes in the range of $[1.2-1.5]$. However, during inference, the RoI scale rate is fixed at $1.3$. We apply strong augmentations to the input image, similar to the approach used in GDR-Net~\cite{wang2021gdr}, in order to simulate variations in lighting, occlusion, and a clustered environment. The network is trained for a maximum of $300$ epochs using the Adam optimizer~\cite{Kingma2014AdamAM}. We use a batch size of either $16$ or $32$ and a fixed learning rate of $2e-4$. The balancing weight in the loss function is set to a default value of $\alpha = 3$. Our network can be trained on a single NVIDIA 2080Ti GPU.
-
-% \subsection{Evaluation Protocol}
-
-% The Visible Surface Discrepancy (VSD) is a widely used metric that compares ground truth measured depth maps with depth maps rendered based on estimated poses. It evaluates the proportion of visible pixels for which the depth absolute discrepancy falls below a threshold of $\tau=20mm$. Consistent with prior research~\cite{wen2020edge, pitteri2019object}, we report the recall of correct 6D object poses at $e_{VSD}<0.3$. Notably, this metric demonstrates reduced sensitivity to visual symmetries, as they often result in analogous symmetries within depth maps.
-
-% We adhere to the evaluation protocol outlined in the BOP challenge\cite{hodan2018bop}. BOP assesses pose accuracy using three metrics: Visible Surface Discrepancy (VSD), Maximum Symmetry-aware Surface Distance (MSSD), and Maximum Symmetry-aware Projection Distance (MSPD). Each metric computes an average recall ($AR_{VSD}$, $AR_{MSSD}$, $AR_{MSPD}$) based on predefined error thresholds, with the overall average recall $AR$ being the mean of these three values. Notably, the pose-error functions in BOP effectively enhance robustness to symmetry ambiguities compared to widely used ADD-S.

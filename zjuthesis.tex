@@ -21,12 +21,12 @@
     % Thesis Info
     ClassNumber     = TP391.4,          % 按中国图书分类法，学位办网上可查
     Security        = 无,              % 注明密级与保密期限，仅限于论文课题来源于国防军工项目，如没有请填：无
-    StudentName     = 林永良,
-    StudentID       = 11932050,
-    AdvisorName     = 张宇 教授,
+    StudentName     = ,
+    StudentID       = ,
+    AdvisorName     = ,
     Grade           = 2025,            % only the year, no '级'
-    Major           = 控制科学与工程,
-    Department      = 控制科学与工程学院,
+    Major           = ,
+    Department      = ,
     SubmitDate      = 二零二五年四月,
     MajorFormat     = general,
     Degree          = graduate,   % 'undergraduate' or 'graduate'
@@ -44,12 +44,12 @@
     ListOfTables    = true,
     ListOfAlgorithms= false,
     % Title
-    Title           = 高精度实时的实例级6D物体位姿估计技术,
+    Title           = 高精度实时实例级6D物体位姿估计方法研究,
     TitleEng        = {High-precision and Real-time Instance-level 6D Object Pose Estimation}
 ]{zjuthesis}
 
 %% Uncomment the following lines if you need multi line titles on cover pages
-\titletwolines{高精度实时的实例级}{6D物体位姿估计技术}
+\titletwolines{高精度实时实例级6D}{物体位姿估计方法研究}
 % \titleengtwolines{Instance-level 6D Object Pose}{Estimation Based on Deep Learning}
 % \titlethreelines{毕业论文题目第一行}{毕业论文题目第二行}{毕业论文题目第三行}
 \titleengthreelines{High-precision and}{Real-time Instance-level}{6D Object Pose Estimation}
@@ -172,9 +172,16 @@
     \inputbody{post}
 }
 
-\special{dvipdfmx:config z 0} % 取消PDF压缩，加快速度，最终版本生成的时候最好把这句话注释掉
+% \special{dvipdfmx:config z 0} % 取消PDF压缩，加快速度，最终版本生成的时候最好把这句话注释掉
 
 \begin{document}
+\renewcommand\floatpagefraction{.9}
+\renewcommand\topfraction{.9}
+\renewcommand\bottomfraction{.9}
+\renewcommand\textfraction{.1}
+\setcounter{totalnumber}{50}
+\setcounter{topnumber}{50}
+\setcounter{bottomnumber}{50}
 \ifthenelse{\equal{\Degree}{undergraduate}}
 {
     \inputundergraduate{}

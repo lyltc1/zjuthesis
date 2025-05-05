@@ -1,9 +1,11 @@
 \begin{table}
   \centering
+  \caption{在BOP挑战赛上的对比结果}
+  \label{tab:bop_score_table}
   \resizebox{\textwidth}{!}{%
   \begin{tabular}{l|c|c|c|c|c|c|c}
     \toprule
-     方法 & 训练数据 & 后优化方法 & LM-O & YCB-V & T-LESS & 均值 & 时间(秒) \\
+     方法 & 训练数据 & 后优化方法 & LM-O & YCB-V & T-LESS & AR & 时间(秒) \\
     \midrule
     FFB6D-CVPR21-PBR-NoRefinement\cite{he2021ffb6d} & PBR &  - & 68.7 &  75.8  & - & 72.3$^*$ & 0.19$^*$\\
     RCVPose 3D\_SingleModel\_VIVO\_PBR\cite{wu2022vote} & PBR &  ICP~\cite{Rusinkiewicz2001EfficientVO} & 72.9 &  84.3  & 70.8 & 76.0 & 1.33\\
@@ -14,26 +16,4 @@
     \bottomrule
   \end{tabular}
   }
-  \caption{在BOP挑战赛上的对比结果}
-  \label{tab:bop_score_table}
 \end{table}
-
-
-
-% \begin{table}
-%   \centering
-%   \begin{tabular}{@{}l|c|c|c|c}
-%     \toprule
-%      \makecell{Method} & LMO & YCBV & TLESS & time(sec) \\
-%     \midrule
-%     \small{\makecell{FFB6D-CVPR21-\\PBR-NoRefinement~\cite{he2021ffb6d}}} &  68.7 &  75.8  & - & -\\
-%     \small{\makecell{GDRNPP-PBR-\\RGBD-MModel~\cite{liu2022gdrnpp_bop}}}} &  77.5 &  90.6  & \textbf{85.2} & 6.26\\
-%     \small{\makecell{RCVPose 3D\_\\SingleModel\_VIVO\_PBR~\cite{Wu2021VoteFT}}}} &  72.9 &  84.3  & 70.8 & 1.33\\
-%     \small{\makecell{RADet+PFA-\\PBR-RGBD~\cite{Hai2023RigidityAwareDF}}}} &  79.7 &  82.6  & 80.2 & 2.63\\
-%     \small{\makecell{SurfEmb-PBR-\\RGBD~\cite{Haugaard2021SurfEmbDA}}}} &  76.0 &  79.9  & 82.8 & 9.04\\
-%     \small{\makecell{HiPose (ours)} &  \textbf{79.9} &  \textbf{90.7}}   & 83.3 & \textbf{0.14}\\
-%     \bottomrule
-%   \end{tabular}
-%   \caption{\textbf{Comparison with Leaders on BOP Challenge~\cite{Sundermeyer2023BOPC2}}. We compare our ZebraPose with state of the art w.r.t AUC of ADD(-S) and AUC of ADD-S in \%. (-) denotes results missing from the original paper.}
-%   \label{tab:bop_score_table}
-% \end{table}

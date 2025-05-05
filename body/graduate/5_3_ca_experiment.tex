@@ -1,42 +1,42 @@
-\section{实验}
+\section{实验验证与分析}
 
 \subsection{数据集和指标}
-我们的方法在YCB-V数据集\cite{ycbv}和IC-BIN数据集\cite{icbin}上进行了验证，遵循BOP挑战赛\cite{hodan2024bop}的设置和评估指标。训练阶段使用了50,000张仿真合成图像，而测试阶段则在真实图像上进行。评估采用了三个指标：可见表面差异（VSD）、最大对称感知表面距离（MSSD）和最大对称感知投影距离（MSPD）。这三个指标的平均值（记为AR）被用作整体性能的衡量标准。
+本章方法在YCB-V数据集\cite{ycbv}和IC-BIN数据集\cite{icbin}上进行了验证，遵循BOP挑战赛\cite{hodan2024bop}的设置和评估指标。训练阶段使用了50,000张仿真合成图像，而测试阶段则在真实图像上进行。评估采用了三个指标：可见表面差异（VSD）、最大对称感知表面距离（MSSD）和最大对称感知投影距离（MSPD）。这三个指标的平均值（记为AR）被用作整体性能的衡量标准。关于评价指标的详细内容参照\autoref{subsec:评价指标}。
 
-\subsection{与现有技术的比较}
+\subsection{与现有方法的比较}
 
-\textbf{在YCB-V数据集上的BOP指标对比 } 我们的方法与其他完全在合成数据上训练的方法在YCB-V数据集上的表现进行了比较，结果如\autoref{tab:ca_ycbv_bop}所示。术语“pbr”表示模型完全在合成图像上训练，而“RGB”表示输入中未使用深度信息。向上箭头（↑）表示较高的指标值代表更好的性能，而向下箭头（↓）则相反。我们采用了BOP挑战赛2023\cite{hodan2024bop}提供的默认检测结果。实验结果表明，我们的方法在仅需0.019秒的运行时间下，能够将基线方法的性能提升。具体而言，我们比基线模型SymNet\cite{symnet}提高了$0.9\%$，并且在不使用深度信息的情况下，达到了接近使用RGB-D图像作为输入的FFB6D\cite{he2021ffb6d}的准确性。与其他需要渲染优化的技术相比，我们的方法在运行时间上仍具有显著优势。
+\textbf{在YCB-V数据集上的BOP指标对比 } 该方法与其他完全在合成数据上训练的方法在YCB-V数据集上的表现进行了比较，结果如\autoref{tab:ca_ycbv_bop}所示。术语“pbr”表示模型完全在合成图像上训练，而“RGB”表示输入中未使用深度信息。向上箭头（↑）表示较高的指标值代表更好的性能，而向下箭头（↓）则相反。采用了BOP挑战赛2023\cite{hodan2024bop}提供的默认检测结果。实验结果表明，提出的方法在仅需0.019秒的运行时间下，能够将基线方法的性能提升。具体而言，该方法比上一章模型SymNet\cite{symnet}提高了$0.9\%$，并且在不使用深度信息的情况下，达到了接近使用RGB-D图像作为输入的FFB6D\cite{he2021ffb6d}的准确性。与其他需要渲染优化的技术相比，该方法在运行时间上仍具有显著优势。
 
 \input{table/ca/ycbv_bop}
 
 \textbf{在IC-BIN数据集BOP指标对比}
 
-我们将我们的结果与完全在合成数据上训练的其他方法进行比较在IC-BIN数据集上，如\autoref{tab:ca_icbin_bop}所示。术语“pbr”表示模型完全在合成图像上训练，而“RGB”表示输入中未使用深度信息。向上箭头（↑）表示较高的指标值表示更好的性能，而向下箭头（↓）表示相反。我们采用BOP挑战赛2023\cite{hodan2024bop}提供的默认检测结果。与其他方法相比，我们的方法运行时间显著减少，因为我们的细化方法不依赖于另一个耗时的网络。我们的方法在准确性和运行时间方面都取得了优异的结果。在该数据集的实验上，我们的方法对基线方法没有显著提升，这也说明了我们的方法的局限性。但综合在YCB-V以及在IC-BIN的结果，说明了我们的方法总体上是有效果的。
+将本章方法与完全在合成数据上训练的其他方法进行比较在IC-BIN数据集上，如\autoref{tab:ca_icbin_bop}所示。术语“pbr”表示模型完全在合成图像上训练，而“RGB”表示输入中未使用深度信息。向上箭头（↑）表示较高的指标值表示更好的性能，而向下箭头（↓）表示相反。采用BOP挑战赛2023\cite{hodan2024bop}提供的默认检测结果。与其他方法相比，该方法运行时间显著减少，因为细化方法不依赖于另一个耗时的网络。该方法在准确性和运行时间方面都取得了优异的结果。在该数据集的实验上，该方法对基线方法没有显著提升，这也说明了该方法的局限性。但综合在YCB-V以及在IC-BIN的结果，说明了该方法总体上是有效果的。
 
 \input{table/ca/icbin_bop}
 
 \subsection{消融实验}
 
-我们进行了多项的消融研究，以探讨多种因素对我们方法性能的影响，包括Tikhonov正则化、优化过程的停止条件以及迭代次数。所有实验均在YCB-V数据集上进行，并采用平均召回率（AR）作为性能评估指标。
+本节通过多项的消融研究，探讨多种因素对该方法性能的影响，包括Tikhonov正则化、优化过程的停止条件以及迭代次数。所有实验均在YCB-V数据集上进行，并采用平均召回率（AR）作为性能评估指标。
 
-\textbf{Tikhonov参数的作用 } 如\autoref{tab:ca_main_ablation}所示，我们对比了不使用优化过程以及使用优化的结果。实验表明，如果不使用Tikhonov正则化，则AR会直接下降4.1\%。缺乏Tikhonov正则化会导致准确性下降，突出了Tikhonov正则化在优化稳定性中的关键作用。使用了Tikhonov正则化后，平均召回率提升0.9\%。通过对运行时间的测试，我们可以得出Tikhonov正则化不会对运行时间产生太大的影响。
+\textbf{Tikhonov参数的作用 } 如\autoref{tab:ca_main_ablation}所示，对比了不使用优化过程以及使用优化的结果。实验表明，如果不使用Tikhonov正则化，则AR会直接下降4.1\%。缺乏Tikhonov正则化会导致准确性下降，突出了Tikhonov正则化在优化稳定性中的关键作用。使用了Tikhonov正则化后，平均召回率提升0.9\%。通过对运行时间的测试，可以得出Tikhonov正则化不会对运行时间产生太大的影响。
 
 \input{table/ca/main_ablation}
 
-\textbf{Tikhonov参数鲁棒性 } 此外，我们验证了Tikhonov参数的鲁棒性，\autoref{tab:ca_Tikhonov_Parameter}展示了Tikhonov参数$\lambda$在$10$到$10^8$范围内以10的幂次为间隔的满意性能。与\autoref{tab:ca_main_ablation}中使用优化而不使用Tikhonov正则化的结果$AR=69.8\%$相比，使用Tikhonov正则化可以明显带来正收益。当Tikhonov参数$\lambda$小于$10^5$时结果$AR$可达到$74.8\%$，当$\lambda=10^6$，算法精度达到最高75.1，并且只有当$\lambda>=10^9$才能够观测到AR的明显下降。实验表明Tikhonov参数的鲁棒性极强，在10至$10^8$均为合理范围。我们推荐使用$\lambda=10^6$作为默认参数。
+\textbf{Tikhonov参数鲁棒性 } 此外，验证了Tikhonov参数的鲁棒性，\autoref{tab:ca_Tikhonov_Parameter}展示了Tikhonov参数$\lambda$在$10$到$10^8$范围内以10的幂次为间隔的满意性能。与\autoref{tab:ca_main_ablation}中使用优化而不使用Tikhonov正则化的结果$AR=69.8\%$相比，使用Tikhonov正则化可以明显带来正收益。当Tikhonov参数$\lambda$小于$10^5$时结果$AR$可达到$74.8\%$，当$\lambda=10^6$，算法精度达到最高75.1，并且只有当$\lambda>=10^9$才能够观测到AR的明显下降。实验表明Tikhonov参数的鲁棒性极强，在10至$10^8$均为合理范围。推荐使用$\lambda=10^6$作为默认参数。
 
 \input{table/ca/Tikhonov_param}
 
-\textbf{迭代步骤 } 通过评估每次迭代的平均召回率（AR），展示了我们方法的收敛性，如\autoref{tab:ca_Iteration_Step}所示。可以观察到，第一次迭代步骤对整体改进贡献显著，AR从73.9提升至74.7。随后几次迭代的改进逐渐减小，最终在第4次迭代后趋于稳定。此外，自动停止条件能够在不需要手动确定迭代次数的情况下实现与固定迭代次数相同的最佳结果（AR=74.8）。
+\textbf{迭代步骤 } 通过评估每次迭代的平均召回率（AR），展示了该方法的收敛性，如\autoref{tab:ca_Iteration_Step}所示。可以观察到，第一次迭代步骤对整体改进贡献显著，AR从73.9提升至74.7。随后几次迭代的改进逐渐减小，最终在第4次迭代后趋于稳定。此外，自动停止条件能够在不需要手动确定迭代次数的情况下实现与固定迭代次数相同的最佳结果（AR=74.8）。
 
 \input{table/ca/iteration_step}
 
 \subsection{运行时间分析}
 
-我们的方法通过避免复杂的网络细化，并结合自动停止策略，有效减少了计算开销。在高速端到端的SymNet网络中集成后，我们的优化方法在运行时间上展现出显著优势。整体执行时间（包括渲染和优化）仅为0.02秒，显著优于其他主流方法。
+该方法通过避免复杂的网络细化，并结合自动停止策略，有效减少了计算开销。在高速端到端的SymNet网络中集成后，本章的优化方法在运行时间上展现出显著优势。整体执行时间（包括渲染和优化）仅为0.02秒，显著优于其他主流方法。
 
 \subsection{可视化}
-\par \textbf{训练数据和测试数据 } 我们的方法在仿真数据上进行了训练，仿真数据中包含了无关物体，并模拟了各种背景、光照条件以及遮挡情况。左图展示了在50,000张合成图像上进行训练的场景。右图（第一行）为来自真实场景的测试图像，右图（第二行）为使用恢复的姿态在场景中渲染的物体模型。由于我们在训练中使用了足够强的数据增广，能够有效完成跨域任务。合成训练集和真实测试集及其对应真值标签可视化见\autoref{fig:ca_quantitative_results}。
+\par \textbf{训练数据和测试数据 } 该方法在仿真数据上进行了训练，仿真数据中包含了无关物体，并模拟了各种背景、光照条件以及遮挡情况。左图展示了在50,000张合成图像上进行训练的场景。右图（第一行）为来自真实场景的测试图像，右图（第二行）为使用恢复的姿态在场景中渲染的物体模型。由于在训练中使用了足够强的数据增广，能够有效完成跨域任务。合成训练集和真实测试集及其对应真值标签可视化见\autoref{fig:ca_quantitative_results}。
 
 \begin{figure}[htbp]
     \centering
@@ -51,7 +51,7 @@
 
 
 
-\textbf{细节展示 } 我们在\autoref{fig: ca_detail_compare}中强调了优化过程的作用。我们展示了SymNet\cite{symnet}（在明亮的蓝色背景中显示）和我们的方法（在明亮的绿色背景中显示）之间的视觉比较，突出了细化过程的影响，展示了其有效性。SymNet端到端网络的输出边缘与实物有些许偏差的情况下，我们的方法能够对此进行优化。我们将估计的位姿渲染回原始图像，并观察到细化后的渲染结果与原始图像的一致性更高。
+\textbf{细节展示 } 在\autoref{fig: ca_detail_compare}中强调了优化过程的作用。展示了SymNet\cite{symnet}（在明亮的蓝色背景中显示）和该方法（在明亮的绿色背景中显示）之间的视觉比较，突出了细化过程的影响，展示了其有效性。SymNet端到端网络的输出边缘与实物有些许偏差的情况下，该方法能够对此进行优化。将估计的位姿渲染回原始图像，并观察到细化后的渲染结果与原始图像的一致性更高。
 
 \begin{figure}[htbp]
 \centerline{\includegraphics[width=1.0\textwidth]{figure/ca/detail_compare.jpg}}
@@ -59,26 +59,26 @@
     \label{fig: ca_detail_compare}
 \end{figure}
 
-\textbf{工作原理展示 } \autoref{fig:optimization_vis}展示了对齐前后CoI、$\mathbf{C}_\text{ren}$和$e_i$的可视化效果。左图为RGB图像，中间和右图分别展示了对齐前后的CoI、$\mathbf{C}_\text{ren}$和$e_i$。为了更清晰地呈现，$e_i$以稀疏形式绘制。文本颜色与对应的视觉元素颜色保持一致，以便于理解。
+\textbf{工作原理展示 } \autoref{fig:optimization_vis}展示了对齐前后CoI、$\bm{C}_\text{ren}$和$e_i$的可视化效果。左图为RGB图像，中间和右图分别展示了对齐前后的CoI、$\bm{C}_\text{ren}$和$e_i$。为了更清晰地呈现，$e_i$以稀疏形式绘制。文本颜色与对应的视觉元素颜色保持一致，以便于理解。
 
-\begin{figure}[ht]
+\begin{figure}[thbp]
     \centering
     \begin{overpic}[width=1.0\textwidth]{figure/ca/optimization_vis.jpg}
         \put (35,4) {\textcolor{red}{$e = 2.69$}}
         \put (69,4) {\textcolor{red}{$e = 0.64$}}
         \put (39,25) {\textcolor{black}{CoI}}
         \put (73,25) {\textcolor{black}{CoI}}
-        \put (52,18) {\textcolor{cyan}{$\mathbf{C}_\text{ren}$}}
-        \put (85,18) {\textcolor{cyan}{$\mathbf{C}_\text{ren}$}}
+        \put (52,18) {\textcolor{cyan}{$\bm{C}_\text{ren}$}}
+        \put (85,18) {\textcolor{cyan}{$\bm{C}_\text{ren}$}}
     \end{overpic}
     \caption{轮廓对齐}
     \label{fig:optimization_vis}
 \end{figure}
 
-\textbf{失败案例分析 } 我们在\autoref{fig: failure_case}中展示了一些失败案例。最左列为RGB图像，中间列为SymNet的预测结果，最右列为经过优化后的结果。从图中可以看出，大多数失败案例集中在物体被严重遮挡的情况下。这些失败的主要原因是初始位姿估计存在较大的误差。值得注意的是，我们没有发现优化过程导致结果显著恶化的情况。这表明，尽管本文提出的细化方法在优化初始估计方面表现良好，但对于初始误差较大的情况，其效果仍然有限，这也反映了方法的局限性。
-
 \begin{figure}[htbp]
-\centerline{\includegraphics[width=1.0\textwidth]{figure/ca/failure_case.jpg}}
-    \caption{失败案例分析}
-    \label{fig: failure_case}
+    \centerline{\includegraphics[width=1.0\textwidth]{figure/ca/failure_case.jpg}}
+        \caption{失败案例分析}
+        \label{fig: failure_case}
 \end{figure}
+
+\textbf{失败案例分析 } 在\autoref{fig: failure_case}中展示了一些失败案例。最左列为RGB图像，中间列为SymNet的预测结果，最右列为经过优化后的结果。从图中可以看出，大多数失败案例集中在物体被严重遮挡的情况下。这些失败的主要原因是初始位姿估计存在较大的误差。值得注意的是，没有发现优化过程导致结果显著恶化的情况。这表明，尽管本文提出的细化方法在优化初始估计方面表现良好，但对于初始误差较大的情况，其效果仍然有限，这也反映了方法的局限性。

@@ -1,10 +1,14 @@
-\begin{table}
+\begin{table}[htbp]
   \centering
+  \caption{在LM-O数据集上的消融实验}
+  \label{tab:hipose_ablation_study}
   \begin{tabular}{@{}c|c|c@{}}
     \toprule
+    代号 & 实验参数设置 & ADD-(S)(\%) \\
+     \midrule
      A0 &Kabsch算法& 86.65 \\
      A1 &RANSAC+ Kabsch算法& 89.12 \\
-     A2 &层次化剪枝算法 &\textbf{89.62}\\
+     A2 &层次化剪枝算法（本章） &\textbf{89.62}\\
      \midrule
      B0 &信任位阈值 0.08& 89.55 \\
      B1 &信任位阈值 0.06& 89.61 \\
@@ -18,6 +22,4 @@
      E1 & ConcatRGBD+RANSAC Kabsch&84.5\\
     \bottomrule
   \end{tabular}
-  \caption{在LM-O数据集上的消融实验}
-  \label{tab:hipose_ablation_study}
 \end{table}
