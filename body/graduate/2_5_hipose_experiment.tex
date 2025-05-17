@@ -11,13 +11,13 @@ BOP挑战赛\cite{Sundermeyer2023BOPC2}使用这些数据集提供的物体模�
 
 \par 对于LM-O数据集，使用ADD与ADD-S指标进行评测，这是该数据集上常用的指标之一。ADD计算物体坐标系坐标分别用估计位姿和真实位姿投影到相机坐标系，计算对应投影点间距离在阈值内的百分比。其公式为：
 \begin{equation}
-  \text{ADD} = \frac{1}{n}\sum_{x_i \in M} \| (R_{gt}x_i + t_{gt}) - (R_{est}x_i + t_{est}) \|,
+  \text{ADD} = \frac{1}{n}\sum_{x_i \in M} \| (R_{gt}x_i + t_{gt}) - (R_{est}x_i + t_{est}) \|
 \end{equation}
 其中，$M$为物体的3D模型点集，$R_{gt}$和$t_{gt}$为真实位姿的旋转和平移，$R_{est}$和$t_{est}$为估计位姿的旋转和平移。
 
 \par 对于对称物体，通常采用ADD-S，ADD-S指标与ADD指标的不同之处在于匹配估计位姿和真实位姿间距离时，需要寻找最近的模型点而不是完全相同的模型点。其公式为：
 \begin{equation}
-  \text{ADD-S} = \frac{1}{n}\sum_{x_i \in M} \min\limits_{x_j \in M} \| (R_{gt}x_i + t_{gt}) - (R_{est}x_j + t_{est}) \|.
+  \text{ADD-S} = \frac{1}{n}\sum_{x_i \in M} \min\limits_{x_j \in M} \| (R_{gt}x_i + t_{gt}) - (R_{est}x_j + t_{est}) \|
 \end{equation}
 通常对于非对称物体，选择用ADD指标，对于对称物体，选用ADD-S指标。这种混合指标的平均值称为ADD-(S)指标。
 
@@ -174,10 +174,10 @@ GDRNPP\cite{liu2022gdrnpp_bop} 的结果与 HiPose 最为接近，但 HiPose 的
       \toprule
       实验设置 & ADD(-S)，\% \\
       \midrule
-      ZebraPose (仅使用pbr数据训练) & 63.5\\
-      ZebraPose (pbr) + ICP & 83.9\\
-      ZebraPose (pbr) + RANSAC Kabsch & 87.0\\
-      ZebraPose (pbr) + RANSAC Kabsch + ICP & 87.0\\
+      ZebraPose (仅使用PBR数据训练) & 63.5\\
+      ZebraPose (PBR) + ICP & 83.9\\
+      ZebraPose (PBR) + RANSAC Kabsch & 87.0\\
+      ZebraPose (PBR) + RANSAC Kabsch + ICP & 87.0\\
       \midrule
       \textbf{HiPose} (本章方法) &  \textbf{89.6}\\
       HiPose + ICP (使用物体掩码真值) &  89.3\\

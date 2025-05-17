@@ -1,7 +1,7 @@
 \chapter{绪论}
 
 \section{研究背景与意义}
-《中国制造2025》\cite{中国制造2025}战略系统阐述了机器人科技作为高端装备创新的重要载体，其产业布局涵盖汽车制造、精密机械、微电子、危险品制造、国防军工、化工及轻工业等领域，并拓展至特种高危作业、医疗康复、居家养老、智慧教育等新型服务场景。2025年《政府工作报告》\cite{政府工作报告}提出持续推进“人工智能+”行动，将数字技术与制造优势、市场优势更好结合起来，大力发展智能机器人。德国工业4.0\cite{德国工业4.0}体系更将机器人技术列为“十大核心突破领域”，强调人机协作与智能柔性生产范式转变。作为先进制造与人工智能的融合载体，机器人革命正重构全球产业链价值分配图景，为社会经济结构转型注入核心驱动力。
+《中国制造2025》\cite{中国制造2025}系统阐述了机器人科技作为高端装备创新的重要载体，其产业布局涵盖汽车制造、精密机械、微电子、危险品制造、国防军工、化工及轻工业等领域，并拓展至特种高危作业、医疗康复、居家养老、智慧教育等新型服务场景。2025年《政府工作报告》\cite{政府工作报告}提出持续推进“人工智能+”行动，将数字技术与制造优势、市场优势更好结合起来，大力发展智能机器人。德国工业4.0\cite{德国工业4.0}体系更将机器人技术列为“十大核心突破领域”，强调人机协作与智能柔性生产范式转变。作为先进制造与人工智能的融合载体，机器人革命正重构全球产业链价值分配图景，为社会经济结构转型注入核心驱动力。
 
 近年来，全球机器人产业呈现爆发式增长态势\cite{2022中国智能机器人行业研究报告}。纵观全球产业格局，美国凭借波士顿动力公司（Boston Dynamics）的Atlas电驱仿人机器人\cite{bostondynamics}与特斯拉（Tesla）Optimus人形机器人\cite{optimus_wikipedia}等标杆性成果，持续引领具身智能技术革命。反观国内创新生态，宇树科技、智元机器人、优必选等头部企业，联合国家级人形机器人创新平台，已构筑起自主可控的产业技术生态。此外，傅利叶智能、星海图、星尘智能等数百家科创企业相继推出差异化产品矩阵，在精密驱动、环境感知、智能决策等关键技术维度实现突破性迭代，标志着我国机器人产业正从"跟跑"向"并跑"战略转型。
 
@@ -85,8 +85,12 @@
 
 随着深度学习技术的快速发展，如图\ref{fig:时间线}橙色区域所示，基于数据驱动的深度学习方法已逐渐成为位姿估计领域的主流范式。PoseCNN\cite{ycbv}和DeepIM \cite{li2018deepim}等开创性工作率先验证了深度学习方法在预测精度上的显著优势，而SO-Pose\cite{Di_2021_ICCV}等较新研究则进一步突破了定位精度的上限，推动了该领域研究的不断进步。
 
-\subsection{训练数据范式分类}
+在推动位姿估计算法发展的同时，统一、权威的评测平台也成为该领域进步的重要驱动力。BOP（Benchmark for 6D Object Pose Estimation）挑战赛\cite{hodan2024bop}正是在这一背景下应运而生，是当前国际上最具影响力的6D物体位姿估计评测平台之一。BOP挑战赛自2017年发起，旨在为学术界和工业界提供统一、公开、标准化的评测基准，推动物体位姿估计领域的发展。BOP平台收集并整理了多种具有代表性的公开数据集，涵盖工业零件、日常物品、杂乱堆叠等多种典型应用场景，支持RGB、RGB-D等多种传感器模态。
 
+BOP挑战赛每年举办一次，参赛者需提交算法在官方数据集上的预测结果，平台统一评测并公布排名。BOP采用多种评价指标，全面考察算法在精度、鲁棒性、泛化能力等方面的表现。BOP不仅推动了算法性能的持续提升，也促进了数据集、评测工具和标准的不断完善，成为物体位姿估计领域公认的权威基准。近年来，BOP挑战赛吸引了全球众多顶尖高校和企业团队参与，涌现出一系列具有代表性的算法，极大推动了该领域的技术进步和实际应用落地。
+
+\subsection{训练数据范式分类}
+ 
 依据训练数据模式，现有方法可分为三类，见\autoref{fig:位姿估计任务分类}。
 
 \begin{figure}[htbp]
@@ -116,30 +120,30 @@
     \label{fig:位姿估计任务分类}
 \end{figure}
 
-\begin{itemize}
-\item \textbf{实例级方法}：针对特定物体的CAD模型进行训练，具备毫米级定位精度与亚秒级推理速度，但仅能在该特定物体上进行推理，无法泛化到其他物体
-\item \textbf{类别级方法}：学习同类物体的形状先验，实现类内物体泛化，需大量标注数据支撑，具备厘米级定位精度
-\item \textbf{零样本方法}：通过多物体联合训练提取通用特征，支持零样本位姿估计，但存在精度-推理速度权衡问题，高精度的方法单张图片需十秒以上的推理
-\end{itemize}
+\begin{enumerate}
+\item \textbf{实例级方法}：针对特定物体的CAD模型进行训练，具备毫米级定位精度与亚秒级推理速度，但仅能在该特定物体上进行推理，无法泛化到其他物体。
+\item \textbf{类别级方法}：学习同类物体的形状先验，实现类内物体泛化，需大量标注数据支撑，具备厘米级定位精度。
+\item \textbf{零样本方法}：通过多物体联合训练提取通用特征，支持零样本位姿估计，但存在精度-推理速度权衡问题，高精度的方法单张图片需十秒以上的推理。
+\end{enumerate}
 
 典型实例级方法通过构建物体级特征空间实现精准匹配，而NOCS\cite{NOCS}开创性地提出标准化物体坐标系实现类别级估计。后续研究通过形状先验建模\cite{SGPA, DPDN}、隐式表面表示\cite{GPV-Pose, HS-Pose}等途径提升类内泛化能力。面向开放世界的零样本方法\cite{Gen6D, MegaPose}则突破CAD模型依赖，但需解决跨域特征对齐问题。
 
 \subsection{传感器模态分类}
 
 传感器配置直接影响位姿估计系统的性能边界：
-\begin{itemize}
+\begin{enumerate}
 \item \textbf{RGB相机}：成本低、易部署，但缺乏深度信息导致尺度模糊
 \item \textbf{RGB-D相机}：主动式深度感知提升估计精度，但受限于材质反射特性（金属/透明物体）与动态范围
 \item \textbf{双目相机}：被动深度估计避免主动光源干扰，但基线距离制约深度分辨率
 \item \textbf{纯深度相机}：适用于结构光受限场景，但缺失纹理信息影响特征匹配
-\end{itemize}
+\end{enumerate}
 
 当前研究主要聚焦RGB与RGB-D模态，其中RGB-D方法能够比RGB方法有明显的精度提升，而纯RGB方法更适用于消费级应用场景。
 
 \subsection{核心挑战分析}
 
 \autoref{fig:困难与挑战}揭示了位姿估计技术在实际部署中面临的七大挑战。
-\begin{itemize}
+\begin{enumerate}
 \item \textbf{杂乱场景}：未在训练集中出现的复杂背景和干扰物
 \item \textbf{密集物体堆叠}：引发严重的相互遮挡与错误实例分割
 \item \textbf{光照变化}：光线色彩、曝光或阴影导致表观特征失配
@@ -147,7 +151,7 @@
 \item \textbf{对称物体}：物体本身具有的对称性导致多解问题
 \item \textbf{实时性约束}：高精度估计与计算资源的平衡
 \item \textbf{非朗伯体材质}：金属/透明物体破坏光度一致性假设
-\end{itemize}
+\end{enumerate}
 
 \begin{figure}[htbp]
     \centering
@@ -175,23 +179,22 @@
 
 \begin{figure}[htbp]
     \centering
-    \begin{overpic}[width=1.0\textwidth]{figure/intro/基于对应关系的方法.png}
-        \put(1,49){输入图像/点云}
-        \put(32,49){检测关键点}
-        \put(50,49){CAD模型及预定义关键点}
-        \put(86,49){输出位姿}
-        \put(35,26.5){a. 基于稀疏对应关系的方法}
-        \put(23,44.5){\rotatebox{270}{神经网络}}
-        \put(75,46){\rotatebox{270}{位姿求解器}}
-        \put(1,22){输入图像/点云}
-        \put(31,22){检测匹配关系}
-        \put(50,22){CAD模型及所有模型点}
-        \put(86,22){输出位姿}
-        \put(35,0){b. 基于稠密对应关系的方法}
-        \put(23,17){\rotatebox{270}{神经网络}}
-        \put(75,19){\rotatebox{270}{位姿求解器}}
-    \end{overpic}
-    \caption{基于对应关系的方法}
+    \begin{subfigure}[b]{1.0\textwidth}
+        \centering
+        \begin{overpic}[width=1.0\textwidth]{figure/intro/基于稀疏对应关系的方法.pdf}
+        \end{overpic}
+        \caption{基于稀疏对应关系的方法}
+        \label{fig:基于稀疏对应关系的方法}
+    \end{subfigure}
+    \vfill
+    \begin{subfigure}[b]{1.0\textwidth}
+        \centering
+        \begin{overpic}[width=1.0\textwidth]{figure/intro/基于密集对应关系的方法.pdf}
+        \end{overpic}
+        \caption{基于稠密对应关系的方法}
+        \label{fig:基于稠密对应关系的方法}
+    \end{subfigure}
+    \caption{基于对应关系的方法示意图：(a) 稀疏对应关系；(b) 稠密对应关系}
     \label{fig:基于对应关系的方法}
 \end{figure}
 
@@ -202,13 +205,13 @@
 
 \par DOPE\cite{dope}是一种基于VGG-19\cite{VGG}网络的位姿估计方法。该方法通过网络提取物体三维包围框的八个角点，并预测从角点指向物体中心点的方向。在后处理阶段，将指向同一物体中心点的角点组合在一起，利用PnP算法计算物体的位姿。DOPE的显著特点是首次仅依赖仿真数据集完成网络训练。为生成仿真数据集，该方法采用域随机化（Domain Randomization）技术，随机化干扰模型的种类和数量、物体纹理、背景图片、物体位姿以及光线的方向、颜色和强度等参数。此外，为了生成更接近真实物理环境的训练数据，DOPE使用标准的UE4环境，模拟厨房、家庭、树林等室内外场景，并考虑物体的重力和碰撞影响，从而生成更加真实的图像。
 
-为了减少遮挡的影响，小块热图法\cite{oberweger2018making}提出将图像分为许多小图像块，每一个小块分别预测该块的物体分类信息以及关键点的分布和置信度，最后将不同小图像块作为输入预测的结果进行融合。由于一些小块完全不存在遮挡问题，因此该小块网络输出的结果不受到遮挡的影响。最终根据预测的物体上的关键点根据PnP算法得到估计的位姿。小块关键点法\cite{Hu2019Segmentation}继承了小块热图法的思想，构建了分割分支和关键点检测分支。分割网络分支将图片分为多个小块，每个小块输出图片的该块的物体分类，关键点检测分支为每个小块输出该物体关键点相对块中心的相对位置和对应的得分。最后选择得分较高的关键点，使用基于RANSAC的PnP算法计算位姿。Huang等人\cite{Huang2021Confidence}则将关键点定位建模为概率分布，提出置信度感知的损失函数设计。PVNet\cite{peng2019pvnet} 开发了一种逐像素投票网络，回归指向2D关键点的像素级向量。这些向量为定位被遮挡或截断的3D关键点提供了灵活的表征。Liu 等人\cite{liu2021kdfnet} 提出了一种称为关键点距离场（KDF）的连续表示方法，该方法通过对每个KDF进行投票来提取2D关键点。DGECN\cite{cao2022dgecn} 提出了一种基于动态图PnP\cite{RANSAC}的方法，通过从2D-3D对应关系中学习物体姿态，实现了端到端训练。Liu 等人\cite{liu2023bdr6d} 开发了一种双向深度残差融合网络，用于融合RGBD信息，从而精确估计2D关键点。受扩散模型启发，Xu 等人\cite{xu20246ddiff} 提出了一种基于扩散模型的框架，将2D关键点检测建模为去噪过程，以建立更准确的2D-3D对应关系。
+为了减少遮挡的影响，小块热图法\cite{oberweger2018making}提出将图像分为许多小图像块，每一个小块分别预测该块的物体分类信息以及关键点的分布和置信度，最后将不同小图像块作为输入预测的结果进行融合。由于一些小块完全不存在遮挡问题，因此该小块网络输出的结果不受到遮挡的影响。最终根据预测的物体上的关键点根据PnP算法得到估计的位姿。小块关键点法\cite{Hu2019Segmentation}继承了小块热图法的思想，构建了分割分支和关键点检测分支。分割网络分支将图片分为多个小块，每个小块输出图片的该块的物体分类，关键点检测分支为每个小块输出该物体关键点相对块中心的相对位置和对应的得分。最后选择得分较高的关键点，使用基于RANSAC的PnP算法计算位姿。Huang等人\cite{Huang2021Confidence}则将关键点定位建模为概率分布，提出置信度感知的损失函数设计。PVNet\cite{peng2019pvnet} 开发了一种逐像素投票网络，回归指向2D关键点的像素级向量。这些向量为定位被遮挡或截断的3D关键点提供了灵活的表征。Liu 等人\cite{liu2021kdfnet} 提出了一种称为关键点距离场（KDF）的连续表示方法，该方法通过对每个KDF进行投票来提取2D关键点。DGECN\cite{cao2022dgecn} 提出了一种基于动态图PnP\cite{RANSAC}的方法，通过从2D-3D对应关系中学习物体姿态，实现了端到端训练。Liu 等人\cite{liu2023bdr6d} 开发了一种双向深度残差融合网络，用于融合RGB-D信息，从而精确估计2D关键点。受扩散模型启发，Xu 等人\cite{xu20246ddiff} 提出了一种基于扩散模型的框架，将2D关键点检测建模为去噪过程，以建立更准确的2D-3D对应关系。
 
 \par 与上述预测2D关键点的方法不同，PVN3d\cite{he2020pvn3d}提出了一种深度霍夫投票网络来预测3D关键点，随后通过列文伯格-马夸尔特（Levenberg-Marquardt）算法\cite{Levenberg_Marquardt}估计物体位姿。进一步地，FFB6D\cite{he2021ffb6d} 提出了一种双向融合网络，通过互补RGB和深度异构数据来提升3D关键点的预测效果。为了更好捕捉3D空间中物体点之间的特征，Mei 等人\cite{mei2022spatial} 利用图卷积网络促进3D空间内点之间的特征交换，从而提高3D关键点预测的准确性。Wu 等人\cite{wu2022vote} 提出了一种基于交叉球面曲面的3D关键点投票方案，可生成更小且更分散的3D关键点集合，从而提升估计效率。为了获取更精确的3D关键点，Wang 等人\cite{wang2023kvnet} 设计了一种迭代式3D关键点投票网络，用于优化3D关键点的初始定位。Zhou 等人\cite{zhou2023deep} 提出了一种新型加权向量3D关键点投票算法，采用非迭代的全局优化策略精确定位3D关键点，同时实现了接近实时的推理速度。
 
 \par 由于大多数工业零件具有参数化特性，Zeng 等人\cite{zeng2021parametricnet} 通过驱动参数和对称性定义了与参数关联的3D关键点，有效解决了堆叠场景中物体的位姿估计问题。
 
-\par 部分研究者提出了新的训练策略以提升姿态估计性能。Yu 等人\cite{yu20206dof} 设计了一种可微分代理投票损失函数，模拟投票过程中的假设选择机制，从而实现端到端训练。此外，Lin 等人\cite{lin2022learning} 提出了一种新颖的学习框架，利用基于RGBD的位姿优化方法的准确结果来监督基于RGB的位姿估计器。
+\par 部分研究者提出了新的训练策略以提升姿态估计性能。Yu 等人\cite{yu20206dof} 设计了一种可微分代理投票损失函数，模拟投票过程中的假设选择机制，从而实现端到端训练。此外，Lin 等人\cite{lin2022learning} 提出了一种新颖的学习框架，利用基于RGB-D的位姿优化方法的准确结果来监督基于RGB的位姿估计器。
 
 \par 为了提升算法效率，Guo等人\cite{guo2023knowledge}将知识蒸馏引入姿态估计网络，通过教师网络的局部预测分布指导学生网络训练。Liu团队\cite{liu2023linear}揭示了可微PnP与对应关系平均化本质的冲突，提出线性协方差损失函数以提升稀疏/稠密对应方法的兼容性。
 
@@ -253,16 +256,16 @@
     \multicolumn{1}{|c|}{} & \multicolumn{1}{l|}{} & HybridPose\cite{Song2020HybridPose6O} & 2020 & RGB & C+P+R & \begin{tabular}[c]{@{}c@{}}对称物体\\遮挡\end{tabular} & \multicolumn{1}{c|}{47.5}& 91.3 & - \\
     \cline{3-10}
 
-    \multicolumn{1}{|c|}{} & \multicolumn{1}{l|}{}& PVN3d\cite{he2020pvn3d} & 2020 & RGBD & S+V+P & 通用 & \multicolumn{1}{c|}{-} & 99.4 & 95.5 \\
+    \multicolumn{1}{|c|}{} & \multicolumn{1}{l|}{}& PVN3d\cite{he2020pvn3d} & 2020 & RGB-D & S+V+P & 通用 & \multicolumn{1}{c|}{-} & 99.4 & 95.5 \\
     \cline{3-10}
 
-    \multicolumn{1}{|c|}{} &\multicolumn{1}{l|}{}& FFB6D\cite{he2021ffb6d} & 2021 & RGBD & S+V+P & 通用 & \multicolumn{1}{c|}{66.2} & 99.7 & 96.6 \\
+    \multicolumn{1}{|c|}{} &\multicolumn{1}{l|}{}& FFB6D\cite{he2021ffb6d} & 2021 & RGB-D & S+V+P & 通用 & \multicolumn{1}{c|}{66.2} & 99.7 & 96.6 \\
     \cline{3-10}
 
     \multicolumn{1}{|c|}{} & \multicolumn{1}{l|}{} & Guo 等人\cite{guo2023knowledge} & 2023 & RGB & D+C+P & 通用 & \multicolumn{1}{c|}{44.5} & - & - \\
     \cline{3-10}
 
-    \multicolumn{1}{|c|}{} &\multicolumn{1}{l|}{}& Zhou 等人\cite{zhou2023deep} & 2023 & RGBD & S+V+P & 通用 & \multicolumn{1}{c|}{77.7} & 99.8 & 96.7 \\
+    \multicolumn{1}{|c|}{} &\multicolumn{1}{l|}{}& Zhou 等人\cite{zhou2023deep} & 2023 & RGB-D & S+V+P & 通用 & \multicolumn{1}{c|}{77.7} & 99.8 & 96.7 \\
     \cline{2-10}
 
     \multicolumn{1}{|c|}{} & \multicolumn{1}{c|}{\multirow{5}{*}{\rotatebox{90}{\centering{密集对应关系}}}} & CDPN\cite{li2019cdpn} & 2019 & RGB & D+C+P & 通用& \multicolumn{1}{c|}{-} & 89.9 & - \\ 
@@ -271,7 +274,7 @@
     \multicolumn{1}{|c|}{} & \multicolumn{1}{l|}{} & EPOS\cite{hodan2020epos}  & 2020 & RGB & C+P & 对称物体& \multicolumn{1}{c|}{-} & - & - \\ 
     \cline{3-10}
     
-    \multicolumn{1}{|c|}{} & \multicolumn{1}{l|}{} & DPODv2\cite{Shugurov2021DPODv2} & 2021 & RGB/RGBD & D+C+P+R & 通用& \multicolumn{1}{c|}{-} & 99.9 & - \\ 
+    \multicolumn{1}{|c|}{} & \multicolumn{1}{l|}{} & DPODv2\cite{Shugurov2021DPODv2} & 2021 & RGB/RGB-D & D+C+P+R & 通用& \multicolumn{1}{c|}{-} & 99.9 & - \\ 
     \cline{3-10} 
     
     \multicolumn{1}{|c|}{} & \multicolumn{1}{l|}{} & Epro-PnP\cite{Chen2022EPro_PnP} & 2022 & RGB & D+C+P & 通用& \multicolumn{1}{c|}{-} & 95.8 & - \\
@@ -288,27 +291,24 @@
 
 \subsection{基于回归的方法}\label{基于回归的方法}
 
-\par 基于回归的方法旨在从学习到的特征中直接回归物体位姿。这类方法可分为两种主要类型：直接回归和辅助约束回归，见\autoref{fig:基于回归的方法}。直接回归法（\autoref{直接回归法}）利用RGB/RGBD信息直接回归物体位姿。辅助约束回归方法（\autoref{基于辅助约束的回归方法}）则通过提取RGB/RGBD图像中的信息（如物体三维结构特征或2D-3D几何约束）辅助位姿估计。
+\par 基于回归的方法旨在从学习到的特征中直接回归物体位姿。这类方法可分为两种主要类型：直接回归和辅助约束回归，见\autoref{fig:基于回归的方法}。直接回归法（\autoref{直接回归法}）利用RGB/RGB-D信息直接回归物体位姿。辅助约束回归方法（\autoref{基于辅助约束的回归方法}）则通过提取RGB/RGB-D图像中的信息（如物体三维结构特征或2D-3D几何约束）辅助位姿估计。
 
 \begin{figure}[htbp]
     \centering
-    \begin{overpic}[width=0.75\textwidth]{figure/intro/基于回归的方法.png}
-        % 直接回归法部分
-        \put(1,64){输入图像/点云}
-        \put(82,64){输出位姿}
-        \put(33,58){\rotatebox{270}{特征提取}}
-        \put(62,58){\rotatebox{270}{位姿回归}}
-        \put(39,37.5){a. 直接回归法}
-
-        % 几何约束回归方法部分
-        \put(1,30){输入图像/点云}
-        \put(82,30){输出位姿}
-        \put(32.5,24){\rotatebox{270}{特征提取}}
-        \put(47,27){\rotatebox{270}{辅助回归信息}}
-        \put(62,24){\rotatebox{270}{位姿回归}}
-        \put(35,1){b. 辅助约束回归方法}
-    \end{overpic}
-    \caption{基于回归的方法}
+    \begin{subfigure}[b]{0.95\textwidth}
+        \centering
+        \includegraphics[width=0.95\textwidth]{figure/intro/直接回归法.pdf}
+        \caption{直接回归法}
+        \label{fig:直接回归法}
+    \end{subfigure}
+    \vfill
+    \begin{subfigure}[b]{0.95\textwidth}
+        \centering
+        \includegraphics[width=0.95\textwidth]{figure/intro/辅助约束回归方法.pdf}
+        \caption{辅助约束回归方法}
+        \label{fig:基于辅助约束的回归方法}
+    \end{subfigure}
+    \caption{基于回归的方法示意图：(a) 直接回归法；(b) 辅助约束回归方法}
     \label{fig:基于回归的方法}
 \end{figure}
 
@@ -320,12 +320,12 @@
 
 \par Deep-6DPose\cite{Deep-6DPose}基于Mask R-CNN网络\cite{maskrcnn}，添加了位姿回归网络分支，对于每一个可能包含对象的提案区域（proposal），也称为感兴趣区域(Region of Interest，RoI)，都输出一个4维向量，其中3维用李代数表示旋转，还有一维为平移的z轴分量。
 
-\par EfficientPose\cite{bukschat2020efficientpose}基于EfficientNet网络\cite{koonce2021efficientnet}，在分类和边界框回归的基础上增加了回归旋转和平移的部分，其损失函数与PoseCNN的损失函数类似。借助EfficientNet网络的轻量化特性和高精度，该方法能够同时输出多个物体的位姿估计，不仅在精度上取得了更好的效果，而且在运行速度上达到了每秒27帧。此外，Wu等人的工作\cite{wu2018real}也采用两个并行的FCN\cite{FCN}分支分别回归物体的旋转和平移参数。此外，Jiang等人\cite{jiang2022uni6d}融合了RGBD数据、内置的2D像素坐标编码以及深度法向量特征，以更好地估计物体的旋转和平移参数。
+\par EfficientPose\cite{bukschat2020efficientpose}基于EfficientNet网络\cite{koonce2021efficientnet}，在分类和边界框回归的基础上增加了回归旋转和平移的部分，其损失函数与PoseCNN的损失函数类似。借助EfficientNet网络的轻量化特性和高精度，该方法能够同时输出多个物体的位姿估计，不仅在精度上取得了更好的效果，而且在运行速度上达到了每秒27帧。此外，Wu等人的工作\cite{wu2018real}也采用两个并行的FCN\cite{FCN}分支分别回归物体的旋转和平移参数。此外，Jiang等人\cite{jiang2022uni6d}融合了RGB-D数据、内置的2D像素坐标编码以及深度法向量特征，以更好地估计物体的旋转和平移参数。
 
 \par Tian等人\cite{tian2020robust} 在SO(3)中均匀采样旋转锚点，随后预测每个锚点相对于目标的约束偏差。他们利用不确定性评分选择最佳预测，然后通过聚合点到中心向量检测3D平移，从而估计6D位姿。DenseFusion\cite{wang2019densefusion} 基于逐像素融合RGB和深度特征，并利用姿态预测器为每个像素生成6自由度位姿和置信度。随后，他们选择置信度最高的像素的位姿作为最终位姿。
 Zhou等人\cite{zhou2020novel} 使用卷积神经网络提取RGB特征，并将其与点云融合以获得融合特征。与DenseFusion\cite{wang2019densefusion}不同，融合特征以点集形式存在，而非特征映射。
-然而，上述RGBD融合方法仅简单拼接RGB和深度特征，未深入挖掘其内在关系。因此，PR-GCN\cite{Zhou2021PRGCNAD} 提出了一种新的多模态融合图卷积网络，通过局部信息传播捕捉跨模态相关性，从而增强RGB与深度图像的融合。
-Liu等人\cite{liu2023depth} 将深度图像中的尺度相关信息和尺度不变信息解耦，引导网络感知场景的3D结构，并为RGB图像特征提取提供场景纹理。与上述使用静态图像的方法不同，TemporalFusion\cite{mu2021temporalfusion} 提出了一种时间融合模型，整合RGBD图像中的时间运动信息进行6自由度物体位姿估计。该方法能够有效捕捉物体运动和变化，从而提升位姿估计的准确性和稳定性。
+然而，上述RGB-D融合方法仅简单拼接RGB和深度特征，未深入挖掘其内在关系。因此，PR-GCN\cite{Zhou2021PRGCNAD} 提出了一种新的多模态融合图卷积网络，通过局部信息传播捕捉跨模态相关性，从而增强RGB与深度图像的融合。
+Liu等人\cite{liu2023depth} 将深度图像中的尺度相关信息和尺度不变信息解耦，引导网络感知场景的3D结构，并为RGB图像特征提取提供场景纹理。与上述使用静态图像的方法不同，TemporalFusion\cite{mu2021temporalfusion} 提出了一种时间融合模型，整合RGB-D图像中的时间运动信息进行6自由度物体位姿估计。该方法能够有效捕捉物体运动和变化，从而提升位姿估计的准确性和稳定性。
 
 \par 为解决物体对称问题，ES6D\cite{mo2022es6d} 设计了一种对称不变的位姿距离度量，使网络能够准确估计对称物体的姿态。SC6D\cite{cai2022sc6d} 引入了3D旋转表示，学习物体的隐式对称性，从而无需额外的对称性先验知识。
 
@@ -355,10 +355,10 @@ Liu等人\cite{liu2023depth} 将深度图像中的尺度相关信息和尺度不
     \multicolumn{1}{|c|}{\multirow{9}{*}{\rotatebox{90}{\centering{基于回归的方法}}}} & \multicolumn{1}{l|}{\multirow{5}{*}{\rotatebox{90}{\centering{直接回归法}}}} & PoseCNN\cite{ycbv} & 2017 & RGB & S+V+P & 杂乱背景 & \multicolumn{1}{c|}{24.9} & - & 75.9 \\
     \cline{3-10} 
     
-    \multicolumn{1}{|c|}{} &\multicolumn{1}{l|}{}& Li 等人\cite{li2018unified} & 2018 & RGBD & P+R & 通用 & \multicolumn{1}{c|}{-} & - & 94.3 \\
+    \multicolumn{1}{|c|}{} &\multicolumn{1}{l|}{}& Li 等人\cite{li2018unified} & 2018 & RGB-D & P+R & 通用 & \multicolumn{1}{c|}{-} & - & 94.3 \\
     \cline{3-10} 
 
-    \multicolumn{1}{|c|}{} &\multicolumn{1}{l|}{}& Uni6d\cite{jiang2022uni6d} & 2022 & RGBD & P & 通用 & \multicolumn{1}{c|}{30.8} & 97.0 & 95.2 \\
+    \multicolumn{1}{|c|}{} &\multicolumn{1}{l|}{}& Uni6d\cite{jiang2022uni6d} & 2022 & RGB-D & P & 通用 & \multicolumn{1}{c|}{30.8} & 97.0 & 95.2 \\
     \cline{3-10} 
 
     \multicolumn{1}{|c|}{} &\multicolumn{1}{l|}{}& Hai 等人\cite{hai2023shape} & 2023 & RGB & P & 通用 & \multicolumn{1}{c|}{66.4} & 99.3 & - \\
@@ -391,36 +391,22 @@ Liu等人\cite{liu2023depth} 将深度图像中的尺度相关信息和尺度不
 
 \par 基于模板检索的方法通过利用图像全局信息，可有效解决无纹理物体带来的挑战。该类方法的核心是从带有真实位姿标注的模板库中检索最相似模板。当输入为RGB图像时，模板库由物体CAD模型投影生成的二维图像及其真实位姿标注构成，此时位姿估计转化为图像检索任务。迭代优化法延续传统方法中迭代匹配的思路，将渲染器得到的初始估计位姿渲染下的图像与输入图像进行对比，得出一个更加优化的估计位姿，重复上述过程最后得到更加精确的估计位姿。该类方法往往用于后处理，提升其他方法的最终性能。
 
-\begin{figure}[h]
+\begin{figure}[htbp]
     \centering
-    \begin{overpic}[width=1.0\textwidth]{figure/intro/基于渲染的方法.png}
-        \put(1,90){渲染各种姿态下的模板}
-        \put(43,90){模板对应的特征}
-        \put(87,90){模板得分}
-        \put(31.5,81.5){\rotatebox{270}{神经网络}}
-        \put(74,87){\rotatebox{270}{计算图像的相似性}}
-        \put(8,57.5){输入图像/点云}
-        \put(30,53){\rotatebox{270}{分割}}
-        \put(49,55){\rotatebox{270}{神经网络}}
-        \put(87,55){输出位姿}
-        \put(93,84){0.71}
-        \put(93,77){0.28}
-        \put(93,63){0.97}
-        \put(45,40){a. 模板检索}
-        \put(5.5,33){\rotatebox{270}{渲染模板}}
-        \put(50,33){\rotatebox{270}{渲染模板}}
-        \put(18,33){模板}
-        \put(16,20){输入图像}
-        \put(64,33){模板}
-        \put(61,20){输入图像}
-        \put(0,19){初始位姿}
-        \put(34,25){\rotatebox{270}{神经网络}}
-        \put(43,19){输出位姿1}
-        \put(87.5,27){输出位姿n}
-        \put(76,22){多次迭代}
-        \put(45,0){b. 迭代优化}
-    \end{overpic}
-    \caption{基于对比的方法}
+    \begin{subfigure}[b]{0.95\textwidth}
+        \centering
+        \includegraphics[width=0.95\textwidth]{figure/intro/模板检索.pdf}
+        \caption{基于模板检索的方法}
+        \label{fig:基于模板检索的方法}
+    \end{subfigure}
+    \vfill
+    \begin{subfigure}[b]{0.95\textwidth}
+        \centering
+        \includegraphics[width=0.95\textwidth]{figure/intro/迭代优化.pdf}
+        \caption{基于迭代优化的方法}
+        \label{fig:基于迭代优化的方法}
+    \end{subfigure}
+    \caption{基于对比的方法示意图：(a) 模板检索法；(b) 迭代优化法}
     \label{fig:基于对比的方法}
 \end{figure}
 

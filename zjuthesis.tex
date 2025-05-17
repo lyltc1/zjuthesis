@@ -172,9 +172,11 @@
     \inputbody{post}
 }
 
-% \special{dvipdfmx:config z 0} % 取消PDF压缩，加快速度，最终版本生成的时候最好把这句话注释掉
+\special{dvipdfmx:config z 0} % 取消PDF压缩，加快速度，最终版本生成的时候最好把这句话注释掉
 
 \begin{document}
+\raggedbottom
+\setlength{\parskip}{0pt plus 0.5\baselineskip} % 允许段落间距有弹性
 \renewcommand\floatpagefraction{.9}
 \renewcommand\topfraction{.9}
 \renewcommand\bottomfraction{.9}
