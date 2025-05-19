@@ -79,7 +79,7 @@ Loss = L_\text{mask}^{PCN} + \alpha L_\text{code}^{PCN} + L_\text{mask}^{CNN} + 
 \end{equation}
 其中，$\alpha$ 是一个权重因子，在所有实验中设置为 $\alpha = 3$，而 $d$ 默认设置为 $2730$。
 
-网络骨干采用了最近的ConvNext架构，如ConvNext\cite{Liu2022ACF}所述，该架构基于ResNet\cite{He2015DeepRL}。ConvNext展现了与Vision Transformer\cite{Dosovitskiy2020AnII}相当的性能，同时保持了ResNet的效率和简洁性。
+网络骨干采用了最近的ConvNext架构，如ConvNext\cite{Liu2022ACF}所述，该架构基于ResNet\cite{he2016resnet}。ConvNext展现了与Vision Transformer\cite{Dosovitskiy2020AnII}相当的性能，同时保持了ResNet的效率和简洁性。
 
 训练过程使用Adam优化器\cite{Kingma2014AdamAM}，以固定的学习率$1e-4$，批量大小为32，训练$380K$次迭代。在训练过程中，对RGB图像应用了ZebraPose\cite{su2022zebrapose}中的增强方法，并对深度图应用了MegaPose\cite{megapose}中的深度增强方法。训练数据集由BOP挑战赛\cite{hodan2024bop}提供，仅包含仿真图像。该方法可以有效地弥合仿真数据和真实数据之间的域间差距。
 
