@@ -205,7 +205,7 @@ BOP挑战赛每年举办一次，参赛者需提交算法在官方数据集上�
 
 \par DOPE\cite{dope}是一种基于VGG-19\cite{VGG}网络的位姿估计方法。该方法通过网络提取物体三维包围框的八个角点，并预测从角点指向物体中心点的方向。在后处理阶段，将指向同一物体中心点的角点组合在一起，利用PnP算法计算物体的位姿。DOPE的显著特点是首次仅依赖仿真数据集完成网络训练。为生成仿真数据集，该方法采用域随机化（Domain Randomization）技术，随机化干扰模型的种类和数量、物体纹理、背景图片、物体位姿以及光线的方向、颜色和强度等参数。此外，为了生成更接近真实物理环境的训练数据，DOPE使用标准的UE4环境，模拟厨房、家庭、树林等室内外场景，并考虑物体的重力和碰撞影响，从而生成更加真实的图像。
 
-为了减少遮挡的影响，小块热图法\cite{oberweger2018making}提出将图像分为许多小图像块，每一个小块分别预测该块的物体分类信息以及关键点的分布和置信度，最后将不同小图像块作为输入预测的结果进行融合。由于一些小块完全不存在遮挡问题，因此该小块网络输出的结果不受到遮挡的影响。最终根据预测的物体上的关键点根据PnP算法得到估计的位姿。小块关键点法\cite{Hu2019Segmentation}继承了小块热图法的思想，构建了分割分支和关键点检测分支。分割网络分支将图片分为多个小块，每个小块输出图片的该块的物体分类，关键点检测分支为每个小块输出该物体关键点相对块中心的相对位置和对应的得分。最后选择得分较高的关键点，使用基于RANSAC的PnP算法计算位姿。Huang等人\cite{Huang2021Confidence}则将关键点定位建模为概率分布，提出置信度感知的损失函数设计。PVNet\cite{peng2019pvnet} 开发了一种逐像素投票网络，回归指向2D关键点的像素级向量。这些向量为定位被遮挡或截断的3D关键点提供了灵活的表征。Liu 等人\cite{liu2021kdfnet} 提出了一种称为关键点距离场（KDF）的连续表示方法，该方法通过对每个KDF进行投票来提取2D关键点。DGECN\cite{cao2022dgecn} 提出了一种基于动态图PnP\cite{RANSAC}的方法，通过从2D-3D对应关系中学习物体姿态，实现了端到端训练。Liu 等人\cite{liu2023bdr6d} 开发了一种双向深度残差融合网络，用于融合RGB-D信息，从而精确估计2D关键点。受扩散模型启发，Xu 等人\cite{xu20246ddiff} 提出了一种基于扩散模型的框架，将2D关键点检测建模为去噪过程，以建立更准确的2D-3D对应关系。
+为了减少遮挡的影响，小块热图法\cite{oberweger2018making}提出将图像分为许多小图像块，每一个小块分别预测该块的物体分类信息以及关键点的分布和置信度，最后将不同小图像块作为输入预测的结果进行融合。由于一些小块完全不存在遮挡问题，因此该小块网络输出的结果不受到遮挡的影响。最终根据预测的物体上的关键点根据PnP算法得到估计的位姿。小块关键点法\cite{2019segmentation}继承了小块热图法的思想，构建了分割分支和关键点检测分支。分割网络分支将图片分为多个小块，每个小块输出图片的该块的物体分类，关键点检测分支为每个小块输出该物体关键点相对块中心的相对位置和对应的得分。最后选择得分较高的关键点，使用基于RANSAC的PnP算法计算位姿。Huang等人\cite{Huang2021Confidence}则将关键点定位建模为概率分布，提出置信度感知的损失函数设计。PVNet\cite{pvnet} 开发了一种逐像素投票网络，回归指向2D关键点的像素级向量。这些向量为定位被遮挡或截断的3D关键点提供了灵活的表征。Liu 等人\cite{liu2021kdfnet} 提出了一种称为关键点距离场（KDF）的连续表示方法，该方法通过对每个KDF进行投票来提取2D关键点。DGECN\cite{cao2022dgecn} 提出了一种基于动态图PnP\cite{RANSAC}的方法，通过从2D-3D对应关系中学习物体姿态，实现了端到端训练。Liu 等人\cite{liu2023bdr6d} 开发了一种双向深度残差融合网络，用于融合RGB-D信息，从而精确估计2D关键点。受扩散模型启发，Xu 等人\cite{xu20246ddiff} 提出了一种基于扩散模型的框架，将2D关键点检测建模为去噪过程，以建立更准确的2D-3D对应关系。
 
 \par 与上述预测2D关键点的方法不同，PVN3d\cite{he2020pvn3d}提出了一种深度霍夫投票网络来预测3D关键点，随后通过列文伯格-马夸尔特（Levenberg-Marquardt）算法\cite{Levenberg_Marquardt}估计物体位姿。进一步地，FFB6D\cite{he2021ffb6d} 提出了一种双向融合网络，通过互补RGB和深度异构数据来提升3D关键点的预测效果。为了更好捕捉3D空间中物体点之间的特征，Mei 等人\cite{mei2022spatial} 利用图卷积网络促进3D空间内点之间的特征交换，从而提高3D关键点预测的准确性。Wu 等人\cite{wu2022vote} 提出了一种基于交叉球面曲面的3D关键点投票方案，可生成更小且更分散的3D关键点集合，从而提升估计效率。为了获取更精确的3D关键点，Wang 等人\cite{wang2023kvnet} 设计了一种迭代式3D关键点投票网络，用于优化3D关键点的初始定位。Zhou 等人\cite{zhou2023deep} 提出了一种新型加权向量3D关键点投票算法，采用非迭代的全局优化策略精确定位3D关键点，同时实现了接近实时的推理速度。
 
@@ -247,13 +247,13 @@ BOP挑战赛每年举办一次，参赛者需提交算法在官方数据集上�
     \multicolumn{1}{|c|}{\multirow{14}{*}{\rotatebox{90}{\centering{基于对应关系的方法}}}} & \multicolumn{1}{l|}{\multirow{9}{*}{\rotatebox{90}{\centering{稀疏对应关系}}}} & BB8\cite{rad2017bb8} & 2017 & RGB & S+C+P+R & 对称物体 & \multicolumn{1}{c|}{-} & 62.7 & - \\ 
     \cline{3-10} 
     
-    \multicolumn{1}{|c|}{} & \multicolumn{1}{l|}{} & 小块热图法\cite{Hu2019Segmentation} & 2019 & RGB & C+V+P & 遮挡& \multicolumn{1}{c|}{27.0} & - & - \\ 
+    \multicolumn{1}{|c|}{} & \multicolumn{1}{l|}{} & 小块热图法\cite{2019segmentation} & 2019 & RGB & C+V+P & 遮挡& \multicolumn{1}{c|}{27.0} & - & - \\ 
     \cline{3-10} 
     
-    \multicolumn{1}{|c|}{} & \multicolumn{1}{l|}{} & Pvnet\cite{peng2019pvnet} & 2019 & RGB & V+P & 遮挡& \multicolumn{1}{c|}{40.8} & 86.3 & - \\
+    \multicolumn{1}{|c|}{} & \multicolumn{1}{l|}{} & Pvnet\cite{pvnet} & 2019 & RGB & V+P & 遮挡& \multicolumn{1}{c|}{40.8} & 86.3 & - \\
     \cline{3-10}
 
-    \multicolumn{1}{|c|}{} & \multicolumn{1}{l|}{} & HybridPose\cite{Song2020HybridPose6O} & 2020 & RGB & C+P+R & \begin{tabular}[c]{@{}c@{}}对称物体\\遮挡\end{tabular} & \multicolumn{1}{c|}{47.5}& 91.3 & - \\
+    \multicolumn{1}{|c|}{} & \multicolumn{1}{l|}{} & HybridPose\cite{hybridpose} & 2020 & RGB & C+P+R & \begin{tabular}[c]{@{}c@{}}对称物体\\遮挡\end{tabular} & \multicolumn{1}{c|}{47.5}& 91.3 & - \\
     \cline{3-10}
 
     \multicolumn{1}{|c|}{} & \multicolumn{1}{l|}{}& PVN3d\cite{he2020pvn3d} & 2020 & RGB-D & S+V+P & 通用 & \multicolumn{1}{c|}{-} & 99.4 & 95.5 \\
@@ -412,11 +412,11 @@ Liu等人\cite{liu2023depth} 将深度图像中的尺度相关信息和尺度不
 
 \subsubsection{基于模板检索的方法}\label{基于模板检索的方法}
 
-\par AAE（Augmented Autoencoder）\cite{Sundermeyer2018AAE}使用域随机化（Domain Randomization）生成不同状态（不同位置、不同姿态、不同纹理、不同遮挡、不同光照等）下的输入图像，训练增强自编码器编码位姿相关的特征，且能够忽略其他状态的影响。训练完成后将各个视角下渲染的模型图像输入AAE网络中，输出对应的隐式表示向量，存储为编码本。在测试时，将输入图像输入AAE网络后输出对应的隐式表示向量，与编码本中的向量一一比较余弦相似度，选出其中相似度最高的编码对应的姿态作为预测姿态。
+\par AAE（Augmented Autoencoder）\cite{sundermeyer2018implicit}使用域随机化（Domain Randomization）生成不同状态（不同位置、不同姿态、不同纹理、不同遮挡、不同光照等）下的输入图像，训练增强自编码器编码位姿相关的特征，且能够忽略其他状态的影响。训练完成后将各个视角下渲染的模型图像输入AAE网络中，输出对应的隐式表示向量，存储为编码本。在测试时，将输入图像输入AAE网络后输出对应的隐式表示向量，与编码本中的向量一一比较余弦相似度，选出其中相似度最高的编码对应的姿态作为预测姿态。
 
 \par Liu等人\cite{Liu2019cutout}开发了一种类似于自动编码器的卷积神经网络，用于重建包含目标物体的任意场景并提取物体区域。此外，Zhang等人\cite{Zhang2020preprocessing}利用目标检测器和关键点提取器来简化模板搜索过程。
 
-\par Papaioannidis等人\cite{Papaioannidis2020Domain}指出，在合成图像中估计物体姿态更为直接。因此，他们采用了生成对抗网络，将真实图像转换为合成图像，同时保留物体的姿态。Li等人\cite{Li2020Pose}使用了一种新的姿态表示方法，3D位置场，引导自动编码器提炼与姿态相关的信息，从而提高了处理姿态的能力。Stev\v{s}i\v{c}等人\cite{Stev2020Spatial}提出了一种空间注意力机制，用于识别和利用空间细节进行姿态优化。与上述方法不同，PoseRBPF\cite{Deng2021PoseRBPF}在 Rao-Blackwellized 粒子滤波框架\cite{Murphy2001}下解决了6自由度物体位姿跟踪问题。他们对旋转空间进行了精细的离散化处理，并训练了一个自动编码器网络，为这些离散化的旋转构建了一个特征编码本。该方法能够高效地估计3D平移以及完整的3D旋转分布。
+\par Papaioannidis等人\cite{9206072}指出，在合成图像中估计物体姿态更为直接。因此，他们采用了生成对抗网络，将真实图像转换为合成图像，同时保留物体的姿态。Li等人\cite{Li2020Pose}使用了一种新的姿态表示方法，3D位置场，引导自动编码器提炼与姿态相关的信息，从而提高了处理姿态的能力。Stev\v{s}i\v{c}等人\cite{Stev2020Spatial}提出了一种空间注意力机制，用于识别和利用空间细节进行姿态优化。与上述方法不同，PoseRBPF\cite{Deng2021PoseRBPF}在 Rao-Blackwellized 粒子滤波框架\cite{Murphy2001}下解决了6自由度物体位姿跟踪问题。他们对旋转空间进行了精细的离散化处理，并训练了一个自动编码器网络，为这些离散化的旋转构建了一个特征编码本。该方法能够高效地估计3D平移以及完整的3D旋转分布。
 
 \par 基于模板检索的方法通过从带有真实位姿标注的模板库中检索最相似模板来估计物体位姿，其精度依赖于模板数量，且对遮挡的处理能力有限。
 
@@ -428,9 +428,9 @@ DeepIM\cite{li2018deepim}首先利用目标检测算法得到目标物体在输�
 
 \par Manhardt 等人\cite{manhardt2018deep}通过对比RGB图像与渲染轮廓之间的物体轮廓，优化了6D位姿。渲染轮廓是通过初始位姿从物体CAD模型中获得的。Hai 等人\cite{hai2023shape}提出了一种基于形状约束的递归匹配框架来优化初始位姿。他们首先基于初始位姿和当前估计的位姿计算诱导的光流，然后直接从诱导的光流中解耦6自由度的位姿。
 
-\par 为了解决位姿优化方法运行效率低的问题，RePOSE\cite{Repose}引入了一种基于深度纹理渲染的位姿优化方法，利用具有可学习纹理的物体CAD模型进行快速特征提取。MRC-Net\cite{li2024mrcnet}提出了一种两阶段方法。第一阶段进行位姿分类，并在分类的位姿下渲染物体CAD模型。第二阶段进行回归，预测分类位姿下的精细残差。该方法通过位姿分类引导残差位姿回归，从而提高了鲁棒性。
+\par 为了解决位姿优化方法运行效率低的问题，RePOSE\cite{iwase2021repose}引入了一种基于深度纹理渲染的位姿优化方法，利用具有可学习纹理的物体CAD模型进行快速特征提取。MRC-Net\cite{li2024mrcnet}提出了一种两阶段方法。第一阶段进行位姿分类，并在分类的位姿下渲染物体CAD模型。第二阶段进行回归，预测分类位姿下的精细残差。该方法通过位姿分类引导残差位姿回归，从而提高了鲁棒性。
 
-一些研究者专注于仅回归3D旋转，以实现更高效和实用的位姿估计。Papaioannidis 等人\cite{papaioannidis20193d}提出了一种基于四元数的多目标损失函数，将流形学习与回归相结合，用于学习3自由度的姿态描述符。他们通过回归学习到的描述符获得了3自由度的姿态。Liu 等人\cite{liu2019regression}基于卷积神经网络训练了一个三重网络，从二值图像中提取判别性特征。他们在构建的三重网络中引入了姿态引导方法和回归约束，使特征适应回归任务，从而增强了鲁棒性。
+一些研究者专注于仅回归3D旋转，以实现更高效和实用的位姿估计。Papaioannidis 等人\cite{8765585}提出了一种基于四元数的多目标损失函数，将流形学习与回归相结合，用于学习3自由度的姿态描述符。他们通过回归学习到的描述符获得了3自由度的姿态。Liu 等人\cite{liu2019regression}基于卷积神经网络训练了一个三重网络，从二值图像中提取判别性特征。他们在构建的三重网络中引入了姿态引导方法和回归约束，使特征适应回归任务，从而增强了鲁棒性。
 
 \begin{table}[thbp]
     \centering
@@ -442,10 +442,10 @@ DeepIM\cite{li2018deepim}首先利用目标检测算法得到目标物体在输�
     \multicolumn{3}{|c|}{方法} & \begin{tabular}[c]{@{}c@{}}发表\\ 年份\end{tabular} & \begin{tabular}[c]{@{}c@{}}数据\\ 模态\end{tabular} & \begin{tabular}[c]{@{}c@{}}方法\\ 架构\end{tabular} & 创新点 &\multicolumn{2}{l|}{\begin{tabular}[c]{@{}c@{}}LM-O $|$ LM\\ ADD(S)-0.1d\end{tabular}} & \begin{tabular}[c]{@{}c@{}}YCB-V\\ ADD-S ($<$0.1m)\end{tabular} \\ 
     \hline
     
-    \multicolumn{1}{|c|}{\multirow{9}{*}{\rotatebox{90}{\centering{基于对比的方法}}}} & \multicolumn{1}{l|}{\multirow{4}{*}{\rotatebox{90}{\centering{模板}}}} & AAE\cite{Sundermeyer2018AAE} & 2018 & RGB & D+T & \begin{tabular}[c]{@{}c@{}}通用\\ 泛化\end{tabular} & \multicolumn{1}{c|}{-} & 31.4 & - \\
+    \multicolumn{1}{|c|}{\multirow{9}{*}{\rotatebox{90}{\centering{基于对比的方法}}}} & \multicolumn{1}{l|}{\multirow{4}{*}{\rotatebox{90}{\centering{模板}}}} & AAE\cite{sundermeyer2018implicit} & 2018 & RGB & D+T & \begin{tabular}[c]{@{}c@{}}通用\\ 泛化\end{tabular} & \multicolumn{1}{c|}{-} & 31.4 & - \\
     \cline{3-10} 
 
-    \multicolumn{1}{|c|}{} & \multicolumn{1}{l|}{} & Papaioannidis 等人\cite{Papaioannidis2020Domain} & 2020 & RGB & D+T & 通用 & \multicolumn{1}{c|}{-} & - & - \\
+    \multicolumn{1}{|c|}{} & \multicolumn{1}{l|}{} & Papaioannidis 等人\cite{9206072} & 2020 & RGB & D+T & 通用 & \multicolumn{1}{c|}{-} & - & - \\
     \cline{3-10}
 
     \multicolumn{1}{|c|}{} & \multicolumn{1}{l|}{} & PoseRBPF\cite{Deng2021PoseRBPF} & 2021 & RGB & D+T & 对称物体& \multicolumn{1}{c|}{-} & - & - \\
