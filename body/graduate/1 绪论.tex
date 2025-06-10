@@ -126,7 +126,7 @@ BOP挑战赛每年举办一次，参赛者需提交算法在官方数据集上�
 \item \textbf{零样本方法}：通过多物体联合训练提取通用特征，支持零样本位姿估计，但存在精度-推理速度权衡问题，高精度的方法单张图片需十秒以上的推理。
 \end{enumerate}
 
-典型实例级方法通过构建物体级特征空间实现精准匹配，而NOCS\cite{NOCS}开创性地提出标准化物体坐标系实现类别级估计。后续研究通过形状先验建模\cite{SGPA, DPDN}、隐式表面表示\cite{GPV-Pose, HS-Pose}等途径提升类内泛化能力。面向开放世界的零样本方法\cite{Gen6D, MegaPose}则突破CAD模型依赖，但需解决跨域特征对齐问题。
+典型实例级方法通过构建物体级特征空间实现精准匹配，而NOCS\cite{NOCS}开创性地提出标准化物体坐标系实现类别级估计。后续研究通过形状先验建模\cite{SGPA, DPDN}、隐式表面表示\cite{GPV-Pose, HS-Pose}等途径提升类内泛化能力。面向开放世界的零样本方法\cite{Gen6D, megapose}则突破CAD模型依赖，但需解决跨域特征对齐问题。
 
 \subsection{传感器模态分类}
 
@@ -155,7 +155,7 @@ BOP挑战赛每年举办一次，参赛者需提交算法在官方数据集上�
 
 \begin{figure}[htbp]
     \centering
-    \begin{overpic}[width=0.85\textwidth]{figure/intro/困难与挑战.jpg}
+    \begin{overpic}[width=0.75\textwidth]{figure/intro/困难与挑战.jpg}
         \put(2.8,56.5){对称物体}
         \put(33.5,57){光照变化}
         \put(85,55.5){杂乱场景}
@@ -181,7 +181,7 @@ BOP挑战赛每年举办一次，参赛者需提交算法在官方数据集上�
     \centering
     \begin{subfigure}[b]{1.0\textwidth}
         \centering
-        \begin{overpic}[width=1.0\textwidth]{figure/intro/基于稀疏对应关系的方法.pdf}
+        \begin{overpic}[width=0.8\textwidth]{figure/intro/基于稀疏对应关系的方法.pdf}
         \end{overpic}
         \caption{基于稀疏对应关系的方法}
         \label{fig:基于稀疏对应关系的方法}
@@ -189,7 +189,7 @@ BOP挑战赛每年举办一次，参赛者需提交算法在官方数据集上�
     \vfill
     \begin{subfigure}[b]{1.0\textwidth}
         \centering
-        \begin{overpic}[width=1.0\textwidth]{figure/intro/基于密集对应关系的方法.pdf}
+        \begin{overpic}[width=0.8\textwidth]{figure/intro/基于密集对应关系的方法.pdf}
         \end{overpic}
         \caption{基于稠密对应关系的方法}
         \label{fig:基于稠密对应关系的方法}
@@ -297,14 +297,14 @@ BOP挑战赛每年举办一次，参赛者需提交算法在官方数据集上�
     \centering
     \begin{subfigure}[b]{0.95\textwidth}
         \centering
-        \includegraphics[width=0.95\textwidth]{figure/intro/直接回归法.pdf}
+        \includegraphics[width=0.75\textwidth]{figure/intro/直接回归法.pdf}
         \caption{直接回归法}
         \label{fig:直接回归法}
     \end{subfigure}
     \vfill
     \begin{subfigure}[b]{0.95\textwidth}
         \centering
-        \includegraphics[width=0.95\textwidth]{figure/intro/辅助约束回归方法.pdf}
+        \includegraphics[width=0.75\textwidth]{figure/intro/辅助约束回归方法.pdf}
         \caption{辅助约束回归方法}
         \label{fig:基于辅助约束的回归方法}
     \end{subfigure}

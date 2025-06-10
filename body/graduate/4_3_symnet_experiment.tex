@@ -70,37 +70,37 @@
     \label{fig:difficult_learn_one_to_one}
 \end{figure}
 
-\subsection{可视化} 
-
-\autoref{fig:compare_code_map}通过对比揭示了SymCode与ZebraPose的二进制编码特性差异：首行与第三行呈现ZebraPose编码图，第二行与第四行展示SymCode编码图，末列则为各比特位的聚合可视化结果。该对比清晰揭示了SymCode编码体系对物体对称性信息的有效整合。从\autoref{fig:compare_code_map}观察到ZebraPose编码不具备明显的规律，而SymNet则展现出更优的对称一致性。
-
 \begin{figure}[htbp]
         \centerline{\includegraphics[width=1.0\textwidth]{figure/symnet/compare_code_map.jpg}}
         \caption{ZebraPose Code 和 SymCode 对比}
         \label{fig:compare_code_map}
 \end{figure}
 
-\autoref{fig:visualization_tless}展示了在T-LESS数据集上的物体位姿估计结果，两个物体分别为离散对称和连续对称。每列展示不同视角下的场景实例，其中三维物体姿态通过渲染叠加至原始图像。检测置信度分值标注于包围框左上角。可视化结果表明，即使在存在严重遮挡的杂乱场景中，本方法仍能保持鲁棒的姿态估计能力。
-
-\begin{figure}[htbp]
+\begin{figure}[ht]
         \centerline{\includegraphics[width=1.0\textwidth]{figure/symnet/visualization_tless.jpg}}
         \caption{在T-LESS数据集上的可视化}
         \label{fig:visualization_tless}
 \end{figure}
 
-\autoref{fig:compare_zebrapose}展示了SymCode与ZebraPose Code学习效果对比。左上：ZebraPose的真实值编码；右上：ZebraPose的预测输出；左下：SymCode的真实值编码；右下：SymCode的预测输出（仅显示前8位比特位）。可视化结果表明，SymNet倾向于输出高置信度的预测结果，其预测值常趋近于0或1的极端值域边界。相较而言，ZebraPose的预测值则更多聚集在0.5附近，这种中间态分布揭示了其预测过程存在较高的不确定性，暗示模型对编码空间的表征能力相对不足。
-
-\begin{figure}[htbp]
+\begin{figure}[h]
         \centerline{\includegraphics[width=1.0\textwidth]{figure/symnet/compare_with_zebrapose.jpg}}
         \caption{SymCode与ZebraPose Code学习效果对比}
         \label{fig:compare_zebrapose}
 \end{figure}
 
-\begin{figure}[ht]
+\begin{figure}[h]
         \centerline{\includegraphics[width=1.0\textwidth]{figure/symnet/ycbv_bowl_vis.jpg}}
         \caption{YCB-V数据集的正确和错误的示例}
         \label{fig:ycbv_bowl_vis}
 \end{figure}
+
+\subsection{可视化} 
+
+\autoref{fig:compare_code_map}通过对比揭示了SymCode与ZebraPose的二进制编码特性差异：首行与第三行呈现ZebraPose编码图，第二行与第四行展示SymCode编码图，末列则为各比特位的聚合可视化结果。该对比清晰揭示了SymCode编码体系对物体对称性信息的有效整合。从\autoref{fig:compare_code_map}观察到ZebraPose编码不具备明显的规律，而SymNet则展现出更优的对称一致性。
+
+\autoref{fig:visualization_tless}展示了在T-LESS数据集上的物体位姿估计结果，两个物体分别为离散对称和连续对称。每列展示不同视角下的场景实例，其中三维物体姿态通过渲染叠加至原始图像。检测置信度分值标注于包围框左上角。可视化结果表明，即使在存在严重遮挡的杂乱场景中，本方法仍能保持鲁棒的姿态估计能力。
+
+\autoref{fig:compare_zebrapose}展示了SymCode与ZebraPose Code学习效果对比。左上：ZebraPose的真实值编码；右上：ZebraPose的预测输出；左下：SymCode的真实值编码；右下：SymCode的预测输出（仅显示前8位比特位）。可视化结果表明，SymNet倾向于输出高置信度的预测结果，其预测值常趋近于0或1的极端值域边界。相较而言，ZebraPose的预测值则更多聚集在0.5附近，这种中间态分布揭示了其预测过程存在较高的不确定性，暗示模型对编码空间的表征能力相对不足。
 
 进一步可视化了正确和错误的示例，如\autoref{fig:ycbv_bowl_vis}所示。可以发现，在显著遮挡的情况下，输出的二进制编码仍然表现出特定姿态的特征，尽管该姿态是错误的。第一列为真实值，第二列为估计的姿态。第一个示例是正确估计的情况，而第二个示例是错误估计的情况。右侧的第一行和第三行为SymCode的真实值，第二行和第四行为估计值。
 
